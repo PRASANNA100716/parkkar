@@ -88,6 +88,42 @@ const IconCamera = ({ size = 22, color = "currentColor" }) => (
   </svg>
 );
 
+// ─── RAPIDO-STYLE AI DYNAMIC SMART PRICING ENGINE ────────────────────────────
+function calculateAISmartPrice(address, city, type, amenities) {
+  let baseRate = 45;
+  let areaTier = "Standard Demand Zone";
+  let surgeMultiplier = "1.0x";
+
+  const addrLower = (address + " " + city).toLowerCase();
+
+  if (addrLower.includes("t. nagar") || addrLower.includes("t nagar") || addrLower.includes("nungambakkam") || addrLower.includes("guindy")) {
+    baseRate = 65;
+    areaTier = "🔥 Ultra-High Commercial Surge Zone";
+    surgeMultiplier = "1.4x";
+  } else if (addrLower.includes("anna nagar") || addrLower.includes("adyar") || addrLower.includes("alwarpet") || addrLower.includes("mylapore")) {
+    baseRate = 50;
+    areaTier = "⚡ Prime Residential Zone";
+    surgeMultiplier = "1.2x";
+  } else if (city === "Coimbatore") {
+    baseRate = 45;
+    areaTier = "📍 Coimbatore Commercial Hub";
+    surgeMultiplier = "1.1x";
+  } else if (city === "Madurai") {
+    baseRate = 35;
+    areaTier = "📍 Madurai City Zone";
+    surgeMultiplier = "1.0x";
+  }
+
+  // Feature Additions
+  if (type === "Underground Basement" || type === "Private Garage") baseRate += 10;
+  if (amenities.includes("EV Ready")) baseRate += 10;
+  if (amenities.includes("CCTV")) baseRate += 5;
+
+  const estimatedMonthly = baseRate * 6 * 30; // 6 hours average daily occupancy
+
+  return { recommendedPrice: baseRate, areaTier, surgeMultiplier, estimatedMonthly };
+}
+
 // ─── HIGH-RELIABILITY MULTI-SOURCE REAL PHOTO COMPONENT ──────────────────────
 const REAL_IMAGES = {
   whiteCar: [
@@ -424,6 +460,14 @@ export default function FullShowcaseBoard() {
 
   const [isPublishing, setIsPublishing] = useState(false);
 
+  // Dynamic AI Pricing Calculation
+  const aiRate = calculateAISmartPrice(hostForm.address, hostForm.city, hostForm.type, hostForm.amenities);
+
+  // Automatically update host price with AI calculation when address/city/type change
+  useEffect(() => {
+    setHostForm(prev => ({ ...prev, price: aiRate.recommendedPrice }));
+  }, [hostForm.address, hostForm.city, hostForm.type]);
+
   const screensList = [
     { id: "01", name: "Splash Screen" },
     { id: "02", name: "Discover Spaces" },
@@ -456,7 +500,7 @@ export default function FullShowcaseBoard() {
     { id: "29", name: "Host Dashboard" },
     { id: "30", name: "Add Space (Intro)" },
     { id: "31", name: "Add Space (Location)" },
-    { id: "32", name: "Add Space (Pricing)" },
+    { id: "32", name: "Add Space (Pricing & AI)" },
     { id: "33", name: "Add Space (Photos)" },
     { id: "34", name: "Review & Publish" },
     { id: "35", name: "Space Submitted" },
@@ -644,7 +688,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 02: ONBOARDING 1 (DISCOVER SPACES) ─── */}
+            {/* ─── SCREEN 02: ONBOARDING 1 ─── */}
             {activeScreen === "02" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
                 <div style={{ width: "100%" }}>
@@ -670,7 +714,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 03: ONBOARDING 2 (HOST & EARN) ─── */}
+            {/* ─── SCREEN 03: ONBOARDING 2 ─── */}
             {activeScreen === "03" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
                 <div style={{ width: "100%" }}>
@@ -696,7 +740,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 04: ONBOARDING 3 (SAFE & SECURE) ─── */}
+            {/* ─── SCREEN 04: ONBOARDING 3 ─── */}
             {activeScreen === "04" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
                 <div style={{ width: "100%" }}>
@@ -901,7 +945,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 08: HOME / SEARCH (INTERACTIVE TAMIL NADU MAP) ─── */}
+            {/* ─── SCREEN 08: HOME / SEARCH ─── */}
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
@@ -1619,7 +1663,7 @@ export default function FullShowcaseBoard() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     {[
                       { icon: "📍", title: "1. Add Location & Details", desc: "Specify address, city & space type" },
-                      { icon: "💰", title: "2. Set Your Hourly Rate", desc: "Flexible pricing from ₹30 to ₹100/hr" },
+                      { icon: "⚡", title: "2. AI Dynamic Pricing", desc: "AI calculates best rates based on demand" },
                       { icon: "📸", title: "3. Take & Upload Photo", desc: "Snap a photo of your garage or slot" },
                       { icon: "🔥", title: "4. Save to Firebase Firestore", desc: "Instant live publish on Tamil Nadu Map" }
                     ].map((step, i) => (
@@ -1674,12 +1718,12 @@ export default function FullShowcaseBoard() {
                     <option value="Madurai">Madurai</option>
                   </select>
 
-                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Full Address</label>
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Full Address / Area Landmark</label>
                   <input 
                     type="text" 
                     value={hostForm.address}
                     onChange={(e) => setHostForm({...hostForm, address: e.target.value})}
-                    placeholder="e.g. 12th Main Road, Anna Nagar, Chennai"
+                    placeholder="e.g. T. Nagar 2nd Avenue, Chennai"
                     style={{ width: "100%", padding: 14, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 14, fontWeight: 700, color: "#0F172A", marginBottom: 16 }}
                   />
 
@@ -1711,35 +1755,66 @@ export default function FullShowcaseBoard() {
                   onClick={() => setActiveScreen("32")}
                   style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
                 >
-                  Next: Set Pricing & Specs
+                  Next: Calculate AI Pricing ➔
                 </button>
               </div>
             )}
 
-            {/* ─── SCREEN 32: HOST FORM STEP 2 ─── */}
+            {/* ─── SCREEN 32: HOST FORM STEP 2 (RAPIDO-STYLE AI DYNAMIC SMART PRICING) ─── */}
             {activeScreen === "32" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between", overflowY: "auto" }}>
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                     <button onClick={() => setActiveScreen("31")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
                       <IconChevronLeft size={22} color="#0F172A" />
                     </button>
-                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Step 2: Pricing & Features</span>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Step 2: AI Dynamic Pricing</span>
                   </div>
 
-                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Set Hourly Rate (₹)</label>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+                  {/* RAPIDO STYLE GLOWING AI SMART PRICING WIDGET */}
+                  <div style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", borderRadius: 22, padding: 18, color: "#FFF", marginBottom: 20, boxShadow: "0 10px 25px rgba(15,23,42,0.25)", position: "relative", overflow: "hidden" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                      <span style={{ fontSize: 11, fontWeight: 900, background: "rgba(34,197,94,0.2)", color: "#22C55E", padding: "4px 10px", borderRadius: 10, border: "1px solid rgba(34,197,94,0.4)" }}>
+                        ✨ PAARKKAR AI ENGINE
+                      </span>
+                      <span style={{ fontSize: 11, color: "#F59E0B", fontWeight: 800 }}>
+                        {aiRate.surgeMultiplier} Surge Factor
+                      </span>
+                    </div>
+
+                    <span style={{ fontSize: 12, color: "#CBD5E1", fontWeight: 700 }}>AI Suggested Rate for {hostForm.city}:</span>
+                    <div style={{ fontSize: 34, fontWeight: 900, color: "#22C55E", margin: "4px 0" }}>
+                      ₹{aiRate.recommendedPrice} <span style={{ fontSize: 14, color: "#94A3B8", fontWeight: 600 }}>/ hour</span>
+                    </div>
+
+                    <div style={{ fontSize: 12, color: "#E2E8F0", marginBottom: 8, fontWeight: 700 }}>
+                      📍 {aiRate.areaTier}
+                    </div>
+
+                    <div style={{ background: "rgba(255,255,255,0.08)", padding: "10px 12px", borderRadius: 12, fontSize: 12, color: "#818CF8", fontWeight: 700 }}>
+                      💰 Projected Monthly Revenue: ~₹{aiRate.estimatedMonthly.toLocaleString()}/month
+                    </div>
+                  </div>
+
+                  {/* HOURLY RATE ADJUSTMENT INPUT */}
+                  <label style={{ fontSize: 13, fontWeight: 900, color: "#0F172A", display: "block", marginBottom: 6 }}>Final Hourly Rate (₹)</label>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
                     <input 
                       type="number" 
                       value={hostForm.price}
                       onChange={(e) => setHostForm({...hostForm, price: e.target.value})}
-                      style={{ width: 100, padding: 14, borderRadius: 14, border: "2px solid #22C55E", outline: "none", fontSize: 20, fontWeight: 900, color: "#22C55E", textAlign: "center" }}
+                      style={{ width: 110, padding: 12, borderRadius: 14, border: "2px solid #22C55E", outline: "none", fontSize: 22, fontWeight: 900, color: "#22C55E", textAlign: "center" }}
                     />
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#64748B" }}>₹ / Hour</span>
+                    <button 
+                      onClick={() => setHostForm({...hostForm, price: aiRate.recommendedPrice})}
+                      style={{ background: "#DCFCE7", border: "1px solid #BBF7D0", color: "#16A34A", padding: "10px 14px", borderRadius: 12, fontWeight: 900, fontSize: 12, cursor: "pointer" }}
+                    >
+                      ⚡ Reset to AI Price (₹{aiRate.recommendedPrice})
+                    </button>
                   </div>
 
-                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 10 }}>Select Amenities</label>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+                  <label style={{ fontSize: 13, fontWeight: 900, color: "#0F172A", display: "block", marginBottom: 10 }}>Select Space Amenities</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
                     {["CCTV", "Covered", "24/7 Access", "EV Ready"].map((am) => {
                       const isSelected = hostForm.amenities.includes(am);
                       return (
@@ -1769,7 +1844,7 @@ export default function FullShowcaseBoard() {
 
                   <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Space Description</label>
                   <textarea 
-                    rows={3}
+                    rows={2}
                     value={hostForm.about}
                     onChange={(e) => setHostForm({...hostForm, about: e.target.value})}
                     style={{ width: "100%", padding: 12, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 13, color: "#0F172A", fontWeight: 600 }}
@@ -1778,9 +1853,9 @@ export default function FullShowcaseBoard() {
 
                 <button 
                   onClick={() => setActiveScreen("33")}
-                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)", marginTop: 16 }}
                 >
-                  Next: Upload Photo
+                  Next: Upload Photo ➔
                 </button>
               </div>
             )}
