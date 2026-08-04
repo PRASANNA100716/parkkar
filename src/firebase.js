@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { getStorage, ref, uploadString, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // Default Live Firebase Project Credentials (paarkkar-dda3d)
@@ -236,7 +236,7 @@ export async function saveHostSpot(spotData) {
 export async function fetchHostSpotsFromFirebase() {
   try {
     if (db) {
-      const q = query(collection(db, "parking_spots"), orderBy("createdAt", "desc"));
+      const q = query(collection(db, "parking_spots"), orderBy("createdAt", "desc"), limit(30));
       const snapshot = await getDocs(q);
       const spots = [];
       snapshot.forEach(doc => {

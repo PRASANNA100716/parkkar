@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, memo, useCallback, useMemo } from "react";
 import { 
   saveHostSpot, 
   fetchHostSpotsFromFirebase, 
@@ -37,137 +37,137 @@ const T = {
 };
 
 // ─── CRISP PRODUCTION SVG ICONS ──────────────────────────────────────────────
-const IconSearch = ({ size = 18, color = "currentColor" }) => (
+const IconSearch = memo(({ size = 18, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="11" cy="11" r="8" />
     <line x1="21" y1="21" x2="16.65" y2="16.65" />
   </svg>
-);
+));
 
-const IconBell = ({ size = 18, color = "currentColor" }) => (
+const IconBell = memo(({ size = 18, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
     <path d="M13.73 21a2 2 0 0 1-3.46 0" />
   </svg>
-);
+));
 
-const IconMenu = ({ size = 20, color = "currentColor" }) => (
+const IconMenu = memo(({ size = 20, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round">
     <line x1="4" x2="20" y1="6" y2="6" />
     <line x1="4" x2="20" y1="12" y2="12" />
     <line x1="4" x2="20" y1="18" y2="18" />
   </svg>
-);
+));
 
-const IconFilter = ({ size = 18, color = "currentColor" }) => (
+const IconFilter = memo(({ size = 18, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
   </svg>
-);
+));
 
-const IconChevronRight = ({ size = 16, color = "currentColor" }) => (
+const IconChevronRight = memo(({ size = 16, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="m9 18 6-6-6-6" />
   </svg>
-);
+));
 
-const IconChevronLeft = ({ size = 20, color = "currentColor" }) => (
+const IconChevronLeft = memo(({ size = 20, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="m15 18-6-6 6-6" />
   </svg>
-);
+));
 
-const IconLock = ({ size = 16, color = "currentColor" }) => (
+const IconLock = memo(({ size = 16, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
   </svg>
-);
+));
 
-const IconShare = ({ size = 20, color = "currentColor" }) => (
+const IconShare = memo(({ size = 20, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
     <polyline points="16 6 12 2 8 6" />
     <line x1="12" y1="2" x2="12" y2="15" />
   </svg>
-);
+));
 
-const IconCheck = ({ size = 20, color = "currentColor" }) => (
+const IconCheck = memo(({ size = 20, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="20 6 9 17 4 12" />
   </svg>
-);
+));
 
 // ─── PREMIUM VECTOR SVG ICONS FOR NAVIGATION DRAWER ───────────────────────
-const IconShieldCheck = ({ size = 18, color = "#2563EB" }) => (
+const IconShieldCheck = memo(({ size = 18, color = "#2563EB" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     <path d="m9 12 2 2 4-4"/>
   </svg>
-);
+));
 
-const IconBuildingCheck = ({ size = 18, color = "#D97706" }) => (
+const IconBuildingCheck = memo(({ size = 18, color = "#D97706" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
     <path d="M9 22v-4h6v4"/>
     <path d="M8 6h.01M16 6h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01"/>
   </svg>
-);
+));
 
-const IconMapPin = ({ size = 18, color = "#16A34A" }) => (
+const IconMapPin = memo(({ size = 18, color = "#16A34A" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/>
     <circle cx="12" cy="10" r="3"/>
   </svg>
-);
+));
 
-const IconGridDashboard = ({ size = 18, color = "#9333EA" }) => (
+const IconGridDashboard = memo(({ size = 18, color = "#9333EA" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <rect width="7" height="9" x="3" y="3" rx="1"/>
     <rect width="7" height="5" x="14" y="3" rx="1"/>
     <rect width="7" height="9" x="14" y="12" rx="1"/>
     <rect width="7" height="5" x="3" y="16" rx="1"/>
   </svg>
-);
+));
 
-const IconPlusCircle = ({ size = 18, color = "#059669" }) => (
+const IconPlusCircle = memo(({ size = 18, color = "#059669" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10"/>
     <path d="M12 8v8M8 12h8"/>
   </svg>
-);
+));
 
-const IconTicketPass = ({ size = 18, color = "#4F46E5" }) => (
+const IconTicketPass = memo(({ size = 18, color = "#4F46E5" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/>
     <path d="M13 5v2M13 11v2M13 17v2"/>
   </svg>
-);
+));
 
-const IconWalletCard = ({ size = 18, color = "#0D9488" }) => (
+const IconWalletCard = memo(({ size = 18, color = "#0D9488" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <rect width="20" height="14" x="2" y="5" rx="2"/>
     <line x1="2" x2="22" y1="10" y2="10"/>
   </svg>
-);
+));
 
-const IconCarSteering = ({ size = 16, color = "currentColor" }) => (
+const IconCarSteering = memo(({ size = 16, color = "currentColor" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 12 10s-6.7.6-8.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"/>
     <circle cx="7" cy="17" r="2"/>
     <circle cx="17" cy="17" r="2"/>
     <path d="M5 17h12"/>
   </svg>
-);
+));
 
-const IconCamera = ({ size = 22, color = "currentColor" }) => (
+const IconCamera = memo(({ size = 22, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
     <circle cx="12" cy="13" r="4" />
   </svg>
-);
+));
 
-const IconTarget = ({ size = 18, color = "currentColor" }) => (
+const IconTarget = memo(({ size = 18, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10" />
     <circle cx="12" cy="12" r="4" />
@@ -176,7 +176,7 @@ const IconTarget = ({ size = 18, color = "currentColor" }) => (
     <line x1="2" y1="12" x2="4" y2="12" />
     <line x1="20" y1="12" x2="22" y2="12" />
   </svg>
-);
+));
 
 // ─── RAPIDO-STYLE AI DYNAMIC SMART PRICING ENGINE ────────────────────────────
 function calculateAISmartPrice(address, city, type, amenities) {
@@ -264,25 +264,27 @@ const REAL_IMAGES = {
   ]
 };
 
-const SmartImage = ({ sources = [], alt, style }) => {
+const SmartImage = memo(({ sources = [], alt, style, loading = "lazy" }) => {
   const [sourceIndex, setSourceIndex] = useState(0);
 
   const srcList = Array.isArray(sources) && sources.length > 0 ? sources : [SVG_GARAGE_DATA_URL];
   const currentSrc = srcList[sourceIndex] || SVG_GARAGE_DATA_URL;
 
-  const handleError = () => {
+  const handleError = useCallback(() => {
     if (sourceIndex < srcList.length - 1) {
       setSourceIndex(prev => prev + 1);
     } else {
       setSourceIndex(srcList.length);
     }
-  };
+  }, [sourceIndex, srcList.length]);
 
   if (sourceIndex >= srcList.length) {
     return (
       <img
         src={SVG_GARAGE_DATA_URL}
         alt={alt}
+        loading={loading}
+        decoding="async"
         style={{ width: "100%", height: "100%", objectFit: "cover", ...style }}
       />
     );
@@ -292,11 +294,13 @@ const SmartImage = ({ sources = [], alt, style }) => {
     <img
       src={currentSrc}
       alt={alt}
+      loading={loading}
+      decoding="async"
       style={{ width: "100%", height: "100%", objectFit: "cover", ...style }}
       onError={handleError}
     />
   );
-};
+});
 
 const RealGaragePhoto = ({ height = 200, badge = "SLOT A-12 • PRIVATE GARAGE" }) => (
   <div style={{ width: "100%", height, borderRadius: 20, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>

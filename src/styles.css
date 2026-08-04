@@ -1,4 +1,42 @@
-.App {
-  font-family: sans-serif;
-  text-align: center;
+/* ─── PAARKKAR HIGH-PERFORMANCE MOBILE CSS SYSTEM ─── */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: #0F172A;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* GPU Hardware Acceleration & Smooth 60 FPS Mobile Touch Scrolling */
+.mobile-scroll-container, [style*="overflowY: \"auto\""], [style*="overflow-y: auto"] {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  will-change: scroll-position;
+  transform: translateZ(0);
+}
+
+/* Image Optimization & Decoding */
+img {
+  max-width: 100%;
+  height: auto;
+  image-rendering: -webkit-optimize-contrast;
+  content-visibility: auto;
+}
+
+/* Transition Hardware Acceleration */
+.modal-transition, .drawer-transition {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }

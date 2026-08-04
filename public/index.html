@@ -3,11 +3,21 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
 	<meta name="theme-color" content="#0F172A">
+	<meta name="description" content="Paarkkar - India's First Peer-to-Peer Parking Marketplace. Rent driveways, garages, & vacant spots instantly." />
+	
+	<!-- Performance Preconnect & DNS-Prefetch Hints -->
+	<link rel="preconnect" href="https://unpkg.com" crossorigin />
+	<link rel="dns-prefetch" href="https://unpkg.com" />
+	<link rel="preconnect" href="https://firebasestorage.googleapis.com" />
+	<link rel="dns-prefetch" href="https://firebasestorage.googleapis.com" />
+
 	<link rel="manifest" href="%PUBLIC_URL%/manifest.json">
 	<link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'" />
+	<noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /></noscript>
+	
 	<title>Paarkkar - India's Peer-to-Peer Parking Platform</title>
 </head>
 
