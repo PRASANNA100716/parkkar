@@ -537,6 +537,12 @@ export default function FullShowcaseBoard() {
   const [loginInput, setLoginInput] = useState("driver@parkkar.com");
   const [loginPassword, setLoginPassword] = useState("12345678");
 
+  // Hidden File Refs for KYC Document Uploads
+  const driverRcFileRef = useRef(null);
+  const driverAadhaarFileRef = useRef(null);
+  const hostAadhaarFileRef = useRef(null);
+  const hostEbFileRef = useRef(null);
+
   // Hidden File Input Ref for Host Photo Upload
   const fileInputRef = useRef(null);
 
