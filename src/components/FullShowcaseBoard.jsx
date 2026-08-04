@@ -591,7 +591,7 @@ export default function FullShowcaseBoard() {
           )}
 
           {/* SCREEN CONTENT AREA */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", position: "relative" }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
             
             {/* ─── SPLASH SCREEN ─── */}
             {activeScreen === "01" && (
@@ -969,17 +969,19 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── PARKING DETAILS (ULTRA-RICH RAPIDO/UBER STYLE DETAIL VIEW) ─── */}
+            {/* ─── PARKING DETAILS (ULTRA-RICH RAPIDO/UBER STYLE DETAIL VIEW WITH FIXED BOTTOM FOOTER) ─── */}
             {activeScreen === "10" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", justifyContent: "space-between" }}>
-                <div style={{ overflowY: "auto" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", height: "100%", overflow: "hidden" }}>
+                
+                {/* SCROLLABLE MIDDLE CONTENT AREA */}
+                <div style={{ flex: 1, overflowY: "auto", paddingBottom: 16 }}>
                   {/* HEADER BAR */}
                   <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
-                    <button onClick={() => setActiveScreen("09")} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                    <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer" }}>
                       <IconChevronLeft size={22} color="#0F172A" />
                     </button>
                     <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Parking Details</span>
-                    <button style={{ background: "none", border: "none", cursor: "pointer" }}>
+                    <button onClick={() => alert(`Shared ${selectedSpot.title} parking link to clipboard!`)} style={{ background: "none", border: "none", cursor: "pointer" }}>
                       <IconShare size={20} color="#0F172A" />
                     </button>
                   </div>
@@ -1027,7 +1029,7 @@ export default function FullShowcaseBoard() {
                         <span style={{ fontSize: 11, color: "#64748B", fontWeight: 600 }}>Verified Host • Responds in &lt; 2 mins</span>
                       </div>
                     </div>
-                    <button style={{ background: "#F1F5F9", border: "none", color: "#0F172A", padding: "8px 12px", borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
+                    <button onClick={() => alert("Calling Host Express Towers (+91 98765 43210)...")} style={{ background: "#F1F5F9", border: "none", color: "#0F172A", padding: "8px 12px", borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
                       📞 Call Host
                     </button>
                   </div>
@@ -1069,11 +1071,10 @@ export default function FullShowcaseBoard() {
                       "Extremely convenient parking right near Pondy Bazaar. Guard was super helpful and checking in was instant via QR code." — <strong>Karthik M.</strong>
                     </p>
                   </div>
-
                 </div>
 
-                {/* STICKY BOTTOM ACTION FOOTER WITH PRICE AND BOOK NOW BUTTON */}
-                <div style={{ padding: "16px 20px 24px", borderTop: "1.5px solid #F1F5F9", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", boxShadow: "0 -6px 20px rgba(0,0,0,0.05)" }}>
+                {/* STICKY FIXED BOTTOM ACTION FOOTER WITH PRICE AND BOOK SPOT NOW BUTTON */}
+                <div style={{ padding: "16px 20px 24px", borderTop: "1.5px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", boxShadow: "0 -6px 20px rgba(0,0,0,0.08)", zIndex: 100 }}>
                   <div>
                     <span style={{ fontSize: 11, color: "#16A34A", fontWeight: 800, display: "block" }}>● Instant Approval • Free Cancel</span>
                     <div style={{ fontSize: 24, fontWeight: 900, color: "#0F172A" }}>
@@ -1098,6 +1099,7 @@ export default function FullShowcaseBoard() {
                     Book Spot Now
                   </button>
                 </div>
+
               </div>
             )}
 
