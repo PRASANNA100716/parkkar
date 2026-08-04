@@ -629,6 +629,21 @@ export default function FullShowcaseBoard() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
 
+  // Helper to Reset Host Spot Form to Clean Empty State
+  const handleStartNewHostListing = () => {
+    setHostForm({
+      title: "",
+      address: "",
+      city: "Chennai",
+      price: "",
+      type: "Private Garage",
+      photoUrl: process.env.PUBLIC_URL + "/assets/home_garage.png",
+      amenities: ["CCTV", "Covered"],
+      about: ""
+    });
+    setActiveScreen("30");
+  };
+
   // Mandatory KYC Gate Check
   const handleAccessApp = (selectedRole) => {
     setRole(selectedRole);
