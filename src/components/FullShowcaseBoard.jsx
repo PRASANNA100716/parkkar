@@ -158,28 +158,28 @@ const SVG_DRIVEWAY_DATA_URL = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3
 
 const REAL_IMAGES = {
   whiteCar: [
-    SVG_GARAGE_DATA_URL,
-    "https://images.unsplash.com/photo-1506521782020-18925f4bfa55?auto=format&fit=crop&w=800&q=80"
+    process.env.PUBLIC_URL + "/assets/driver_car.png",
+    SVG_GARAGE_DATA_URL
   ],
   garageHouse: [
-    SVG_GARAGE_DATA_URL,
-    "https://images.unsplash.com/photo-1590674899484-13da0d1b58f5?auto=format&fit=crop&w=800&q=80"
+    process.env.PUBLIC_URL + "/assets/home_garage.png",
+    SVG_GARAGE_DATA_URL
   ],
   garage: [
-    SVG_GARAGE_DATA_URL,
-    "https://images.unsplash.com/photo-1506521782020-18925f4bfa55?auto=format&fit=crop&w=800&q=80"
+    process.env.PUBLIC_URL + "/assets/home_garage.png",
+    SVG_GARAGE_DATA_URL
   ],
   office: [
-    SVG_BASEMENT_DATA_URL,
-    "https://images.unsplash.com/photo-1590674899484-13da0d1b58f5?auto=format&fit=crop&w=800&q=80"
+    process.env.PUBLIC_URL + "/assets/office_basement.png",
+    SVG_BASEMENT_DATA_URL
   ],
   driveway: [
-    SVG_DRIVEWAY_DATA_URL,
-    "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?auto=format&fit=crop&w=800&q=80"
+    process.env.PUBLIC_URL + "/assets/residential_driveway.png",
+    SVG_DRIVEWAY_DATA_URL
   ],
   security: [
-    SVG_GARAGE_DATA_URL,
-    "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80"
+    process.env.PUBLIC_URL + "/assets/security_parking.png",
+    SVG_GARAGE_DATA_URL
   ]
 };
 
@@ -2557,19 +2557,19 @@ export default function FullShowcaseBoard() {
                   <label style={{ fontSize: 11, fontWeight: 800, color: "#64748B", display: "block", marginBottom: 6 }}>Or Select Sample Spot Photo:</label>
                   <div style={{ display: "flex", gap: 10 }}>
                     {[
-                      { name: "Garage", url: SVG_GARAGE_DATA_URL },
-                      { name: "Basement", url: SVG_BASEMENT_DATA_URL },
-                      { name: "Driveway", url: SVG_DRIVEWAY_DATA_URL }
+                      { name: "Garage", url: process.env.PUBLIC_URL + "/assets/home_garage.png" },
+                      { name: "Basement", url: process.env.PUBLIC_URL + "/assets/office_basement.png" },
+                      { name: "Driveway", url: process.env.PUBLIC_URL + "/assets/residential_driveway.png" }
                     ].map((item, i) => (
                       <div 
                         key={i}
                         onClick={() => {
                           setHostForm({...hostForm, photoUrl: item.url});
-                          setPhotoStatus(`✓ ${item.name} sample photo selected`);
+                          setPhotoStatus(`✓ ${item.name} real sample photo selected`);
                         }}
                         style={{ width: 85, height: 60, borderRadius: 12, overflow: "hidden", border: hostForm.photoUrl === item.url ? "2.5px solid #22C55E" : "1.5px solid #E2E8F0", cursor: "pointer", position: "relative" }}
                       >
-                        <SmartImage sources={[item.url]} alt={item.name} />
+                        <SmartImage sources={[item.url, SVG_GARAGE_DATA_URL]} alt={item.name} />
                         <div style={{ position: "absolute", bottom: 2, left: 2, right: 2, background: "rgba(15,23,42,0.85)", color: "#FFF", fontSize: 9, fontWeight: 900, textAlign: "center", padding: "1px 0", borderRadius: 4 }}>
                           {item.name}
                         </div>
