@@ -671,9 +671,9 @@ export default function FullShowcaseBoard() {
   const [signUpPhone, setSignUpPhone] = useState("");
 
   // Login Form Email / Phone Input State
-  const [loginInput, setLoginInput] = useState("driver@parkkar.com");
-  const [loginPassword, setLoginPassword] = useState("12345678");
-  const [mobilePhoneInput, setMobilePhoneInput] = useState("9876543210");
+  const [loginInput, setLoginInput] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [mobilePhoneInput, setMobilePhoneInput] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   // Hidden File Refs for KYC Document Uploads
@@ -994,12 +994,11 @@ export default function FullShowcaseBoard() {
         alert(`🎉 Firebase Google Sign-In Successful!\nWelcome ${res.user.displayName || res.user.email}`);
         handleAccessApp(role || "driver");
       } else if (res?.error) {
-        console.warn("Google Sign-In notice:", res.error);
+        alert(`⚠️ Google Sign-In: ${res.error}`);
       }
     } catch (err) {
       console.warn("Google Sign-In error:", err);
-      setLoginInput("google_user@gmail.com");
-      handleAccessApp(role || "driver");
+      alert("⚠️ Unable to complete Google Sign-In. Please try again.");
     }
   };
 

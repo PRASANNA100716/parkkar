@@ -151,12 +151,13 @@ export async function firebaseGoogleSignIn() {
       };
     }
   } catch (err) {
-    console.warn("Firebase Google Sign-In popup notice:", err.code, err.message);
+    console.warn("Firebase Google Sign-In popup error:", err.code, err.message);
     if (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request") {
       return { success: false, error: "Google sign-in popup was closed." };
     }
+    return { success: false, error: err.message };
   }
-  return { success: true, user: { email: "google_user@gmail.com", displayName: "Google User" } };
+  return { success: false, error: "Firebase Auth service not ready" };
 }
 
 export async function firebaseSignUp(email, password) {
