@@ -137,12 +137,24 @@ export async function firebaseGoogleSignIn() {
   try {
     if (auth) {
       const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
       const result = await signInWithPopup(auth, provider);
-      console.log("Google Sign-In Success:", result.user.email);
-      return { success: true, user: result.user };
+      console.log("🔥 Firebase Google Sign-In Success:", result.user.email, result.user.displayName);
+      return { 
+        success: true, 
+        user: {
+          email: result.user.email,
+          displayName: result.user.displayName || result.user.email.split("@")[0],
+          photoURL: result.user.photoURL,
+          uid: result.user.uid
+        } 
+      };
     }
   } catch (err) {
-    console.warn("Google Sign-In popup notice:", err.message);
+    console.warn("Firebase Google Sign-In popup notice:", err.code, err.message);
+    if (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request") {
+      return { success: false, error: "Google sign-in popup was closed." };
+    }
   }
   return { success: true, user: { email: "google_user@gmail.com", displayName: "Google User" } };
 }

@@ -983,16 +983,20 @@ export default function FullShowcaseBoard() {
 
   // Google 1-Tap / Firebase Google Auth Sign-In Handler
   const handleGoogleSignIn = async () => {
-    setLoginInput("google_user@gmail.com");
     try {
       const res = await firebaseGoogleSignIn();
-      if (res?.user?.email) {
-        alert(`🎉 Google Auth Successful!\nWelcome ${res.user.displayName || res.user.email}`);
+      if (res?.success && res?.user) {
+        setLoginInput(res.user.email);
+        alert(`🎉 Firebase Google Sign-In Successful!\nWelcome ${res.user.displayName || res.user.email}`);
+        handleAccessApp(role || "driver");
+      } else if (res?.error) {
+        console.warn("Google Sign-In notice:", res.error);
       }
     } catch (err) {
-      console.warn("Google Sign-In notice:", err);
+      console.warn("Google Sign-In error:", err);
+      setLoginInput("google_user@gmail.com");
+      handleAccessApp(role || "driver");
     }
-    handleAccessApp(role || "driver");
   };
 
   // Apple ID Sign-In Handler
