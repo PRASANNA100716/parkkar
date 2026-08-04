@@ -1368,7 +1368,7 @@ export default function FullShowcaseBoard() {
                 {/* BOTTOM ACTION BUTTONS */}
                 <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
                   <button 
-                    onClick={() => setActiveScreen("05")} 
+                    onClick={() => setActiveScreen("06")} 
                     style={{ width: "100%", padding: "14px 20px", borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 900, cursor: "pointer", boxShadow: "0 6px 20px rgba(34,197,94,0.35)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
                   >
                     <span>Get Started</span>
@@ -1413,7 +1413,7 @@ export default function FullShowcaseBoard() {
 
                 {/* BOTTOM CONTROLS: SKIP, INDICATOR DOTS, NEXT BUTTON */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
-                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 700, cursor: "pointer", fontSize: 15 }}>
+                  <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 700, cursor: "pointer", fontSize: 15 }}>
                     Skip
                   </button>
 
@@ -1526,7 +1526,7 @@ export default function FullShowcaseBoard() {
 
                 {/* BOTTOM CONTROLS: SKIP, INDICATOR DOTS, NEXT BUTTON */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
-                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 800, cursor: "pointer", fontSize: 14 }}>
+                  <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 800, cursor: "pointer", fontSize: 14 }}>
                     Skip
                   </button>
 
@@ -1559,13 +1559,13 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
-                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>Skip</button>
+                  <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>Skip</button>
                   <div style={{ display: "flex", gap: 6 }}>
                     <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
                     <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
                     <div style={{ width: 24, height: 8, borderRadius: 4, background: "#22C55E" }} />
                   </div>
-                  <button onClick={() => setActiveScreen("05")} style={{ width: 48, height: 48, borderRadius: "50%", background: "#22C55E", border: "none", color: "#FFF", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 16px rgba(34,197,94,0.3)" }}>
+                  <button onClick={() => setActiveScreen("06")} style={{ width: 48, height: 48, borderRadius: "50%", background: "#22C55E", border: "none", color: "#FFF", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 16px rgba(34,197,94,0.3)" }}>
                     <IconChevronRight size={20} color="#FFF" />
                   </button>
                 </div>
