@@ -67,37 +67,6 @@ const IconLock = ({ size = 16, color = "currentColor" }) => (
   </svg>
 );
 
-const IconBuilding = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
-    <line x1="9" y1="6" x2="9" y2="6.01" />
-    <line x1="15" y1="6" x2="15" y2="6.01" />
-    <line x1="9" y1="10" x2="9" y2="10.01" />
-    <line x1="15" y1="10" x2="15" y2="10.01" />
-    <path d="M9 22v-4h6v4" />
-  </svg>
-);
-
-const IconCCTV = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-    <circle cx="12" cy="13" r="4" />
-  </svg>
-);
-
-const IconClock = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="12 6 12 12 16 14" />
-  </svg>
-);
-
-const IconEV = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-  </svg>
-);
-
 const IconShare = ({ size = 20, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
@@ -145,7 +114,7 @@ const REAL_IMAGES = {
     "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?auto=format&fit=crop&w=800&q=80"
   ],
   security: [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Automatic_number_plate_recognition_barrier_parking.jpg/800px-Automatic_number_plate_recording_barrier_parking.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Automatic_number_plate_recognition_barrier_parking.jpg/800px-Automatic_number_plate_recognition_barrier_parking.jpg",
     "https://images.pexels.com/photos/4481326/pexels-photo-4481326.jpeg?auto=compress&cs=tinysrgb&w=800",
     "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80"
   ]
@@ -647,7 +616,7 @@ export default function FullShowcaseBoard() {
           {/* SCREEN CONTENT AREA */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
             
-            {/* ─── SPLASH SCREEN ─── */}
+            {/* ─── SCREEN 01: SPLASH SCREEN ─── */}
             {activeScreen === "01" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "30px 24px 30px", background: "#FFF" }}>
                 <div style={{ textAlign: "center", marginTop: 10 }}>
@@ -675,7 +644,264 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── HOME / SEARCH (INTERACTIVE TAMIL NADU RAPIDO/OLA VECTOR MAP) ─── */}
+            {/* ─── SCREEN 02: ONBOARDING 1 (DISCOVER SPACES) ─── */}
+            {activeScreen === "02" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
+                <div style={{ width: "100%" }}>
+                  <RealOfficePhoto height={230} badge="NEARBY INSTANT RESERVATION" />
+                </div>
+
+                <div style={{ textAlign: "center" }}>
+                  <h2 style={{ fontSize: 26, fontWeight: 800, color: "#0F172A", margin: "0 0 10px" }}>Find Parking Anywhere</h2>
+                  <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.5, margin: 0 }}>Discover safe, verified, and affordable parking spaces around your location in real time across Tamil Nadu.</p>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
+                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>Skip</button>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <div style={{ width: 24, height: 8, borderRadius: 4, background: "#22C55E" }} />
+                    <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
+                    <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
+                  </div>
+                  <button onClick={() => setActiveScreen("03")} style={{ width: 48, height: 48, borderRadius: "50%", background: "#22C55E", border: "none", color: "#FFF", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 16px rgba(34,197,94,0.3)" }}>
+                    <IconChevronRight size={20} color="#FFF" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 03: ONBOARDING 2 (HOST & EARN) ─── */}
+            {activeScreen === "03" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
+                <div style={{ width: "100%" }}>
+                  <RealDrivewayPhoto height={230} badge="EARN ₹15,000 / MONTH" />
+                </div>
+
+                <div style={{ textAlign: "center" }}>
+                  <h2 style={{ fontSize: 26, fontWeight: 800, color: "#0F172A", margin: "0 0 10px" }}>Earn From Your Extra Space</h2>
+                  <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.5, margin: 0 }}>Rent out your driveway, garage, or vacant spot whenever it's free and earn effortless passive income.</p>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
+                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>Skip</button>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
+                    <div style={{ width: 24, height: 8, borderRadius: 4, background: "#22C55E" }} />
+                    <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
+                  </div>
+                  <button onClick={() => setActiveScreen("04")} style={{ width: 48, height: 48, borderRadius: "50%", background: "#22C55E", border: "none", color: "#FFF", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 16px rgba(34,197,94,0.3)" }}>
+                    <IconChevronRight size={20} color="#FFF" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 04: ONBOARDING 3 (SAFE & SECURE) ─── */}
+            {activeScreen === "04" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
+                <div style={{ width: "100%" }}>
+                  <RealSecurityPhoto height={230} />
+                </div>
+
+                <div style={{ textAlign: "center" }}>
+                  <h2 style={{ fontSize: 26, fontWeight: 800, color: "#0F172A", margin: "0 0 10px" }}>Safe. Secure. Monitored.</h2>
+                  <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.5, margin: 0 }}>Every space and host is verified for total peace of mind with 24/7 CCTV & gate protection.</p>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
+                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>Skip</button>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
+                    <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
+                    <div style={{ width: 24, height: 8, borderRadius: 4, background: "#22C55E" }} />
+                  </div>
+                  <button onClick={() => setActiveScreen("05")} style={{ width: 48, height: 48, borderRadius: "50%", background: "#22C55E", border: "none", color: "#FFF", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 16px rgba(34,197,94,0.3)" }}>
+                    <IconChevronRight size={20} color="#FFF" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 05: CHOOSE YOUR ROLE ─── */}
+            {activeScreen === "05" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 30px", justifyContent: "space-between", background: "#FFF" }}>
+                <div>
+                  <button onClick={() => setActiveScreen("01")} style={{ background: "none", border: "none", cursor: "pointer", marginBottom: 16 }}>
+                    <IconChevronLeft size={22} color="#0F172A" />
+                  </button>
+                  <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", textAlign: "center", letterSpacing: "-0.02em" }}>Choose Your Role</h2>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#64748B", textAlign: "center", margin: "0 0 28px" }}>Get started as</p>
+                  
+                  <div 
+                    onClick={() => { setRole("driver"); setActiveScreen("08"); }} 
+                    style={{ 
+                      background: "#FFFFFF", 
+                      borderRadius: 22, 
+                      padding: "18px 20px", 
+                      marginBottom: 20, 
+                      border: "2px solid #22C55E", 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: 16, 
+                      cursor: "pointer", 
+                      boxShadow: "0 10px 25px rgba(34,197,94,0.15)"
+                    }}
+                  >
+                    <div style={{ width: 90, height: 74, borderRadius: 16, overflow: "hidden", flexShrink: 0, boxShadow: "0 6px 16px rgba(0,0,0,0.1)" }}>
+                      <SmartImage sources={REAL_IMAGES.whiteCar} alt="Driver Role" />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "inline-block", background: "#DCFCE7", color: "#16A34A", padding: "3px 8px", borderRadius: 8, fontSize: 10, fontWeight: 900, marginBottom: 6 }}>
+                        DRIVER MODE
+                      </div>
+                      <h3 style={{ fontSize: 16, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", lineHeight: 1.2 }}>I'm Looking for Parking</h3>
+                      <p style={{ fontSize: 12, color: "#64748B", margin: 0, fontWeight: 600, lineHeight: 1.3 }}>Find & book instant verified parking near you</p>
+                    </div>
+                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", flexShrink: 0 }}>
+                      <IconChevronRight size={18} color="#FFF" />
+                    </div>
+                  </div>
+
+                  <div 
+                    onClick={() => { setRole("host"); setActiveScreen("29"); }} 
+                    style={{ 
+                      background: "#FFFFFF", 
+                      borderRadius: 22, 
+                      padding: "18px 20px", 
+                      border: "2px solid #F59E0B", 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: 16, 
+                      cursor: "pointer", 
+                      boxShadow: "0 10px 25px rgba(245,158,11,0.15)"
+                    }}
+                  >
+                    <div style={{ width: 90, height: 74, borderRadius: 16, overflow: "hidden", flexShrink: 0, boxShadow: "0 6px 16px rgba(0,0,0,0.1)" }}>
+                      <SmartImage sources={REAL_IMAGES.garageHouse} alt="Host Role" />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "inline-block", background: "#FEF3C7", color: "#D97706", padding: "3px 8px", borderRadius: 8, fontSize: 10, fontWeight: 900, marginBottom: 6 }}>
+                        HOST & EARN ₹
+                      </div>
+                      <h3 style={{ fontSize: 16, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", lineHeight: 1.2 }}>I Have a Parking Space</h3>
+                      <p style={{ fontSize: 12, color: "#64748B", margin: 0, fontWeight: 600, lineHeight: 1.3 }}>List my space & start earning passive income</p>
+                    </div>
+                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#F59E0B", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", flexShrink: 0 }}>
+                      <IconChevronRight size={18} color="#FFF" />
+                    </div>
+                  </div>
+                </div>
+
+                <button onClick={() => setActiveScreen("08")} style={{ width: "100%", background: "none", border: "none", color: "#64748B", fontWeight: 700, fontSize: 14, cursor: "pointer", padding: 12, textAlign: "center" }}>
+                  Skip to Live Tamil Nadu Map ➔
+                </button>
+              </div>
+            )}
+
+            {/* ─── SCREEN 06: ACCOUNT LOGIN ─── */}
+            {activeScreen === "06" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 30px", justifyContent: "space-between", background: "#FFF" }}>
+                <div>
+                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", cursor: "pointer", marginBottom: 20 }}>
+                    <IconChevronLeft size={22} color="#0F172A" />
+                  </button>
+                  <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Welcome Back!</h2>
+                  <p style={{ fontSize: 14, color: "#64748B", margin: "0 0 24px" }}>Sign in to continue to Paarkkar</p>
+                  
+                  {/* ROLE MODE SWITCHER IN LOGIN */}
+                  <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 20 }}>
+                    <button 
+                      onClick={() => setRole("driver")}
+                      style={{ flex: 1, padding: "10px 0", borderRadius: 10, border: "none", background: role !== "host" ? "#22C55E" : "transparent", color: role !== "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 13, cursor: "pointer" }}
+                    >
+                      🚗 Driver Login
+                    </button>
+                    <button 
+                      onClick={() => setRole("host")}
+                      style={{ flex: 1, padding: "10px 0", borderRadius: 10, border: "none", background: role === "host" ? "#F59E0B" : "transparent", color: role === "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 13, cursor: "pointer" }}
+                    >
+                      🏢 Host Login
+                    </button>
+                  </div>
+
+                  <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 6 }}>Phone Number</label>
+                  <div style={{ display: "flex", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: "#0F172A" }}>🇮🇳 +91</span>
+                    <input type="text" defaultValue="98765 43210" style={{ border: "none", outline: "none", flex: 1, fontSize: 15, fontWeight: 600, color: "#0F172A" }} />
+                  </div>
+
+                  <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 6 }}>Password</label>
+                  <div style={{ display: "flex", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                    <IconLock size={18} color="#94A3B8" />
+                    <input type="password" defaultValue="12345678" style={{ border: "none", outline: "none", flex: 1, fontSize: 15, color: "#0F172A" }} />
+                  </div>
+
+                  <div style={{ textAlign: "right", marginBottom: 24 }}>
+                    <span style={{ color: "#22C55E", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Forgot Password?</span>
+                  </div>
+
+                  <button 
+                    onClick={() => {
+                      if (role === "host") setActiveScreen("29");
+                      else setActiveScreen("07");
+                    }} 
+                    style={{ width: "100%", padding: "16px", borderRadius: 16, background: role === "host" ? "#F59E0B" : "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 900, cursor: "pointer", boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
+                  >
+                    {role === "host" ? "Sign In as Host" : "Login as Driver"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 07: OTP VERIFICATION ─── */}
+            {activeScreen === "07" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 20px", justifyContent: "space-between", background: "#FFF" }}>
+                <div>
+                  <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", cursor: "pointer", marginBottom: 20 }}>
+                    <IconChevronLeft size={22} color="#0F172A" />
+                  </button>
+                  <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 6px", textAlign: "center" }}>Enter Verification Code</h2>
+                  <p style={{ fontSize: 13, color: "#64748B", textAlign: "center", margin: "0 0 24px" }}>
+                    We've sent a 6-digit code to <br/><strong style={{ color: "#0F172A" }}>+91 98765 43210</strong>
+                  </p>
+
+                  <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 20 }}>
+                    {otpVal.map((v, idx) => (
+                      <div key={idx} style={{ width: 44, height: 48, borderRadius: 12, border: "2px solid #22C55E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, fontWeight: 800, color: "#0F172A", background: "#F0FDF4" }}>
+                        {v}
+                      </div>
+                    ))}
+                  </div>
+
+                  <p style={{ textAlign: "center", fontSize: 13, color: "#64748B" }}>
+                    Resend OTP in <span style={{ color: "#22C55E", fontWeight: 700 }}>00:30</span>
+                  </p>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, padding: "10px 0" }}>
+                  {["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "✓"].map((k) => (
+                    <button
+                      key={k}
+                      onClick={() => { if (k === "✓") setActiveScreen("08"); }}
+                      style={{
+                        padding: "14px 0",
+                        borderRadius: 14,
+                        border: "none",
+                        background: k === "✓" ? "#22C55E" : "#F1F5F9",
+                        color: k === "✓" ? "#FFF" : "#0F172A",
+                        fontSize: 20,
+                        fontWeight: 700,
+                        cursor: "pointer"
+                      }}
+                    >
+                      {k}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 08: HOME / SEARCH (INTERACTIVE TAMIL NADU MAP) ─── */}
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
@@ -749,6 +975,39 @@ export default function FullShowcaseBoard() {
                       Details
                     </button>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 09: NEARBY SPACES (LIST VIEW) ─── */}
+            {activeScreen === "09" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
+                  <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                    <IconChevronLeft size={22} color="#0F172A" />
+                  </button>
+                  <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Nearby Tamil Nadu Spaces</span>
+                  <span style={{ width: 20 }} />
+                </div>
+
+                <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
+                  {allSpots.map((item) => (
+                    <div key={item.id} style={{ background: "#FFF", borderRadius: 16, padding: 12, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
+                      <div style={{ width: 84, height: 84, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
+                        <SmartImage sources={item.imgSources} alt="spot" />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>{item.title}</h4>
+                        <p style={{ margin: "0 0 6px", fontSize: 12, color: "#64748B" }}>{item.address}</p>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div style={{ fontWeight: 900, color: "#22C55E", fontSize: 15 }}>₹{item.price}<span style={{ fontSize: 10, color: "#64748B" }}>/hr</span></div>
+                          <button onClick={() => { setSelectedSpot(item); setActiveScreen("10"); }} style={{ background: "#22C55E", border: "none", color: "#FFF", padding: "8px 14px", borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
+                            Book Now
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -1066,7 +1325,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 13: PAYMENT CHECKOUT (ULTRA-HIGH-QUALITY PAYMENTS UI) ─── */}
+            {/* ─── SCREEN 13: PAYMENT CHECKOUT ─── */}
             {activeScreen === "13" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", height: "100%", overflow: "hidden" }}>
                 
@@ -1128,7 +1387,6 @@ export default function FullShowcaseBoard() {
                           <div style={{ width: 22, height: 22, borderRadius: "50%", border: selectedPayment === "upi" ? "6px solid #22C55E" : "2px solid #CBD5E1", background: "#FFF", flexShrink: 0 }} />
                         </div>
 
-                        {/* INTERACTIVE EXPANDABLE INPUT FOR UPI */}
                         {selectedPayment === "upi" && (
                           <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px dashed #BBF7D0" }}>
                             <label style={{ fontSize: 11, fontWeight: 800, color: "#16A34A", display: "block", marginBottom: 6 }}>Enter VPA ID / GPay Phone Number:</label>
@@ -1181,7 +1439,7 @@ export default function FullShowcaseBoard() {
 
                         {selectedPayment === "card" && (
                           <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px dashed #BBF7D0", display: "flex", flexDirection: "column", gap: 8 }}>
-                            <input type="text" placeholder="Card Number (4111 2222 3333 4444)" defaultValue="4111 •••• •••• 8924" style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #CBD5E1", outline: "none", fontSize: 13, fontWeight: 700 }} />
+                            <input type="text" placeholder="Card Number" defaultValue="4111 •••• •••• 8924" style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #CBD5E1", outline: "none", fontSize: 13, fontWeight: 700 }} />
                             <div style={{ display: "flex", gap: 8 }}>
                               <input type="text" placeholder="MM/YY" defaultValue="12/28" style={{ flex: 1, padding: 10, borderRadius: 10, border: "1px solid #CBD5E1", outline: "none", fontSize: 13, fontWeight: 700 }} />
                               <input type="password" placeholder="CVV" defaultValue="123" style={{ flex: 1, padding: 10, borderRadius: 10, border: "1px solid #CBD5E1", outline: "none", fontSize: 13, fontWeight: 700 }} />
