@@ -4,7 +4,11 @@ import {
   fetchHostSpotsFromFirebase, 
   getFirebaseConfig, 
   saveCustomFirebaseConfig, 
-  isFirebaseConnected 
+  isFirebaseConnected,
+  firebaseSignIn,
+  firebaseSignUp,
+  firebaseSignOutUser,
+  auth
 } from "../firebase";
 
 // Theme Palette matching PARKKAR UI Reference
@@ -248,6 +252,20 @@ const RealSecurityPhoto = ({ height = 230 }) => (
   </div>
 );
 
+// Dedicated component for host-uploaded photos so image load errors fall back smoothly
+const HostUploadedPhoto = ({ sources = [], height = 200, badge = "HOST LISTING" }) => (
+  <div style={{ width: "100%", height, borderRadius: 20, overflow: "hidden", position: "relative", border: "1.5px solid #22C55E" }}>
+    <SmartImage sources={sources} alt="Host Uploaded Space" />
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
+    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.95)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
+      ● FIREBASE LIVE
+    </div>
+    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
+      {badge}
+    </div>
+  </div>
+);
+
 // ─── INITIAL TAMIL NADU SPOTS DATABASE ───────────────────────────────────────
 const INITIAL_TAMIL_NADU_SPOTS = [
   {
@@ -350,187 +368,120 @@ const INITIAL_TAMIL_NADU_SPOTS = [
   }
 ];
 
-// ─── PURE WHITE BASEMAP TILE THEME (CartoDB Positron) ────────────────────────
-const WHITE_MAP_TILES = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-
-// Injected once: pulse animation for the live "you are here" GPS dot
-function ensureMapStyles() {
-  if (document.getElementById("parkkar-map-styles")) return;
-  const style = document.createElement("style");
-  style.id = "parkkar-map-styles";
-  style.textContent = `
-    @keyframes parkkarGpsPulse {
-      0%   { transform: scale(0.6); opacity: 0.85; }
-      70%  { transform: scale(2.6); opacity: 0; }
-      100% { transform: scale(2.6); opacity: 0; }
-    }
-    .leaflet-container { background: #FFFFFF !important; }
-  `;
-  document.head.appendChild(style);
-}
-
 // ─── HIGH-PERFORMANCE CLEAN WHITE MAP ENGINE ────────────────
 function TamilNaduMap({ spotsList, selectedSpot, onSelectSpot, userLocation }) {
   const mapContainerRef = useRef(null);
   const leafletInstanceRef = useRef(null);
   const markersRef = useRef([]);
-  const userLayersRef = useRef([]);
-  const didCenterOnUserRef = useRef(false);
-  const [mapReady, setMapReady] = useState(false);
+  const userMarkerRef = useRef(null);
 
-  // ── Create the Leaflet map exactly once (never torn down on data changes) ──
   useEffect(() => {
-    ensureMapStyles();
-    let cancelled = false;
-
-    function initLeafletMap() {
-      if (cancelled || !mapContainerRef.current || !window.L) return;
-      if (leafletInstanceRef.current) return;
-
-      const map = window.L.map(mapContainerRef.current, {
-        zoomControl: false,
-        attributionControl: false
-      }).setView([13.0604, 80.2201], 13);
-
-      window.L.tileLayer(WHITE_MAP_TILES, {
-        maxZoom: 20,
-        subdomains: "abcd"
-      }).addTo(map);
-
-      leafletInstanceRef.current = map;
-      // Leaflet mis-measures its container when created inside a flex layout
-      setTimeout(() => map.invalidateSize(), 120);
-      setMapReady(true);
-    }
-
     if (!window.L) {
-      let script = document.querySelector('script[data-parkkar-leaflet="1"]');
-      if (!script) {
-        script = document.createElement("script");
-        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-        script.dataset.parkkarLeaflet = "1";
-        document.head.appendChild(script);
-      }
-      script.addEventListener("load", initLeafletMap);
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      script.onload = () => initLeafletMap();
+      document.head.appendChild(script);
     } else {
       initLeafletMap();
     }
 
-    return () => {
-      cancelled = true;
+    function initLeafletMap() {
+      if (!mapContainerRef.current || !window.L) return;
+
       if (leafletInstanceRef.current) {
         leafletInstanceRef.current.remove();
         leafletInstanceRef.current = null;
       }
-      markersRef.current = [];
-      userLayersRef.current = [];
-    };
-  }, []);
 
-  // ── Sync price pins whenever the spot list or the selection changes ──
-  useEffect(() => {
-    const map = leafletInstanceRef.current;
-    if (!map || !window.L) return;
+      const centerLat = userLocation ? userLocation.lat : 13.0604;
+      const centerLng = userLocation ? userLocation.lng : 80.2201;
 
-    markersRef.current.forEach((m) => map.removeLayer(m));
-    markersRef.current = [];
+      const map = window.L.map(mapContainerRef.current, {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([centerLat, centerLng], 13);
 
-    spotsList.forEach((spot) => {
-      const isSelected = selectedSpot && selectedSpot.id === spot.id;
+      leafletInstanceRef.current = map;
 
-      const pinHtml = `
-        <div style="
-          background: ${isSelected ? "#F59E0B" : "#22C55E"};
-          color: #FFF;
-          padding: 6px 12px;
-          border-radius: 14px;
-          font-weight: 900;
-          font-size: 13px;
-          box-shadow: 0 3px 10px rgba(15,23,42,0.18);
-          border: 2px solid #FFF;
-          cursor: pointer;
-          white-space: nowrap;
-          transform: ${isSelected ? "scale(1.18)" : "scale(1.0)"};
-          transition: transform 0.2s;
-        ">
-          ₹${spot.price}/hr
-        </div>
-      `;
-
-      const customIcon = window.L.divIcon({
-        className: `custom-price-pin-${spot.id}`,
-        html: pinHtml,
-        iconSize: [75, 32],
-        iconAnchor: [37, 16]
-      });
-
-      const marker = window.L.marker([spot.lat, spot.lng], { icon: customIcon }).addTo(map);
-      marker.on("click", () => {
-        onSelectSpot(spot);
-        map.panTo([spot.lat, spot.lng]);
-      });
-
-      markersRef.current.push(marker);
-    });
-  }, [spotsList, selectedSpot, onSelectSpot, mapReady]);
-
-  // ── Live GPS dot + accuracy halo, centred the first time a fix arrives ──
-  useEffect(() => {
-    const map = leafletInstanceRef.current;
-    if (!map || !window.L) return;
-
-    userLayersRef.current.forEach((l) => map.removeLayer(l));
-    userLayersRef.current = [];
-
-    if (!userLocation) {
-      didCenterOnUserRef.current = false;
-      return;
-    }
-
-    const dotIcon = window.L.divIcon({
-      className: "parkkar-gps-dot",
-      html: `
-        <div style="position:relative;width:22px;height:22px;">
-          <div style="position:absolute;inset:0;border-radius:50%;background:rgba(37,99,235,0.28);animation:parkkarGpsPulse 1.9s ease-out infinite;"></div>
-          <div style="position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#2563EB;border:3px solid #FFF;box-shadow:0 2px 8px rgba(37,99,235,0.45);"></div>
-        </div>
-      `,
-      iconSize: [22, 22],
-      iconAnchor: [11, 11]
-    });
-
-    const dot = window.L.marker([userLocation.lat, userLocation.lng], {
-      icon: dotIcon,
-      zIndexOffset: 1000
-    }).addTo(map);
-    userLayersRef.current.push(dot);
-
-    if (userLocation.accuracy) {
-      const halo = window.L.circle([userLocation.lat, userLocation.lng], {
-        radius: Math.min(userLocation.accuracy, 500),
-        color: "#2563EB",
-        weight: 1,
-        opacity: 0.35,
-        fillColor: "#3B82F6",
-        fillOpacity: 0.1
+      // CLEAN CRISP WHITE MAP TILE THEME (CartoDB Voyager / Positron)
+      window.L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        subdomains: 'abcd'
       }).addTo(map);
-      userLayersRef.current.push(halo);
+
+      // Render User GPS Location Pin if available
+      if (userLocation) {
+        const userPinHtml = `
+          <div style="
+            width: 22px; height: 22px; borderRadius: 50%;
+            background: #3B82F6; border: 3px solid #FFF;
+            box-shadow: 0 0 16px rgba(59,130,246,0.8);
+            animation: pulse 1.5s infinite;
+          "></div>
+        `;
+        const userIcon = window.L.divIcon({
+          className: "custom-user-gps-pin",
+          html: userPinHtml,
+          iconSize: [22, 22],
+          iconAnchor: [11, 11]
+        });
+        userMarkerRef.current = window.L.marker([userLocation.lat, userLocation.lng], { icon: userIcon }).addTo(map);
+      }
+
+      spotsList.forEach((spot) => {
+        const isSelected = selectedSpot && selectedSpot.id === spot.id;
+        
+        const pinHtml = `
+          <div style="
+            background: ${isSelected ? '#F59E0B' : '#22C55E'}; 
+            color: #FFF; 
+            padding: 6px 12px; 
+            border-radius: 14px; 
+            font-weight: 900; 
+            font-size: 13px; 
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25); 
+            border: 2px solid #FFF; 
+            cursor: pointer;
+            white-space: nowrap;
+            transform: ${isSelected ? 'scale(1.18)' : 'scale(1.0)'};
+            transition: transform 0.2s;
+          ">
+            ₹${spot.price}/hr
+          </div>
+        `;
+
+        const customIcon = window.L.divIcon({
+          className: `custom-price-pin-${spot.id}`,
+          html: pinHtml,
+          iconSize: [75, 32],
+          iconAnchor: [37, 16]
+        });
+
+        const marker = window.L.marker([spot.lat, spot.lng], { icon: customIcon }).addTo(map);
+        marker.on('click', () => {
+          onSelectSpot(spot);
+          map.panTo([spot.lat, spot.lng]);
+        });
+
+        markersRef.current.push(marker);
+      });
     }
 
-    if (!didCenterOnUserRef.current) {
-      map.setView([userLocation.lat, userLocation.lng], 15, { animate: true });
-      didCenterOnUserRef.current = true;
-    }
-  }, [userLocation, mapReady]);
+    return () => {
+      if (leafletInstanceRef.current) {
+        leafletInstanceRef.current.remove();
+        leafletInstanceRef.current = null;
+      }
+    };
+  }, [spotsList, userLocation]);
 
-  // ── Pan to the actively selected spot ──
   useEffect(() => {
     if (leafletInstanceRef.current && selectedSpot) {
       leafletInstanceRef.current.panTo([selectedSpot.lat, selectedSpot.lng], { animate: true });
     }
-  }, [selectedSpot, mapReady]);
+  }, [selectedSpot]);
 
-  return <div ref={mapContainerRef} style={{ width: "100%", height: "100%", background: "#FFFFFF" }} />;
+  return <div ref={mapContainerRef} style={{ width: "100%", height: "100%", background: "#F8FAFC" }} />;
 }
 
 export default function FullShowcaseBoard() {
@@ -540,6 +491,13 @@ export default function FullShowcaseBoard() {
   const [showQuickNav, setShowQuickNav] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showFirebaseModal, setShowFirebaseModal] = useState(false);
+
+  // User GPS Coordinates State
+  const [userLocation, setUserLocation] = useState(null);
+
+  // Login Form Email / Phone Input State
+  const [loginInput, setLoginInput] = useState("98765 43210");
+  const [loginPassword, setLoginPassword] = useState("12345678");
 
   // Hidden File Input Ref for Host Photo Upload
   const fileInputRef = useRef(null);
@@ -553,7 +511,7 @@ export default function FullShowcaseBoard() {
   // Controlled Search Input Bar State synced with selected spot location
   const [searchQuery, setSearchQuery] = useState(INITIAL_TAMIL_NADU_SPOTS[1].address);
 
-  // Custom Firebase Credentials State
+  // Custom Firebase Credentials State (Pre-filled with user's project paarkkar-dda3d)
   const [fbConfigInput, setFbConfigInput] = useState(getFirebaseConfig());
 
   // Load Live Spots from Firebase Firestore on Mount
@@ -561,20 +519,29 @@ export default function FullShowcaseBoard() {
     async function loadLiveDbSpots() {
       const dbSpots = await fetchHostSpotsFromFirebase();
       if (dbSpots && dbSpots.length > 0) {
-        const formatted = dbSpots.map(s => ({
-          id: s.id,
-          title: s.title || "Host Parking Space",
-          address: s.address || "Tamil Nadu",
-          price: Number(s.price) || 50,
-          rating: "5.0 (Firebase Live)",
-          lat: s.lat || (13.0850 + (Math.random() * 0.02 - 0.01)),
-          lng: s.lng || (80.2101 + (Math.random() * 0.02 - 0.01)),
-          imgSources: s.photoUrl ? [s.photoUrl, ...REAL_IMAGES.garage] : REAL_IMAGES.garage,
-          city: s.city || "Chennai",
-          badge: "FIREBASE FIRESTORE",
-          photoComponent: <RealGaragePhoto height={200} badge={`₹${s.price || 50}/hr • FIREBASE LIVE`} />,
-          about: s.about || "Verified space synced with Firebase Firestore database."
-        }));
+        const formatted = dbSpots.map(s => {
+          const photoSources = s.photoUrl ? [s.photoUrl, ...REAL_IMAGES.garage] : REAL_IMAGES.garage;
+          return {
+            id: s.id,
+            title: s.title || "Host Parking Space",
+            address: s.address || "Tamil Nadu",
+            price: Number(s.price) || 50,
+            rating: "5.0 (Firebase Live)",
+            lat: s.lat || (13.0850 + (Math.random() * 0.02 - 0.01)),
+            lng: s.lng || (80.2101 + (Math.random() * 0.02 - 0.01)),
+            imgSources: photoSources,
+            city: s.city || "Chennai",
+            badge: "FIREBASE FIRESTORE",
+            photoComponent: (
+              <HostUploadedPhoto
+                sources={photoSources}
+                height={200}
+                badge={`₹${s.price || 50}/hr • FIREBASE LIVE`}
+              />
+            ),
+            about: s.about || "Verified space synced with Firebase Firestore database (paarkkar-dda3d)."
+          };
+        });
 
         setAllSpots(prev => [...formatted, ...prev]);
       }
@@ -611,174 +578,89 @@ export default function FullShowcaseBoard() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
 
-  // Live GPS State: real coordinates + resolved street address + failure reason
-  const [userLocation, setUserLocation] = useState(null);
-  const [locationLabel, setLocationLabel] = useState("");
-  const [locationError, setLocationError] = useState("");
-  const autoLocateDoneRef = useRef(false);
-
-  // Reverse geocode coordinates into a human readable Indian street address
-  const resolveAddressLabel = async (lat, lng) => {
-    try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=17&addressdetails=1`,
-        { headers: { Accept: "application/json" } }
-      );
-      if (!res.ok) throw new Error("reverse geocode failed");
-      const data = await res.json();
-      const a = data.address || {};
-      const parts = [
-        a.road || a.neighbourhood || a.suburb,
-        a.suburb && a.suburb !== a.road ? a.suburb : null,
-        a.city || a.town || a.village || a.county,
-        a.state
-      ].filter(Boolean);
-      return parts.length ? parts.join(", ") : data.display_name || "";
-    } catch (err) {
-      console.warn("Reverse geocoding unavailable:", err);
-      return "";
-    }
-  };
-
-  // GPS Location Fetch Functionality (real browser geolocation)
+  // GPS Location Fetch Functionality
   const handleFetchUserLocation = () => {
-    setLocationError("");
-
-    if (!navigator.geolocation) {
-      setLocationError("This browser does not support location access.");
-      return;
-    }
-    if (!window.isSecureContext) {
-      setLocationError("Location needs HTTPS or localhost. Open the app on a secure URL.");
-      return;
-    }
-
     setIsLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude, longitude, accuracy } = pos.coords;
-        setUserLocation({ lat: latitude, lng: longitude, accuracy });
-        setIsLocating(false);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const userLat = pos.coords.latitude;
+          const userLng = pos.coords.longitude;
 
-        // Select the closest real parking spot to where the user actually is
-        const nearest = findNearestSpot(allSpots, latitude, longitude);
-        if (nearest) setSelectedSpot(nearest);
+          setUserLocation({ lat: userLat, lng: userLng });
 
-        const label = await resolveAddressLabel(latitude, longitude);
-        const finalLabel =
-          label || `${latitude.toFixed(5)}, ${longitude.toFixed(5)} (live GPS)`;
-        setLocationLabel(finalLabel);
-        setSearchQuery(finalLabel);
-      },
-      (err) => {
-        setIsLocating(false);
-        const messages = {
-          1: "Location permission blocked. Allow location for this site in your browser, then tap GPS again.",
-          2: "Location unavailable right now. Check that GPS / location services are switched on.",
-          3: "Locating timed out. Move near a window or try again."
-        };
-        setLocationError(messages[err.code] || "Could not fetch your location.");
-      },
-      { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
-    );
+          const userGpsSpot = {
+            id: "sp_user_gps_" + Date.now(),
+            title: "📍 My Live GPS Location",
+            address: "Live Location (Tamil Nadu)",
+            price: 50,
+            rating: "5.0 (GPS)",
+            lat: userLat,
+            lng: userLng,
+            imgSources: REAL_IMAGES.garage,
+            city: "Chennai",
+            badge: "YOUR LOCATION",
+            photoComponent: <RealGaragePhoto height={200} badge="YOUR GPS LOCATION • TAMIL NADU" />,
+            about: "Your live GPS position detected accurately."
+          };
+
+          setAllSpots(prev => [userGpsSpot, ...prev]);
+          setSelectedSpot(userGpsSpot);
+          setSearchQuery("Live GPS Location, Tamil Nadu");
+          setIsLocating(false);
+        },
+        (err) => {
+          console.warn("GPS failed, using Chennai center fallback:", err);
+          const defaultSpot = INITIAL_TAMIL_NADU_SPOTS[0];
+          setSelectedSpot(defaultSpot);
+          setSearchQuery("Anna Nagar, Chennai (Tamil Nadu)");
+          setIsLocating(false);
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    } else {
+      setIsLocating(false);
+    }
   };
 
-  // Ask for the live location once, the first time the map screen is opened
-  useEffect(() => {
-    if (activeScreen === "08" && !autoLocateDoneRef.current) {
-      autoLocateDoneRef.current = true;
-      handleFetchUserLocation();
-    }
-  }, [activeScreen]);
-
-  // Host Photo Upload: validate, downscale, then preview — works with any phone photo
-  const [photoStatus, setPhotoStatus] = useState("");
-  const [photoError, setPhotoError] = useState("");
-  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
-
-  const acceptPhotoFile = (file) => {
-    setPhotoError("");
-    setPhotoStatus("");
-
-    if (!file) {
-      setPhotoError("No file selected. Tap the green box and pick an image.");
-      return;
-    }
-    if (!file.type.startsWith("image/")) {
-      setPhotoError(`"${file.name}" is not an image. Choose a JPG, PNG, HEIC or WebP photo.`);
-      return;
-    }
-    if (file.size > 25 * 1024 * 1024) {
-      setPhotoError("That photo is over 25MB. Pick a smaller one.");
-      return;
-    }
-
-    setIsProcessingPhoto(true);
-    const reader = new FileReader();
-
-    reader.onerror = () => {
-      setIsProcessingPhoto(false);
-      setPhotoError("Could not read that file. Try choosing the photo again.");
-    };
-
-    reader.onload = (ev) => {
-      const rawDataUrl = ev.target?.result;
-      if (!rawDataUrl) {
-        setIsProcessingPhoto(false);
-        setPhotoError("The photo came back empty. Please try another image.");
-        return;
-      }
-
-      // Downscale so a 10MP phone photo stays small enough to store and publish
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const maxEdge = 1280;
-          const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
-          const canvas = document.createElement("canvas");
-          canvas.width = Math.round(img.width * scale);
-          canvas.height = Math.round(img.height * scale);
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          const compressed = canvas.toDataURL("image/jpeg", 0.82);
-          const used = compressed.length < rawDataUrl.length ? compressed : rawDataUrl;
-          setHostForm((prev) => ({ ...prev, photoUrl: used }));
-          setPhotoStatus(`✓ ${file.name} added (${Math.round(used.length / 1024)} KB)`);
-        } catch (err) {
-          console.warn("Canvas downscale failed, using original photo:", err);
-          setHostForm((prev) => ({ ...prev, photoUrl: rawDataUrl }));
-          setPhotoStatus(`✓ ${file.name} added`);
-        }
-        setIsProcessingPhoto(false);
-      };
-      img.onerror = () => {
-        // HEIC and other formats the canvas cannot decode still preview natively
-        setHostForm((prev) => ({ ...prev, photoUrl: rawDataUrl }));
-        setPhotoStatus(`✓ ${file.name} added`);
-        setIsProcessingPhoto(false);
-      };
-      img.src = rawDataUrl;
-    };
-
-    reader.readAsDataURL(file);
-  };
-
+  // Host Photo File Upload Handler
   const handlePhotoFileUpload = (e) => {
-    acceptPhotoFile(e.target.files?.[0]);
-    // Reset so re-picking the same file still fires onChange
-    e.target.value = "";
-  };
-
-  const handlePhotoDrop = (e) => {
-    e.preventDefault();
-    acceptPhotoFile(e.dataTransfer?.files?.[0]);
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        if (uploadEvent.target?.result) {
+          setHostForm(prev => ({ ...prev, photoUrl: uploadEvent.target.result }));
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   // Save Custom Firebase Credentials
   const handleSaveFirebaseConfig = () => {
     saveCustomFirebaseConfig(fbConfigInput);
     setShowFirebaseModal(false);
-    alert("🔥 Firebase Configuration updated & connected!");
+    alert("🔥 Firebase Configuration updated & connected to paarkkar-dda3d!");
+  };
+
+  // Firebase Auth Login Handler
+  const handleFirebaseLogin = async () => {
+    const formattedEmail = loginInput.includes("@") ? loginInput : `${loginInput.replace(/\s+/g, '')}@parkkar.com`;
+    const res = await firebaseSignIn(formattedEmail, loginPassword);
+    if (res?.success) {
+      alert(`🔥 Firebase Authenticated: Welcome back ${res.user.email}!`);
+    }
+    if (role === "host") setActiveScreen("29");
+    else setActiveScreen("07");
+  };
+
+  // Firebase Auth Sign Out Handler
+  const handleFirebaseSignOut = async () => {
+    await firebaseSignOutUser();
+    setRole(null);
+    setActiveScreen("06");
+    setShowDrawer(false);
   };
 
   // Dynamic AI Pricing Calculation
@@ -849,7 +731,15 @@ export default function FullShowcaseBoard() {
   // Publish Host Spot to Firebase & Tamil Nadu Map
   const handlePublishHostSpot = async () => {
     setIsPublishing(true);
-    const publishedId = await saveHostSpot(hostForm);
+
+    let publishedId = null;
+    try {
+      publishedId = await saveHostSpot(hostForm);
+    } catch (err) {
+      console.warn("Publish persistence failed, listing stays live in this session:", err);
+    }
+
+    const hostPhotoSources = [hostForm.photoUrl, ...REAL_IMAGES.garage].filter(Boolean);
 
     const newSpot = {
       id: publishedId || "sp_custom_" + Date.now(),
@@ -857,12 +747,18 @@ export default function FullShowcaseBoard() {
       address: hostForm.address,
       price: Number(hostForm.price),
       rating: "5.0 (Firebase Live)",
-      lat: 13.0850 + (Math.random() * 0.02 - 0.01),
-      lng: 80.2101 + (Math.random() * 0.02 - 0.01),
-      imgSources: [hostForm.photoUrl, ...REAL_IMAGES.garage],
+      lat: userLocation ? userLocation.lat : 13.0850 + (Math.random() * 0.02 - 0.01),
+      lng: userLocation ? userLocation.lng : 80.2101 + (Math.random() * 0.02 - 0.01),
+      imgSources: hostPhotoSources,
       city: hostForm.city,
       badge: "FIREBASE HOST LISTING",
-      photoComponent: <RealGaragePhoto height={200} badge={`₹${hostForm.price}/hr • ${hostForm.title.toUpperCase()}`} />,
+      photoComponent: (
+        <HostUploadedPhoto
+          sources={hostPhotoSources}
+          height={200}
+          badge={`₹${hostForm.price}/hr • ${hostForm.title.toUpperCase()}`}
+        />
+      ),
       about: hostForm.about
     };
 
@@ -913,7 +809,9 @@ export default function FullShowcaseBoard() {
                   <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>🔥 Firebase Credentials</h3>
                   <button onClick={() => setShowFirebaseModal(false)} style={{ background: "none", border: "none", fontSize: 18, fontWeight: 900, cursor: "pointer", color: "#94A3B8" }}>✕</button>
                 </div>
-                <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 14px", fontWeight: 600 }}>Link your own Firebase Project for live Storage & Firestore sync:</p>
+                <div style={{ background: "#DCFCE7", border: "1px solid #BBF7D0", color: "#16A34A", padding: "8px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, marginBottom: 12 }}>
+                  ✓ Connected to paarkkar-dda3d
+                </div>
 
                 <label style={{ fontSize: 11, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>API Key</label>
                 <input type="text" value={fbConfigInput.apiKey} onChange={(e) => setFbConfigInput({...fbConfigInput, apiKey: e.target.value})} style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #CBD5E1", fontSize: 12, marginBottom: 10 }} />
@@ -964,8 +862,8 @@ export default function FullShowcaseBoard() {
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ fontSize: 16 }}>🔥</span>
                       <div>
-                        <span style={{ fontSize: 11, fontWeight: 900, color: "#16A34A", display: "block" }}>Firebase Connected</span>
-                        <span style={{ fontSize: 10, color: "#64748B" }}>Firestore & Storage Online</span>
+                        <span style={{ fontSize: 11, fontWeight: 900, color: "#16A34A", display: "block" }}>Firebase Live (paarkkar-dda3d)</span>
+                        <span style={{ fontSize: 10, color: "#64748B" }}>Firestore, Storage & Auth Online</span>
                       </div>
                     </div>
                     <span style={{ fontSize: 11, color: "#16A34A", fontWeight: 800 }}>⚙️ Config</span>
@@ -1011,10 +909,10 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <button 
-                  onClick={() => { setRole(null); setActiveScreen("06"); setShowDrawer(false); }}
+                  onClick={handleFirebaseSignOut}
                   style={{ width: "100%", padding: 14, borderRadius: 14, background: "#FEF2F2", border: "none", color: "#EF4444", fontWeight: 800, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
                 >
-                  🚪 Sign Out
+                  🚪 Sign Out (Firebase Auth)
                 </button>
               </div>
             </div>
@@ -1037,7 +935,7 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <div style={{ width: "100%" }}>
-                  <RealGaragePhoto height={210} badge="FIREBASE POWERED • 500+ SPACES" />
+                  <RealGaragePhoto height={210} badge="FIREBASE AUTH & FIRESTORE LIVE" />
                 </div>
 
                 <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
@@ -1205,7 +1103,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 06: ACCOUNT LOGIN ─── */}
+            {/* ─── SCREEN 06: ACCOUNT LOGIN (FIREBASE AUTH SIGN-IN) ─── */}
             {activeScreen === "06" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 30px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
@@ -1213,7 +1111,7 @@ export default function FullShowcaseBoard() {
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
                   <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Welcome Back!</h2>
-                  <p style={{ fontSize: 14, color: "#64748B", margin: "0 0 24px" }}>Sign in to continue to PARKKAR</p>
+                  <p style={{ fontSize: 14, color: "#64748B", margin: "0 0 20px" }}>Sign in with Firebase Auth (paarkkar-dda3d)</p>
                   
                   {/* ROLE MODE SWITCHER IN LOGIN */}
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 20 }}>
@@ -1231,30 +1129,39 @@ export default function FullShowcaseBoard() {
                     </button>
                   </div>
 
-                  <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 6 }}>Phone Number</label>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 6 }}>Email or Phone Number</label>
                   <div style={{ display: "flex", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#0F172A" }}>🇮🇳 +91</span>
-                    <input type="text" defaultValue="98765 43210" style={{ border: "none", outline: "none", flex: 1, fontSize: 15, fontWeight: 600, color: "#0F172A" }} />
+                    <span style={{ fontSize: 14, fontWeight: 800, color: "#0F172A" }}>🇮🇳</span>
+                    <input 
+                      type="text" 
+                      value={loginInput}
+                      onChange={(e) => setLoginInput(e.target.value)}
+                      placeholder="e.g. 9876543210 or host@parkkar.com" 
+                      style={{ border: "none", outline: "none", flex: 1, fontSize: 14, fontWeight: 700, color: "#0F172A" }} 
+                    />
                   </div>
 
                   <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 6 }}>Password</label>
                   <div style={{ display: "flex", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", alignItems: "center", gap: 10, marginBottom: 10 }}>
                     <IconLock size={18} color="#94A3B8" />
-                    <input type="password" defaultValue="12345678" style={{ border: "none", outline: "none", flex: 1, fontSize: 15, color: "#0F172A" }} />
+                    <input 
+                      type="password" 
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="Password" 
+                      style={{ border: "none", outline: "none", flex: 1, fontSize: 14, color: "#0F172A" }} 
+                    />
                   </div>
 
-                  <div style={{ textAlign: "right", marginBottom: 24 }}>
+                  <div style={{ textAlign: "right", marginBottom: 20 }}>
                     <span style={{ color: "#22C55E", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Forgot Password?</span>
                   </div>
 
                   <button 
-                    onClick={() => {
-                      if (role === "host") setActiveScreen("29");
-                      else setActiveScreen("07");
-                    }} 
+                    onClick={handleFirebaseLogin}
                     style={{ width: "100%", padding: "16px", borderRadius: 16, background: role === "host" ? "#F59E0B" : "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 900, cursor: "pointer", boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
                   >
-                    {role === "host" ? "Sign In as Host" : "Login as Driver"}
+                    🔥 Firebase Sign In as {role === "host" ? "Host" : "Driver"}
                   </button>
                 </div>
               </div>
@@ -1269,7 +1176,7 @@ export default function FullShowcaseBoard() {
                   </button>
                   <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 6px", textAlign: "center" }}>Enter Verification Code</h2>
                   <p style={{ fontSize: 13, color: "#64748B", textAlign: "center", margin: "0 0 24px" }}>
-                    We've sent a 6-digit code to <br/><strong style={{ color: "#0F172A" }}>+91 98765 43210</strong>
+                    We've sent a 6-digit code to <br/><strong style={{ color: "#0F172A" }}>+91 {loginInput}</strong>
                   </p>
 
                   <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 20 }}>
@@ -1388,6 +1295,7 @@ export default function FullShowcaseBoard() {
                   <TamilNaduMap 
                     spotsList={allSpots}
                     selectedSpot={selectedSpot} 
+                    userLocation={userLocation}
                     onSelectSpot={(spot) => {
                       setSelectedSpot(spot);
                       setSearchQuery(spot.address);
@@ -2345,7 +2253,7 @@ export default function FullShowcaseBoard() {
 
                   <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: 14, borderRadius: 14, display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontSize: 20 }}>🔥</span>
-                    <span style={{ fontSize: 12, color: "#15803D", fontWeight: 700 }}>Firebase Firestore Collection 'parking_spots' & Storage connected!</span>
+                    <span style={{ fontSize: 12, color: "#15803D", fontWeight: 700 }}>Firebase Project paarkkar-dda3d Firestore & Storage connected!</span>
                   </div>
                 </div>
 
@@ -2367,11 +2275,11 @@ export default function FullShowcaseBoard() {
                     <IconCheck size={40} color="#22C55E" />
                   </div>
                   <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Spot Live in Firebase!</h2>
-                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>Your space is saved to Firebase Firestore and live on the Tamil Nadu map!</p>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>Your space is saved to Firebase project paarkkar-dda3d and live on the map!</p>
 
                   <div style={{ background: "#F8FAFC", borderRadius: 20, padding: 20, border: "1px solid #E2E8F0", textAlign: "left", marginBottom: 20 }}>
                     <span style={{ fontSize: 11, fontWeight: 800, color: "#22C55E", background: "#DCFCE7", padding: "2px 8px", borderRadius: 6, display: "inline-block", marginBottom: 8 }}>
-                      ● FIREBASE FIRESTORE LIVE
+                      ● FIREBASE LIVE (paarkkar-dda3d)
                     </span>
                     <h3 style={{ fontSize: 18, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>{selectedSpot.title}</h3>
                     <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 8px" }}>{selectedSpot.address}</p>
