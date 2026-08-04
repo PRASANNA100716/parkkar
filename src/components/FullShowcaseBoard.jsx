@@ -80,18 +80,6 @@ const IconProfile = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
-const IconStar = ({ size = 14 }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="#F59E0B" stroke="#F59E0B" strokeWidth="1">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
-);
-
-const IconHeart = ({ size = 18, color = "currentColor", fill = "none" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill={fill} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-  </svg>
-);
-
 const IconChevronRight = ({ size = 16, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="m9 18 6-6-6-6" />
@@ -136,24 +124,73 @@ const IconBuilding = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
-// ─── ULTRA-REALISTIC REAL-WORLD PHOTOGRAPHY MEDIA COMPONENTS ─────────────────
+// ─── HIGH-RELIABILITY SMART IMAGE COMPONENT (PREVENTS BROKEN IMAGE ICONS) ───
+const SmartImage = ({ src, alt, style, type = "garage" }) => {
+  const [error, setError] = useState(false);
+
+  if (error || !src) {
+    // Beautiful, realistic dark photographic gradient card with crisp UI accents
+    const isOffice = type === "office";
+    const isDriveway = type === "driveway";
+    const primaryColor = isOffice ? "#38BDF8" : "#22C55E";
+    const titleText = isOffice ? "OFFICE BASEMENT PARKING" : isDriveway ? "GATED DRIVEWAY SPOT" : "PRIVATE COVERED GARAGE";
+
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          background: isOffice
+            ? "linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0369A1 100%)"
+            : isDriveway
+            ? "linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #15803D 100%)"
+            : "linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #166534 100%)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#FFF",
+          padding: 16,
+          position: "relative",
+          boxSizing: "border-box",
+          ...style
+        }}
+      >
+        <div style={{ width: 50, height: 50, borderRadius: "50%", background: "rgba(255,255,255,0.12)", border: `1.5px solid ${primaryColor}`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, backdropFilter: "blur(4px)" }}>
+          <IconCar size={26} color={primaryColor} />
+        </div>
+        <div style={{ fontSize: 13, fontWeight: 900, color: "#FFF", letterSpacing: "0.03em" }}>{titleText}</div>
+        <div style={{ fontSize: 11, color: primaryColor, fontWeight: 800, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: primaryColor }} /> Paarkkar Verified
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      style={{ width: "100%", height: "100%", objectFit: "cover", ...style }}
+      onError={() => setError(true)}
+    />
+  );
+};
+
 const REAL_IMAGES = {
   garage: "https://images.unsplash.com/photo-1506521782020-18925f4bfa55?auto=format&fit=crop&w=800&q=80",
   office: "https://images.unsplash.com/photo-1590674899484-13da0d1b58f5?auto=format&fit=crop&w=800&q=80",
   driveway: "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?auto=format&fit=crop&w=800&q=80",
-  sedan: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80",
-  suv: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80",
-  avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
 };
 
 const RealGaragePhoto = ({ height = 200, badge = "SLOT A-12 • PRIVATE GARAGE" }) => (
   <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
-    <img src={REAL_IMAGES.garage} alt="Real Home Garage" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    <SmartImage src={REAL_IMAGES.garage} alt="Real Home Garage" type="garage" />
     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
-    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800 }}>
+    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       ● LIVE
     </div>
-    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800 }}>
+    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       {badge}
     </div>
   </div>
@@ -161,12 +198,12 @@ const RealGaragePhoto = ({ height = 200, badge = "SLOT A-12 • PRIVATE GARAGE" 
 
 const RealOfficePhoto = ({ height = 200, badge = "OFFICE BASEMENT PARKING" }) => (
   <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
-    <img src={REAL_IMAGES.office} alt="Real Office Basement" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    <SmartImage src={REAL_IMAGES.office} alt="Real Office Basement" type="office" />
     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
-    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(56,189,248,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800 }}>
+    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(56,189,248,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       AVAILABLE
     </div>
-    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#38BDF8", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800 }}>
+    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#38BDF8", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       {badge}
     </div>
   </div>
@@ -174,12 +211,12 @@ const RealOfficePhoto = ({ height = 200, badge = "OFFICE BASEMENT PARKING" }) =>
 
 const RealDrivewayPhoto = ({ height = 200, badge = "GATED RESIDENTIAL DRIVEWAY" }) => (
   <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
-    <img src={REAL_IMAGES.driveway} alt="Real Driveway Spot" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    <SmartImage src={REAL_IMAGES.driveway} alt="Real Driveway Spot" type="driveway" />
     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
-    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800 }}>
+    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       EV ⚡ READY
     </div>
-    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800 }}>
+    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       {badge}
     </div>
   </div>
@@ -473,7 +510,7 @@ export default function FullShowcaseBoard() {
             {/* ─── ONBOARDING 3 ─── */}
             {activeScreen === "04" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
-                <div style={{ width: "100%", borderRadius: 24, overflow: "hidden", border: "1px solid #E2E8F0", boxShadow: "0 10px 25px rgba(0,0,0,0.06)", background: "#0F172A", padding: 24, color: "#FFF", display: "flex", flexDirection: "column", justifyContent: "space-between", height: 230 }}>
+                <div style={{ width: "100%", borderRadius: 24, overflow: "hidden", border: "1px solid #E2E8F0", boxShadow: "0 10px 25px rgba(0,0,0,0.06)", background: "#0F172A", padding: 24, color: "#FFF", display: "flex", flexDirection: "column", justifyContent: "space-between", height: 230, boxSizing: "border-box" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ width: 44, height: 44, borderRadius: 14, background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <IconShield size={24} color="#FFF" />
@@ -656,7 +693,9 @@ export default function FullShowcaseBoard() {
                   <InteractiveMap />
 
                   <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.25)", display: "flex", gap: 12, alignItems: "center", zIndex: 500 }}>
-                    <img src={REAL_IMAGES.garage} alt="spot" style={{ width: 70, height: 70, borderRadius: 12, objectFit: "cover" }} />
+                    <div style={{ width: 70, height: 70, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
+                      <SmartImage src={REAL_IMAGES.garage} alt="spot" type="garage" />
+                    </div>
                     <div style={{ flex: 1 }}>
                       <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>{selectedSpot.title}</h4>
                       <p style={{ margin: "0 0 4px", fontSize: 12, color: "#64748B" }}>{selectedSpot.address}</p>
@@ -683,12 +722,14 @@ export default function FullShowcaseBoard() {
 
                 <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
                   {[
-                    { title: "Home Garage", loc: "Anna Nagar, Chennai", img: REAL_IMAGES.garage, price: 40, photo: <RealGaragePhoto height={210} badge="SLOT A-12 • PRIVATE GARAGE" /> },
-                    { title: "Office Basement", loc: "T. Nagar, Chennai", img: REAL_IMAGES.office, price: 60, photo: <RealOfficePhoto height={210} badge="OFFICE BASEMENT PARKING" /> },
-                    { title: "Apartment Parking", loc: "West Mambalam, Chennai", img: REAL_IMAGES.driveway, price: 35, photo: <RealDrivewayPhoto height={210} badge="GATED RESIDENTIAL DRIVEWAY" /> },
+                    { title: "Home Garage", loc: "Anna Nagar, Chennai", img: REAL_IMAGES.garage, type: "garage", price: 40, photo: <RealGaragePhoto height={210} badge="SLOT A-12 • PRIVATE GARAGE" /> },
+                    { title: "Office Basement", loc: "T. Nagar, Chennai", img: REAL_IMAGES.office, type: "office", price: 60, photo: <RealOfficePhoto height={210} badge="OFFICE BASEMENT PARKING" /> },
+                    { title: "Apartment Parking", loc: "West Mambalam, Chennai", img: REAL_IMAGES.driveway, type: "driveway", price: 35, photo: <RealDrivewayPhoto height={210} badge="GATED RESIDENTIAL DRIVEWAY" /> },
                   ].map((item, idx) => (
                     <div key={idx} style={{ background: "#FFF", borderRadius: 16, padding: 12, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
-                      <img src={item.img} alt="spot" style={{ width: 84, height: 84, borderRadius: 12, objectFit: "cover" }} />
+                      <div style={{ width: 84, height: 84, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
+                        <SmartImage src={item.img} alt="spot" type={item.type} />
+                      </div>
                       <div style={{ flex: 1 }}>
                         <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>{item.title}</h4>
                         <p style={{ margin: "0 0 6px", fontSize: 12, color: "#64748B" }}>{item.loc}</p>
