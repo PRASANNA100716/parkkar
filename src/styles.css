@@ -18,12 +18,80 @@ html, body {
   text-rendering: optimizeLegibility;
 }
 
+/* Viewport Wrapper & Mobile Frame Alignment System */
+.app-viewport-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  background-color: #0F172A;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.mobile-app-frame {
+  width: 100%;
+  max-width: 440px;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #FFFFFF;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 600px) {
+  .mobile-app-frame {
+    height: 94vh;
+    max-height: 880px;
+    border-radius: 32px;
+    border: 8px solid #1E293B;
+  }
+}
+
 /* GPU Hardware Acceleration & Smooth 60 FPS Mobile Touch Scrolling */
 .mobile-scroll-container, [style*="overflowY: \"auto\""], [style*="overflow-y: auto"] {
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
   will-change: scroll-position;
   transform: translateZ(0);
+}
+
+/* Clean Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.6);
+}
+
+/* Global Form Elements & Touch Targets */
+input, select, textarea, button {
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+button {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
 }
 
 /* Image Optimization & Decoding */
