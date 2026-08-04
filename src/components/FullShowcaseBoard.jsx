@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { saveHostSpot } from "../firebase";
 
-// Theme Palette matching Paarkkar UI Reference
+// Theme Palette matching PARKKAR UI Reference
 const T = {
   bg: "#F8FAFC",
   card: "#FFFFFF",
@@ -435,6 +435,18 @@ export default function FullShowcaseBoard() {
   // Dynamic Tamil Nadu Spots Database State
   const [allSpots, setAllSpots] = useState(INITIAL_TAMIL_NADU_SPOTS);
 
+  // Selected Spot State
+  const [selectedSpot, setSelectedSpot] = useState(INITIAL_TAMIL_NADU_SPOTS[1]);
+
+  // Controlled Search Input Bar State synced with selected spot location
+  const [searchQuery, setSearchQuery] = useState(INITIAL_TAMIL_NADU_SPOTS[1].address);
+
+  useEffect(() => {
+    if (selectedSpot) {
+      setSearchQuery(selectedSpot.address);
+    }
+  }, [selectedSpot]);
+
   // Booking Flow State
   const [selectedDate, setSelectedDate] = useState("Today, 04 Aug");
   const [startTime, setStartTime] = useState("10:00 AM");
@@ -442,9 +454,6 @@ export default function FullShowcaseBoard() {
   const [durationHours, setDurationHours] = useState(4);
   const [selectedPayment, setSelectedPayment] = useState("upi");
   const [upiIdInput, setUpiIdInput] = useState("hanush@paytm");
-
-  // Selected Spot State
-  const [selectedSpot, setSelectedSpot] = useState(INITIAL_TAMIL_NADU_SPOTS[1]);
 
   // Host Space Form State
   const [hostForm, setHostForm] = useState({
@@ -547,6 +556,7 @@ export default function FullShowcaseBoard() {
 
     setAllSpots(prev => [newSpot, ...prev]);
     setSelectedSpot(newSpot);
+    setSearchQuery(newSpot.address);
     setIsPublishing(false);
     setActiveScreen("35");
   };
@@ -667,7 +677,7 @@ export default function FullShowcaseBoard() {
                   <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.35)" }}>
                     <span style={{ color: "#FFF", fontSize: 48, fontWeight: 900 }}>P</span>
                   </div>
-                  <h1 style={{ fontSize: 38, fontWeight: 900, color: "#0F172A", margin: "0 0 6px", letterSpacing: "-0.03em" }}>Paarkkar</h1>
+                  <h1 style={{ fontSize: 38, fontWeight: 900, color: "#0F172A", margin: "0 0 6px", letterSpacing: "-0.03em" }}>PARKKAR</h1>
                   <p style={{ fontSize: 15, fontWeight: 600, color: "#64748B", margin: 0 }}>
                     Park Anywhere. Earn <span style={{ color: "#22C55E", fontWeight: 800 }}>Everywhere.</span>
                   </p>
@@ -850,7 +860,7 @@ export default function FullShowcaseBoard() {
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
                   <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Welcome Back!</h2>
-                  <p style={{ fontSize: 14, color: "#64748B", margin: "0 0 24px" }}>Sign in to continue to Paarkkar</p>
+                  <p style={{ fontSize: 14, color: "#64748B", margin: "0 0 24px" }}>Sign in to continue to PARKKAR</p>
                   
                   {/* ROLE MODE SWITCHER IN LOGIN */}
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 20 }}>
@@ -945,7 +955,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 08: HOME / SEARCH ─── */}
+            {/* ─── SCREEN 08: HOME / SEARCH (INTERACTIVE TAMIL NADU MAP) ─── */}
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
@@ -954,7 +964,7 @@ export default function FullShowcaseBoard() {
                   </button>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 16 }}>P</div>
-                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Paarkkar Map</span>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A", letterSpacing: "0.02em" }}>PARKKAR Map</span>
                   </div>
                   <button onClick={() => setActiveScreen("22")} style={{ background: "none", border: "none", cursor: "pointer" }}>
                     <IconBell size={20} color="#0F172A" />
@@ -964,7 +974,13 @@ export default function FullShowcaseBoard() {
                 <div style={{ padding: "8px 16px 12px", background: "#FFF", display: "flex", flexDirection: "column", gap: 8 }}>
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 14, padding: "10px 14px", alignItems: "center", gap: 10 }}>
                     <IconSearch size={18} color="#64748B" />
-                    <input type="text" placeholder="Search location" defaultValue={selectedSpot.address} style={{ border: "none", background: "transparent", outline: "none", flex: 1, fontWeight: 600 }} />
+                    <input 
+                      type="text" 
+                      placeholder="Search location" 
+                      value={searchQuery} 
+                      onChange={(e) => setSearchQuery(e.target.value)} 
+                      style={{ border: "none", background: "transparent", outline: "none", flex: 1, fontWeight: 700, fontSize: 14, color: "#0F172A" }} 
+                    />
                     <button onClick={() => setActiveScreen("09")} style={{ background: "none", border: "none", cursor: "pointer" }}>
                       <IconFilter size={18} color="#64748B" />
                     </button>
@@ -978,15 +994,18 @@ export default function FullShowcaseBoard() {
                         <button
                           key={cityName}
                           onClick={() => {
-                            if (spotInCity) setSelectedSpot(spotInCity);
+                            if (spotInCity) {
+                              setSelectedSpot(spotInCity);
+                              setSearchQuery(spotInCity.address);
+                            }
                           }}
                           style={{
-                            padding: "4px 12px",
+                            padding: "6px 14px",
                             borderRadius: 12,
                             border: "none",
                             background: isSelected ? "#22C55E" : "#F1F5F9",
                             color: isSelected ? "#FFF" : "#475569",
-                            fontSize: 11,
+                            fontSize: 12,
                             fontWeight: 800,
                             cursor: "pointer",
                             whiteSpace: "nowrap"
@@ -1003,7 +1022,10 @@ export default function FullShowcaseBoard() {
                   <TamilNaduMap 
                     spotsList={allSpots}
                     selectedSpot={selectedSpot} 
-                    onSelectSpot={(spot) => setSelectedSpot(spot)} 
+                    onSelectSpot={(spot) => {
+                      setSelectedSpot(spot);
+                      setSearchQuery(spot.address);
+                    }} 
                   />
 
                   <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.25)", display: "flex", gap: 12, alignItems: "center", zIndex: 500 }}>
@@ -1045,7 +1067,7 @@ export default function FullShowcaseBoard() {
                         <p style={{ margin: "0 0 6px", fontSize: 12, color: "#64748B" }}>{item.address}</p>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div style={{ fontWeight: 900, color: "#22C55E", fontSize: 15 }}>₹{item.price}<span style={{ fontSize: 10, color: "#64748B" }}>/hr</span></div>
-                          <button onClick={() => { setSelectedSpot(item); setActiveScreen("10"); }} style={{ background: "#22C55E", border: "none", color: "#FFF", padding: "8px 14px", borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
+                          <button onClick={() => { setSelectedSpot(item); setSearchQuery(item.address); setActiveScreen("10"); }} style={{ background: "#22C55E", border: "none", color: "#FFF", padding: "8px 14px", borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
                             Book Now
                           </button>
                         </div>
@@ -1492,7 +1514,7 @@ export default function FullShowcaseBoard() {
                         )}
                       </div>
 
-                      {/* 3. PAARKKAR WALLET OPTION */}
+                      {/* 3. PARKKAR WALLET OPTION */}
                       <div 
                         onClick={() => setSelectedPayment("wallet")}
                         style={{ 
@@ -1510,7 +1532,7 @@ export default function FullShowcaseBoard() {
                               👛
                             </div>
                             <div>
-                              <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 900, color: "#0F172A" }}>Paarkkar Cash Wallet</h4>
+                              <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 900, color: "#0F172A" }}>PARKKAR Cash Wallet</h4>
                               <p style={{ margin: 0, fontSize: 12, color: "#64748B", fontWeight: 600 }}>Available Balance: <strong style={{ color: "#22C55E" }}>₹450</strong></p>
                             </div>
                           </div>
@@ -1775,7 +1797,7 @@ export default function FullShowcaseBoard() {
                   <div style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", borderRadius: 22, padding: 18, color: "#FFF", marginBottom: 20, boxShadow: "0 10px 25px rgba(15,23,42,0.25)", position: "relative", overflow: "hidden" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                       <span style={{ fontSize: 11, fontWeight: 900, background: "rgba(34,197,94,0.2)", color: "#22C55E", padding: "4px 10px", borderRadius: 10, border: "1px solid rgba(34,197,94,0.4)" }}>
-                        ✨ PAARKKAR AI ENGINE
+                        ✨ PARKKAR AI ENGINE
                       </span>
                       <span style={{ fontSize: 11, color: "#F59E0B", fontWeight: 800 }}>
                         {aiRate.surgeMultiplier} Surge Factor
@@ -2024,7 +2046,7 @@ export default function FullShowcaseBoard() {
                   <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
-                  <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Paarkkar Wallet</span>
+                  <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>PARKKAR Wallet</span>
                 </div>
 
                 <div style={{ padding: 20 }}>
@@ -2054,7 +2076,7 @@ export default function FullShowcaseBoard() {
                 <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
                   {[
                     { title: "Booking Confirmed 🎉", desc: "Your slot at Home Garage has been reserved.", time: "10m ago" },
-                    { title: "₹100 Cashback Credited 🎁", desc: "Welcome bonus credited to your Paarkkar wallet.", time: "1h ago" }
+                    { title: "₹100 Cashback Credited 🎁", desc: "Welcome bonus credited to your PARKKAR wallet.", time: "1h ago" }
                   ].map((n, i) => (
                     <div key={i} style={{ background: "#FFF", borderRadius: 14, padding: 14, border: "1px solid #E2E8F0" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
@@ -2080,7 +2102,7 @@ export default function FullShowcaseBoard() {
                   <h3 style={{ margin: "0 0 6px", fontSize: 20, fontWeight: 900, color: "#0F172A" }}>
                     {screensList.find(s => s.id === activeScreen)?.name || "Page View"}
                   </h3>
-                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 20px" }}>Real-time Paarkkar native UI screen</p>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 20px" }}>Real-time PARKKAR native UI screen</p>
 
                   <div style={{ width: "100%", marginTop: 10 }}>
                     <RealGaragePhoto height={190} />
