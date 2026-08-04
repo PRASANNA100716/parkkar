@@ -928,28 +928,7 @@ export default function FullShowcaseBoard() {
         {/* RESPONSIVE MOBILE APP FRAME */}
         <div style={{ width: "100%", maxWidth: 440, height: "100vh", maxHeight: "100vh", background: activeScreen === "15" || activeScreen === "17" ? "#0F172A" : "#FFFFFF", overflow: "hidden", display: "flex", flexDirection: "column", position: "relative", boxShadow: "0 0 40px rgba(0,0,0,0.5)" }}>
           
-          {/* REALISTIC MOBILE STATUS BAR */}
-          <div style={{ height: 44, padding: "0 22px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, fontWeight: 700, color: activeScreen === "15" || activeScreen === "17" ? "#FFF" : "#0F172A", zIndex: 50, background: activeScreen === "15" || activeScreen === "17" ? "#0F172A" : "#FFFFFF" }}>
-            <span>9:41</span>
-            
-            <div style={{ width: 80, height: 18, background: activeScreen === "15" || activeScreen === "17" ? "#1E293B" : "#0F172A", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#1E293B", border: "1px solid #334155" }} />
-            </div>
 
-            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              <svg width="14" height="12" viewBox="0 0 14 12" fill={activeScreen === "15" || activeScreen === "17" ? "#FFF" : "#0F172A"}>
-                <rect x="0" y="8" width="2" height="4" rx="0.5" />
-                <rect x="4" y="6" width="2" height="6" rx="0.5" />
-                <rect x="8" y="3" width="2" height="9" rx="0.5" />
-                <rect x="12" y="0" width="2" height="12" rx="0.5" />
-              </svg>
-              <svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke={activeScreen === "15" || activeScreen === "17" ? "#FFF" : "#0F172A"} strokeWidth="1.2">
-                <rect x="0.5" y="0.5" width="14" height="9" rx="2" />
-                <rect x="2" y="2" width="9" height="6" rx="1" fill="#22C55E" stroke="none" />
-                <path d="M16 3.5v3" strokeLinecap="round" />
-              </svg>
-            </div>
-          </div>
 
           {/* CUSTOM FIREBASE CONFIGURATION MODAL */}
           {showFirebaseModal && (
