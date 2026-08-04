@@ -1,7 +1,22 @@
-// Firebase Integration Engine for PARKKAR Storage, Firestore & Authentication
+// Firebase Integration Engine for PARKKAR Storage, Firestore Database & Authentication
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
-import { getStorage, ref, uploadString, getDownloadURL } from "firebase/storage";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  orderBy, 
+  setDoc, 
+  doc 
+} from "firebase/firestore";
+import { 
+  getStorage, 
+  ref, 
+  uploadString, 
+  uploadBytes, 
+  getDownloadURL 
+} from "firebase/storage";
 import { 
   getAuth, 
   signInWithEmailAndPassword, 
@@ -53,7 +68,71 @@ initFirebase();
 
 export { app, db, storage, auth };
 
-// Firebase Authentication Functions
+// Timeout helper for reliable network calls
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+    )
+  ]);
+}
+
+// ─── FIREBASE STORAGE IMAGE UPLOADER SERVICE ─────────────────────────────────
+/**
+ * Uploads a file (File object or Data URL) to Firebase Storage & records metadata in Firestore
+ * @param {File|string} fileInput - HTML File object or Base64 Data URL string
+ * @param {string} folder - Destination folder in storage e.g. "parking_photos", "host_documents"
+ * @returns {Promise<string>} Public Firebase Storage download URL
+ */
+export async function uploadImageToFirebaseStorage(fileInput, folder = "parking_photos") {
+  if (!storage) {
+    console.warn("Firebase Storage unavailable, returning input as-is.");
+    return typeof fileInput === "string" ? fileInput : "";
+  }
+
+  try {
+    const filename = `img_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.jpg`;
+    const imageRef = ref(storage, `${folder}/${filename}`);
+
+    let downloadUrl = "";
+
+    if (typeof fileInput === "string" && fileInput.startsWith("data:image")) {
+      // Upload Base64 Data URL string
+      await withTimeout(uploadString(imageRef, fileInput, "data_url"), 12000, "Firebase Storage String Upload");
+      downloadUrl = await withTimeout(getDownloadURL(imageRef), 8000, "Get Download URL");
+    } else if (fileInput instanceof File || fileInput instanceof Blob) {
+      // Upload HTML File / Blob object
+      await withTimeout(uploadBytes(imageRef, fileInput), 12000, "Firebase Storage File Upload");
+      downloadUrl = await withTimeout(getDownloadURL(imageRef), 8000, "Get Download URL");
+    } else if (typeof fileInput === "string") {
+      // Already an HTTP URL
+      return fileInput;
+    }
+
+    if (downloadUrl && db) {
+      // Record image metadata in Firestore collection 'uploaded_images'
+      try {
+        await addDoc(collection(db, "uploaded_images"), {
+          url: downloadUrl,
+          folder: folder,
+          path: `${folder}/${filename}`,
+          uploadedAt: new Date().toISOString()
+        });
+        console.log("Image metadata saved to Firestore collection 'uploaded_images'");
+      } catch (dbErr) {
+        console.warn("Image metadata record skipped:", dbErr);
+      }
+    }
+
+    return downloadUrl;
+  } catch (err) {
+    console.warn("Firebase Storage image upload failed, fallback to local URL:", err);
+    return typeof fileInput === "string" ? fileInput : "";
+  }
+}
+
+// ─── FIREBASE AUTHENTICATION SERVICES ──────────────────────────────────────
 export async function firebaseSignIn(email, password) {
   try {
     if (auth) {
@@ -62,7 +141,7 @@ export async function firebaseSignIn(email, password) {
       return { user: userCredential.user, success: true };
     }
   } catch (err) {
-    console.warn("Firebase Auth sign-in failed, using mock auth:", err.message);
+    console.warn("Firebase Auth sign-in failed, using fallback:", err.message);
     return { success: false, error: err.message };
   }
 }
@@ -104,52 +183,31 @@ export function isFirebaseConnected() {
   return !!db;
 }
 
-// Timeout helper for reliable network calls
-function withTimeout(promise, ms, label) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
-    )
-  ]);
-}
-
+// ─── FIRESTORE HOST SPOTS & IMAGES DATABASE SERVICES ─────────────────────────
 // Save Host Space Listing to Firebase Firestore & Storage
 export async function saveHostSpot(spotData) {
   try {
+    // 1. Upload photo to Firebase Storage if it's a data URL or File
+    let finalPhotoUrl = spotData.photoUrl;
+
+    if (spotData.photoUrl && (spotData.photoUrl.startsWith("data:image") || spotData.photoUrl instanceof File)) {
+      console.log("Uploading host spot photo to Firebase Storage...");
+      finalPhotoUrl = await uploadImageToFirebaseStorage(spotData.photoUrl, "parking_photos");
+    }
+
     if (db) {
-      // 1. If photo is a base64 data URL, upload to Firebase Storage
-      let uploadedPhotoUrl = spotData.photoUrl;
-
-      if (storage && spotData.photoUrl && spotData.photoUrl.startsWith("data:image")) {
-        try {
-          const imageRef = ref(storage, `parking_photos/spot_${Date.now()}.jpg`);
-          await withTimeout(
-            uploadString(imageRef, spotData.photoUrl, "data_url"),
-            10000,
-            "Storage upload"
-          );
-          uploadedPhotoUrl = await withTimeout(getDownloadURL(imageRef), 8000, "Download URL");
-          console.log("Photo uploaded to Firebase Storage:", uploadedPhotoUrl);
-        } catch (stErr) {
-          console.warn("Firebase Storage upload skipped, keeping local photo:", stErr);
-        }
-      }
-
       // 2. Save Document to Firestore Collection "parking_spots"
-      const isDataUrl = uploadedPhotoUrl && uploadedPhotoUrl.startsWith("data:image");
       const docRef = await withTimeout(
         addDoc(collection(db, "parking_spots"), {
           ...spotData,
-          photoUrl: isDataUrl ? "" : uploadedPhotoUrl,
-          photoPending: !!isDataUrl,
+          photoUrl: finalPhotoUrl,
           createdAt: new Date().toISOString()
         }),
         10000,
         "Firestore write"
       );
 
-      console.log("Spot saved to Firebase Firestore (paarkkar-dda3d) with ID:", docRef.id);
+      console.log("Spot document saved to Firestore collection 'parking_spots' (paarkkar-dda3d) with ID:", docRef.id);
       return docRef.id;
     }
   } catch (err) {
@@ -192,4 +250,20 @@ export async function fetchHostSpotsFromFirebase() {
   }
 
   return JSON.parse(localStorage.getItem("parkkar_custom_spots") || "[]");
+}
+
+// Save Host Profile & ID Verification Document into Firestore
+export async function saveHostVerification(hostVerificationData) {
+  try {
+    if (db) {
+      const docRef = await addDoc(collection(db, "host_verifications"), {
+        ...hostVerificationData,
+        submittedAt: new Date().toISOString()
+      });
+      console.log("Host verification saved to Firestore collection 'host_verifications':", docRef.id);
+      return docRef.id;
+    }
+  } catch (err) {
+    console.warn("Host verification save failed:", err);
+  }
 }

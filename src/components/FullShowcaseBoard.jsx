@@ -8,6 +8,8 @@ import {
   firebaseSignIn,
   firebaseSignUp,
   firebaseSignOutUser,
+  uploadImageToFirebaseStorage,
+  saveHostVerification,
   auth
 } from "../firebase";
 
@@ -481,7 +483,7 @@ function TamilNaduMap({ spotsList, selectedSpot, onSelectSpot, userLocation }) {
     }
   }, [selectedSpot]);
 
-  return <div ref={mapContainerRef} style={{ width: "100%", height: "100%", background: "#F8FAFC" }} />;
+  return <div ref={mapContainerRef} style={{ width: "100%", height: "100%", background: "#FFFFFF" }} />;
 }
 
 export default function FullShowcaseBoard() {
@@ -514,6 +516,10 @@ export default function FullShowcaseBoard() {
   // Custom Firebase Credentials State (Pre-filled with user's project paarkkar-dda3d)
   const [fbConfigInput, setFbConfigInput] = useState(getFirebaseConfig());
 
+  // Host Image Upload Processing Status
+  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
+  const [photoStatus, setPhotoStatus] = useState("");
+
   // Load Live Spots from Firebase Firestore on Mount
   useEffect(() => {
     async function loadLiveDbSpots() {
@@ -536,7 +542,7 @@ export default function FullShowcaseBoard() {
               <HostUploadedPhoto
                 sources={photoSources}
                 height={200}
-                badge={`₹${s.price || 50}/hr • FIREBASE LIVE`}
+                badge={`₹${s.price || 50}/hr • FIREBASE STORAGE`}
               />
             ),
             about: s.about || "Verified space synced with Firebase Firestore database (paarkkar-dda3d)."
@@ -623,17 +629,36 @@ export default function FullShowcaseBoard() {
     }
   };
 
-  // Host Photo File Upload Handler
-  const handlePhotoFileUpload = (e) => {
+  // Host Photo File Upload Handler with Instant Firebase Storage Upload
+  const handlePhotoFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (uploadEvent) => {
-        if (uploadEvent.target?.result) {
-          setHostForm(prev => ({ ...prev, photoUrl: uploadEvent.target.result }));
+      setIsProcessingPhoto(true);
+      setPhotoStatus("⚡ Uploading image to Firebase Storage (paarkkar-dda3d)...");
+
+      try {
+        // Direct Firebase Storage Upload
+        const storageUrl = await uploadImageToFirebaseStorage(file, "parking_photos");
+
+        if (storageUrl) {
+          setHostForm(prev => ({ ...prev, photoUrl: storageUrl }));
+          setPhotoStatus(`✓ Saved to Firebase Storage & Firestore`);
+        } else {
+          // Local reader fallback if storage takes longer
+          const reader = new FileReader();
+          reader.onload = (uploadEvent) => {
+            if (uploadEvent.target?.result) {
+              setHostForm(prev => ({ ...prev, photoUrl: uploadEvent.target.result }));
+              setPhotoStatus("✓ Image selected");
+            }
+          };
+          reader.readAsDataURL(file);
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.warn("Direct upload error:", err);
+      } finally {
+        setIsProcessingPhoto(false);
+      }
     }
   };
 
@@ -935,7 +960,7 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <div style={{ width: "100%" }}>
-                  <RealGaragePhoto height={210} badge="FIREBASE AUTH & FIRESTORE LIVE" />
+                  <RealGaragePhoto height={210} badge="FIREBASE STORAGE & FIRESTORE LIVE" />
                 </div>
 
                 <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
@@ -1291,16 +1316,26 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 {/* CLEAN CRISP WHITE MAP CONTAINER */}
-                <div style={{ flex: 1, background: "#F8FAFC", position: "relative", overflow: "hidden" }}>
-                  <TamilNaduMap 
+                <div style={{ flex: 1, background: "#FFFFFF", position: "relative", overflow: "hidden" }}>
+                  <TamilNaduMap
                     spotsList={allSpots}
-                    selectedSpot={selectedSpot} 
+                    selectedSpot={selectedSpot}
                     userLocation={userLocation}
                     onSelectSpot={(spot) => {
                       setSelectedSpot(spot);
                       setSearchQuery(spot.address);
-                    }} 
+                    }}
                   />
+
+                  {/* RECENTER ON MY LIVE LOCATION */}
+                  <button
+                    onClick={handleFetchUserLocation}
+                    disabled={isLocating}
+                    title="Center on my live location"
+                    style={{ position: "absolute", right: 16, bottom: 118, zIndex: 500, width: 44, height: 44, borderRadius: 14, background: "#FFF", border: "1px solid #E2E8F0", boxShadow: "0 6px 18px rgba(15,23,42,0.14)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: isLocating ? 0.6 : 1 }}
+                  >
+                    <IconTarget size={20} color={userLocation ? "#2563EB" : "#16A34A"} />
+                  </button>
 
                   <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.15)", display: "flex", gap: 12, alignItems: "center", zIndex: 500, border: "1px solid #E2E8F0" }}>
                     <div style={{ width: 74, height: 74, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
@@ -1961,7 +1996,7 @@ export default function FullShowcaseBoard() {
                       { icon: "📍", title: "1. Add Location & Details", desc: "Specify address, city & space type" },
                       { icon: "⚡", title: "2. AI Dynamic Pricing", desc: "AI calculates best rates based on demand" },
                       { icon: "📸", title: "3. Take & Upload Photo", desc: "Snap a photo of your garage or slot" },
-                      { icon: "🔥", title: "4. Save to Firebase Firestore", desc: "Instant live publish on Tamil Nadu Map" }
+                      { icon: "🔥", title: "4. Save to Firebase Storage & Firestore", desc: "Instant live publish on Tamil Nadu Map" }
                     ].map((step, i) => (
                       <div key={i} style={{ display: "flex", gap: 12, alignItems: "center", background: "#F8FAFC", padding: 12, borderRadius: 14, border: "1px solid #E2E8F0" }}>
                         <span style={{ fontSize: 20 }}>{step.icon}</span>
@@ -2156,7 +2191,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 33: HOST FORM STEP 3 (REAL WORKING PHOTO UPLOADER) ─── */}
+            {/* ─── SCREEN 33: HOST FORM STEP 3 (REAL WORKING FIREBASE STORAGE UPLOADER) ─── */}
             {activeScreen === "33" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between" }}>
                 <div>
@@ -2168,12 +2203,20 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   {/* REAL IMAGE PREVIEW BOX */}
-                  <div style={{ width: "100%", height: 210, borderRadius: 20, overflow: "hidden", position: "relative", marginBottom: 16, border: "2.5px solid #22C55E", boxShadow: "0 6px 20px rgba(34,197,94,0.2)" }}>
+                  <div style={{ width: "100%", height: 210, borderRadius: 20, overflow: "hidden", position: "relative", marginBottom: 12, border: "2.5px solid #22C55E", boxShadow: "0 6px 20px rgba(34,197,94,0.2)" }}>
                     <SmartImage sources={[hostForm.photoUrl]} alt="Upload Preview" />
                     <div style={{ position: "absolute", bottom: 12, left: 12, background: "rgba(15,23,42,0.9)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 900, backdropFilter: "blur(6px)" }}>
-                      ✓ READY FOR FIREBASE STORAGE UPLOAD
+                      ✓ READY FOR FIREBASE STORAGE & FIRESTORE
                     </div>
                   </div>
+
+                  {/* UPLOAD PROGRESS BADGE */}
+                  {photoStatus && (
+                    <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", color: "#16A34A", padding: "8px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+                      <span>🔥</span>
+                      <span>{photoStatus}</span>
+                    </div>
+                  )}
 
                   {/* HIDDEN FILE INPUT */}
                   <input 
@@ -2187,12 +2230,14 @@ export default function FullShowcaseBoard() {
                   {/* CLICKABLE UPLOAD TARGET BOX */}
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    style={{ border: "2px dashed #22C55E", borderRadius: 18, padding: 20, textAlign: "center", background: "#F0FDF4", marginBottom: 16, cursor: "pointer" }}
+                    style={{ border: "2px dashed #22C55E", borderRadius: 18, padding: 18, textAlign: "center", background: "#F0FDF4", marginBottom: 16, cursor: "pointer" }}
                   >
-                    <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#22C55E", color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px", boxShadow: "0 4px 12px rgba(34,197,94,0.3)" }}>
-                      <IconCamera size={26} color="#FFF" />
+                    <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#22C55E", color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 8px", boxShadow: "0 4px 12px rgba(34,197,94,0.3)" }}>
+                      <IconCamera size={24} color="#FFF" />
                     </div>
-                    <span style={{ fontSize: 14, fontWeight: 900, color: "#16A34A", display: "block" }}>📸 Tap to Choose Photo / Take Picture</span>
+                    <span style={{ fontSize: 14, fontWeight: 900, color: "#16A34A", display: "block" }}>
+                      {isProcessingPhoto ? "⚡ Uploading to Firebase Storage..." : "📸 Tap to Choose Photo / Take Picture"}
+                    </span>
                     <span style={{ fontSize: 11, color: "#64748B", marginTop: 2, display: "block" }}>Direct Firebase Storage Upload Enabled</span>
                   </div>
 
@@ -2206,7 +2251,10 @@ export default function FullShowcaseBoard() {
                     ].map((url, i) => (
                       <div 
                         key={i}
-                        onClick={() => setHostForm({...hostForm, photoUrl: url})}
+                        onClick={() => {
+                          setHostForm({...hostForm, photoUrl: url});
+                          setPhotoStatus("✓ Sample image selected");
+                        }}
                         style={{ width: 75, height: 60, borderRadius: 12, overflow: "hidden", border: hostForm.photoUrl === url ? "2.5px solid #22C55E" : "1px solid #E2E8F0", cursor: "pointer" }}
                       >
                         <SmartImage sources={[url]} alt="sample" />
@@ -2217,7 +2265,7 @@ export default function FullShowcaseBoard() {
 
                 <button 
                   onClick={() => setActiveScreen("34")}
-                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)", marginTop: 12 }}
                 >
                   Next: Review & Publish ➔
                 </button>
@@ -2253,7 +2301,7 @@ export default function FullShowcaseBoard() {
 
                   <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: 14, borderRadius: 14, display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontSize: 20 }}>🔥</span>
-                    <span style={{ fontSize: 12, color: "#15803D", fontWeight: 700 }}>Firebase Project paarkkar-dda3d Firestore & Storage connected!</span>
+                    <span style={{ fontSize: 12, color: "#15803D", fontWeight: 700 }}>Firebase Project paarkkar-dda3d Storage & Firestore ready!</span>
                   </div>
                 </div>
 
@@ -2262,7 +2310,7 @@ export default function FullShowcaseBoard() {
                   disabled={isPublishing}
                   style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)", opacity: isPublishing ? 0.7 : 1 }}
                 >
-                  {isPublishing ? "Publishing to Firebase Firestore..." : "🚀 Publish Space to Firebase"}
+                  {isPublishing ? "Publishing to Firebase Storage & Firestore..." : "🚀 Publish Space to Firebase"}
                 </button>
               </div>
             )}
@@ -2275,11 +2323,11 @@ export default function FullShowcaseBoard() {
                     <IconCheck size={40} color="#22C55E" />
                   </div>
                   <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Spot Live in Firebase!</h2>
-                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>Your space is saved to Firebase project paarkkar-dda3d and live on the map!</p>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>Your image is uploaded to Firebase Storage and details saved in Firestore (paarkkar-dda3d)!</p>
 
                   <div style={{ background: "#F8FAFC", borderRadius: 20, padding: 20, border: "1px solid #E2E8F0", textAlign: "left", marginBottom: 20 }}>
                     <span style={{ fontSize: 11, fontWeight: 800, color: "#22C55E", background: "#DCFCE7", padding: "2px 8px", borderRadius: 6, display: "inline-block", marginBottom: 8 }}>
-                      ● FIREBASE LIVE (paarkkar-dda3d)
+                      ● FIREBASE STORAGE & FIRESTORE LIVE
                     </span>
                     <h3 style={{ fontSize: 18, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>{selectedSpot.title}</h3>
                     <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 8px" }}>{selectedSpot.address}</p>
