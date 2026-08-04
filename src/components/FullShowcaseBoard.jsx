@@ -4237,55 +4237,7 @@ export default function FullShowcaseBoard() {
         </div>
       </div>
 
-      {/* DISCREET FLOATING SCREEN NAVIGATOR TOOLBAR */}
-      <div style={{ position: "fixed", bottom: 12, right: 12, zIndex: 1000 }}>
-        {showQuickNav ? (
-          <div style={{ background: "#1E293B", borderRadius: 16, padding: 12, border: "1px solid #334155", boxShadow: "0 10px 30px rgba(0,0,0,0.5)", width: 260, maxHeight: 320, display: "flex", flexDirection: "column" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, borderBottom: "1px solid #334155", paddingBottom: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 800, color: "#22C55E" }}>Jump to Page</span>
-              <button onClick={() => setShowQuickNav(false)} style={{ background: "none", border: "none", color: "#94A3B8", cursor: "pointer", fontWeight: "bold" }}>✕</button>
-            </div>
-            <div style={{ overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
-              {screensList.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => { setActiveScreen(s.id); setShowQuickNav(false); }}
-                  style={{
-                    textAlign: "left",
-                    padding: "6px 10px",
-                    borderRadius: 8,
-                    border: "none",
-                    background: activeScreen === s.id ? "#22C55E" : "transparent",
-                    color: activeScreen === s.id ? "#FFF" : "#CBD5E1",
-                    fontSize: 11,
-                    fontWeight: 700,
-                    cursor: "pointer"
-                  }}
-                >
-                  {s.name}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <button
-            onClick={() => setShowQuickNav(true)}
-            style={{
-              padding: "8px 14px",
-              borderRadius: 20,
-              background: "#22C55E",
-              color: "#FFF",
-              border: "none",
-              fontWeight: 800,
-              fontSize: 12,
-              cursor: "pointer",
-              boxShadow: "0 4px 14px rgba(34,197,94,0.4)"
-            }}
-          >
-            ⚙️ Switch Screen
-          </button>
-        )}
-      </div>
+
 
     </div>
   );
