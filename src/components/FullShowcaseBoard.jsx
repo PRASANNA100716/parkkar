@@ -93,6 +93,34 @@ const IconBuilding = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
+const IconCCTV = ({ size = 20, color = "currentColor" }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+    <circle cx="12" cy="13" r="4" />
+  </svg>
+);
+
+const IconClock = ({ size = 20, color = "currentColor" }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
+const IconEV = ({ size = 20, color = "currentColor" }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+  </svg>
+);
+
+const IconShare = ({ size = 20, color = "currentColor" }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+    <polyline points="16 6 12 2 8 6" />
+    <line x1="12" y1="2" x2="12" y2="15" />
+  </svg>
+);
+
 // ─── HIGH-RELIABILITY MULTI-SOURCE REAL PHOTO COMPONENT ──────────────────────
 const REAL_IMAGES = {
   whiteCar: [
@@ -148,7 +176,7 @@ const SmartImage = ({ sources = [], alt, style }) => {
 };
 
 const RealGaragePhoto = ({ height = 200, badge = "SLOT A-12 • PRIVATE GARAGE" }) => (
-  <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
+  <div style={{ width: "100%", height, borderRadius: 20, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
     <SmartImage sources={REAL_IMAGES.garage} alt="Real Home Garage" />
     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
     <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
@@ -161,7 +189,7 @@ const RealGaragePhoto = ({ height = 200, badge = "SLOT A-12 • PRIVATE GARAGE" 
 );
 
 const RealOfficePhoto = ({ height = 200, badge = "OFFICE BASEMENT PARKING" }) => (
-  <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
+  <div style={{ width: "100%", height, borderRadius: 20, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
     <SmartImage sources={REAL_IMAGES.office} alt="Real Office Basement" />
     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
     <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(56,189,248,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
@@ -174,7 +202,7 @@ const RealOfficePhoto = ({ height = 200, badge = "OFFICE BASEMENT PARKING" }) =>
 );
 
 const RealDrivewayPhoto = ({ height = 200, badge = "GATED RESIDENTIAL DRIVEWAY" }) => (
-  <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
+  <div style={{ width: "100%", height, borderRadius: 20, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
     <SmartImage sources={REAL_IMAGES.driveway} alt="Real Driveway Spot" />
     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
     <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
@@ -309,9 +337,9 @@ export default function FullShowcaseBoard() {
     rating: "4.8 (120)",
     price: 40,
     distance: "0.2 km",
-    photoComponent: <RealGaragePhoto height={210} badge="SLOT A-12 • PRIVATE GARAGE" />,
-    features: ["Covered", "CCTV", "24/7 Access", "EV Ready"],
-    about: "Private covered garage with 24/7 access. Gated security, CCTV monitoring, and dedicated EV charging port."
+    photoComponent: <RealGaragePhoto height={200} badge="SLOT A-12 • PRIVATE GARAGE" />,
+    features: ["CCTV", "Covered", "24/7 Access", "EV Ready"],
+    about: "Private garage with 24/7 access. Safe and secure."
   });
 
   const screensList = [
@@ -736,9 +764,9 @@ export default function FullShowcaseBoard() {
 
                 <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
                   {[
-                    { title: "Home Garage", loc: "Anna Nagar, Chennai", imgSources: REAL_IMAGES.garage, price: 40, photo: <RealGaragePhoto height={210} badge="SLOT A-12 • PRIVATE GARAGE" /> },
-                    { title: "Office Basement", loc: "T. Nagar, Chennai", imgSources: REAL_IMAGES.office, price: 60, photo: <RealOfficePhoto height={210} badge="OFFICE BASEMENT PARKING" /> },
-                    { title: "Apartment Parking", loc: "West Mambalam, Chennai", imgSources: REAL_IMAGES.driveway, price: 35, photo: <RealDrivewayPhoto height={210} badge="GATED RESIDENTIAL DRIVEWAY" /> },
+                    { title: "Home Garage", loc: "Anna Nagar, Chennai", imgSources: REAL_IMAGES.garage, price: 40, photo: <RealGaragePhoto height={200} badge="SLOT A-12 • PRIVATE GARAGE" /> },
+                    { title: "Office Basement", loc: "T. Nagar, Chennai", imgSources: REAL_IMAGES.office, price: 60, photo: <RealOfficePhoto height={200} badge="OFFICE BASEMENT PARKING" /> },
+                    { title: "Apartment Parking", loc: "West Mambalam, Chennai", imgSources: REAL_IMAGES.driveway, price: 35, photo: <RealDrivewayPhoto height={200} badge="GATED RESIDENTIAL DRIVEWAY" /> },
                   ].map((item, idx) => (
                     <div key={idx} style={{ background: "#FFF", borderRadius: 16, padding: 12, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
                       <div style={{ width: 84, height: 84, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
@@ -760,32 +788,88 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── PARKING DETAILS ─── */}
+            {/* ─── PARKING DETAILS (EXACTLY MATCHING ATTACHED TARGET DESIGN) ─── */}
             {activeScreen === "10" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF" }}>
-                <div style={{ height: 210, position: "relative" }}>
-                  {selectedSpot.photoComponent || <RealGaragePhoto height={210} />}
-                  <button onClick={() => setActiveScreen("09")} style={{ position: "absolute", top: 12, left: 16, width: 36, height: 36, borderRadius: "50%", background: "#FFF", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 10 }}>
-                    <IconChevronLeft size={20} color="#0F172A" />
-                  </button>
-                </div>
-
-                <div style={{ flex: 1, padding: 20, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                  <div>
-                    <h2 style={{ fontSize: 22, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>{selectedSpot.title}</h2>
-                    <p style={{ color: "#64748B", fontSize: 13, margin: "0 0 16px" }}>{selectedSpot.address}</p>
-
-                    <div style={{ fontSize: 24, fontWeight: 900, color: "#0F172A", marginBottom: 16 }}>
-                      ₹{selectedSpot.price} <span style={{ fontSize: 13, color: "#64748B", fontWeight: 500 }}>/hr</span>
-                    </div>
-
-                    <h4 style={{ fontSize: 15, fontWeight: 800, color: "#0F172A", margin: "0 0 6px" }}>About this space</h4>
-                    <p style={{ fontSize: 13, color: "#64748B", lineHeight: 1.5, margin: 0 }}>
-                      {selectedSpot.about}
-                    </p>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", justifyContent: "space-between" }}>
+                <div>
+                  {/* HEADER BAR */}
+                  <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <button onClick={() => setActiveScreen("09")} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Parking Details</span>
+                    <button style={{ background: "none", border: "none", cursor: "pointer" }}>
+                      <IconShare size={20} color="#0F172A" />
+                    </button>
                   </div>
 
-                  <button onClick={() => setActiveScreen("11")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 800, fontSize: 15, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.3)" }}>
+                  {/* PADDED HERO PHOTO CARD */}
+                  <div style={{ padding: "0 16px 16px" }}>
+                    {selectedSpot.photoComponent || <RealGaragePhoto height={200} />}
+                  </div>
+
+                  {/* TITLE & RATING ROW */}
+                  <div style={{ padding: "0 20px 16px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div>
+                      <h2 style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", margin: "0 0 2px" }}>{selectedSpot.title}</h2>
+                      <p style={{ color: "#64748B", fontSize: 13, margin: 0, fontWeight: 500 }}>{selectedSpot.address}</p>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#F59E0B", fontWeight: 800, fontSize: 14 }}>
+                      <span>★</span>
+                      <span style={{ color: "#0F172A" }}>4.8</span>
+                      <span style={{ color: "#94A3B8", fontWeight: 500, fontSize: 12 }}>(120)</span>
+                    </div>
+                  </div>
+
+                  {/* 4 FEATURE ICONS GRID */}
+                  <div style={{ padding: "0 20px 20px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+                    {[
+                      { icon: <IconCCTV size={22} color="#475569" />, label: "CCTV" },
+                      { icon: <IconBuilding size={22} color="#475569" />, label: "Covered" },
+                      { icon: <IconClock size={22} color="#475569" />, label: "24/7 Access" },
+                      { icon: <IconEV size={22} color="#475569" />, label: "EV Ready" },
+                    ].map((f, i) => (
+                      <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                        <div style={{ width: 50, height: 50, borderRadius: "50%", background: "#F8FAFC", border: "1px solid #F1F5F9", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          {f.icon}
+                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#475569" }}>{f.label}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* ABOUT SPACE SECTION */}
+                  <div style={{ padding: "0 20px" }}>
+                    <h4 style={{ fontSize: 15, fontWeight: 800, color: "#0F172A", margin: "0 0 6px" }}>About Space</h4>
+                    <p style={{ fontSize: 13, color: "#64748B", lineHeight: 1.5, margin: 0 }}>
+                      Private garage with 24/7 access.<br />Safe and secure.
+                    </p>
+                  </div>
+                </div>
+
+                {/* BOTTOM STICKY ACTION FOOTER WITH PRICE AND BOOK NOW BUTTON */}
+                <div style={{ padding: "16px 20px 24px", borderTop: "1px solid #F1F5F9", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
+                  <div>
+                    <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600, display: "block" }}>Price</span>
+                    <div style={{ fontSize: 20, fontWeight: 900, color: "#0F172A" }}>
+                      ₹{selectedSpot.price} <span style={{ fontSize: 13, color: "#64748B", fontWeight: 500 }}>/hr</span>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => setActiveScreen("11")} 
+                    style={{ 
+                      padding: "14px 32px", 
+                      borderRadius: 16, 
+                      background: "#22C55E", 
+                      border: "none", 
+                      color: "#FFF", 
+                      fontWeight: 900, 
+                      fontSize: 15, 
+                      cursor: "pointer", 
+                      boxShadow: "0 6px 16px rgba(34,197,94,0.35)" 
+                    }}
+                  >
                     Book Now
                   </button>
                 </div>
