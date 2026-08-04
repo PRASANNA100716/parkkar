@@ -18,8 +18,6 @@ const T = {
   white: "#FFFFFF",
 };
 
-const GOOGLE_MAPS_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "AIzaSyCgVkjThmCRYwn9Q5Py8F52EUEo774gRLY";
-
 // ─── CRISP PRODUCTION SVG ICONS ──────────────────────────────────────────────
 const IconSearch = ({ size = 18, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -234,101 +232,204 @@ const RealSecurityPhoto = ({ height = 230 }) => (
   </div>
 );
 
-// ─── RESILIENT DUAL MAP COMPONENT (GOOGLE MAPS + LEAFLET FALLBACK) ───────────
-function InteractiveMap() {
-  const mapRef = useRef(null);
-  const [mapType, setMapType] = useState("google");
+// ─── TAMIL NADU SPOTS DATABASE (HOST LISTINGS) ───────────────────────────────
+const TAMIL_NADU_SPOTS = [
+  {
+    id: "sp1",
+    title: "Home Garage",
+    address: "Anna Nagar, Chennai",
+    price: 40,
+    rating: "4.8 (120)",
+    lat: 13.0850,
+    lng: 80.2101,
+    imgSources: REAL_IMAGES.garage,
+    city: "Chennai",
+    badge: "PRIVATE GARAGE",
+    photoComponent: <RealGaragePhoto height={200} badge="SLOT A-12 • PRIVATE GARAGE" />,
+    about: "Private covered garage with 24/7 access. Gated security, CCTV monitoring, and dedicated EV charging port."
+  },
+  {
+    id: "sp2",
+    title: "Subterranean Office Basement",
+    address: "T. Nagar, Chennai",
+    price: 65,
+    rating: "4.9 (240)",
+    lat: 13.0418,
+    lng: 80.2341,
+    imgSources: REAL_IMAGES.office,
+    city: "Chennai",
+    badge: "OFFICE BASEMENT",
+    photoComponent: <RealOfficePhoto height={200} badge="OFFICE BASEMENT PARKING" />,
+    about: "Underground office basement parking with automated boom barrier, 24/7 security guard, and valet."
+  },
+  {
+    id: "sp3",
+    title: "Gated Driveway Spot",
+    address: "Nungambakkam, Chennai",
+    price: 50,
+    rating: "4.7 (85)",
+    lat: 13.0604,
+    lng: 80.2496,
+    imgSources: REAL_IMAGES.driveway,
+    city: "Chennai",
+    badge: "RESIDENTIAL DRIVEWAY",
+    photoComponent: <RealDrivewayPhoto height={200} badge="GATED RESIDENTIAL DRIVEWAY" />,
+    about: "Spacious private driveway with shade canopy, night lighting, and CCTV monitoring."
+  },
+  {
+    id: "sp4",
+    title: "Apartment Parking Bay",
+    address: "West Mambalam, Chennai",
+    price: 35,
+    rating: "4.6 (64)",
+    lat: 13.0368,
+    lng: 80.2185,
+    imgSources: REAL_IMAGES.garage,
+    city: "Chennai",
+    badge: "APARTMENT SLOT",
+    photoComponent: <RealGaragePhoto height={200} badge="APARTMENT COVERED SLOT" />,
+    about: "Gated apartment parking bay with 24/7 security guard and easy main road access."
+  },
+  {
+    id: "sp5",
+    title: "EV Fast Charging Station Hub",
+    address: "Guindy Industrial Estate, Chennai",
+    price: 80,
+    rating: "5.0 (310)",
+    lat: 13.0102,
+    lng: 80.2157,
+    imgSources: REAL_IMAGES.security,
+    city: "Chennai",
+    badge: "EV ⚡ FAST CHARGE",
+    photoComponent: <RealSecurityPhoto height={230} />,
+    about: "High-tech commercial parking hub with 60kW EV fast chargers, solar canopy, and lounge."
+  },
+  {
+    id: "sp6",
+    title: "Gandhipuram House Garage",
+    address: "Gandhipuram, Coimbatore",
+    price: 45,
+    rating: "4.8 (95)",
+    lat: 11.0168,
+    lng: 76.9558,
+    imgSources: REAL_IMAGES.driveway,
+    city: "Coimbatore",
+    badge: "PRIVATE DRIVEWAY",
+    photoComponent: <RealDrivewayPhoto height={200} badge="COIMBATORE DRIVEWAY" />,
+    about: "Secure covered house garage near Gandhipuram bus stand with 24/7 CCTV."
+  },
+  {
+    id: "sp7",
+    title: "Madurai Central Parking Bay",
+    address: "KK Nagar, Madurai",
+    price: 30,
+    rating: "4.7 (110)",
+    lat: 9.9252,
+    lng: 78.1198,
+    imgSources: REAL_IMAGES.garage,
+    city: "Madurai",
+    badge: "SHADED PARKING",
+    photoComponent: <RealGaragePhoto height={200} badge="MADURAI SHADED BAY" />,
+    about: "Shaded residential parking slot near KK Nagar park with lockable gate."
+  }
+];
+
+// ─── HIGH-PERFORMANCE RAPIDO/OLA STYLE TAMIL NADU MAP ENGINE ────────────────
+function TamilNaduMap({ selectedSpot, onSelectSpot }) {
+  const mapContainerRef = useRef(null);
+  const leafletInstanceRef = useRef(null);
+  const markersRef = useRef([]);
 
   useEffect(() => {
-    window.gm_authFailure = () => {
-      console.warn("Google Maps Key Auth Failed. Seamlessly switching to Leaflet Dark Tile Map.");
-      setMapType("leaflet");
-    };
-
-    if (!window.google) {
+    // Ensure Leaflet is loaded
+    if (!window.L) {
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}`;
-      script.async = true;
-      script.onerror = () => setMapType("leaflet");
-      script.onload = () => {
-        if (window.google && window.google.maps) {
-          initGoogleMap();
-        } else {
-          setMapType("leaflet");
-        }
-      };
+      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      script.onload = () => initLeafletMap();
       document.head.appendChild(script);
     } else {
-      initGoogleMap();
+      initLeafletMap();
     }
 
-    function initGoogleMap() {
-      if (!mapRef.current || !window.google || !window.google.maps) return;
-      try {
-        const center = { lat: 13.0850, lng: 80.2101 };
-        const map = new window.google.maps.Map(mapRef.current, {
-          center,
-          zoom: 14,
-          disableDefaultUI: true,
-          styles: [
-            { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
-            { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
-            { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
-            { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
-            { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] }
-          ]
-        });
+    function initLeafletMap() {
+      if (!mapContainerRef.current || !window.L) return;
 
-        new window.google.maps.Marker({ position: { lat: 13.0850, lng: 80.2101 }, map, title: "Home Garage (₹40/hr)" });
-        new window.google.maps.Marker({ position: { lat: 13.0890, lng: 80.2150 }, map, title: "Office Basement (₹60/hr)" });
-        new window.google.maps.Marker({ position: { lat: 13.0810, lng: 80.2050 }, map, title: "Apartment Parking (₹35/hr)" });
-      } catch (err) {
-        setMapType("leaflet");
+      // Prevent duplicate init
+      if (leafletInstanceRef.current) {
+        leafletInstanceRef.current.remove();
+        leafletInstanceRef.current = null;
       }
-    }
-  }, []);
 
-  useEffect(() => {
-    if (mapType === "leaflet" && mapRef.current) {
-      if (!window.L) {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-        document.head.appendChild(link);
+      // Initialize Leaflet Map centered on Chennai, Tamil Nadu
+      const map = window.L.map(mapContainerRef.current, {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([13.0604, 80.2201], 13);
 
-        const script = document.createElement("script");
-        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-        script.onload = () => initLeaflet();
-        document.head.appendChild(script);
-      } else {
-        initLeaflet();
-      }
-    }
+      leafletInstanceRef.current = map;
 
-    function initLeaflet() {
-      if (!mapRef.current || !window.L || mapRef.current._leaflet_id) return;
-      const map = window.L.map(mapRef.current, { zoomControl: false }).setView([13.0850, 80.2101], 14);
-      
+      // Add CartoDB Dark Matter tile layer for slick Rapido UI
       window.L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
-        attribution: '© OpenStreetMap'
+        subdomains: 'abcd'
       }).addTo(map);
 
-      // Add custom green price markers
-      const customIcon = (price) => window.L.divIcon({
-        className: 'custom-map-pin',
-        html: `<div style="background:#22C55E; color:#FFF; padding:4px 8px; border-radius:12px; font-weight:800; font-size:11px; box-shadow:0 4px 10px rgba(0,0,0,0.4); border:1px solid #FFF;">${price}</div>`,
-        iconSize: [60, 24],
-        iconAnchor: [30, 12]
+      // Render Price Pins on Tamil Nadu map
+      TAMIL_NADU_SPOTS.forEach((spot) => {
+        const isSelected = selectedSpot && selectedSpot.id === spot.id;
+        
+        const pinHtml = `
+          <div style="
+            background: ${isSelected ? '#F59E0B' : '#22C55E'}; 
+            color: #FFF; 
+            padding: 5px 10px; 
+            border-radius: 14px; 
+            font-weight: 900; 
+            font-size: 12px; 
+            box-shadow: 0 4px 14px rgba(0,0,0,0.5); 
+            border: 2px solid #FFF; 
+            cursor: pointer;
+            white-space: nowrap;
+            transform: ${isSelected ? 'scale(1.15)' : 'scale(1.0)'};
+            transition: transform 0.2s;
+          ">
+            ₹${spot.price}/hr
+          </div>
+        `;
+
+        const customIcon = window.L.divIcon({
+          className: `custom-price-pin-${spot.id}`,
+          html: pinHtml,
+          iconSize: [70, 30],
+          iconAnchor: [35, 15]
+        });
+
+        const marker = window.L.marker([spot.lat, spot.lng], { icon: customIcon }).addTo(map);
+        marker.on('click', () => {
+          onSelectSpot(spot);
+          map.panTo([spot.lat, spot.lng]);
+        });
+
+        markersRef.current.push(marker);
       });
-
-      window.L.marker([13.0850, 80.2101], { icon: customIcon("₹40/hr") }).addTo(map);
-      window.L.marker([13.0890, 80.2150], { icon: customIcon("₹60/hr") }).addTo(map);
-      window.L.marker([13.0810, 80.2050], { icon: customIcon("₹35/hr") }).addTo(map);
     }
-  }, [mapType]);
 
-  return <div ref={mapRef} style={{ width: "100%", height: "100%", position: "relative" }} />;
+    return () => {
+      if (leafletInstanceRef.current) {
+        leafletInstanceRef.current.remove();
+        leafletInstanceRef.current = null;
+      }
+    };
+  }, []);
+
+  // Update map pan when selectedSpot changes
+  useEffect(() => {
+    if (leafletInstanceRef.current && selectedSpot) {
+      leafletInstanceRef.current.panTo([selectedSpot.lat, selectedSpot.lng], { animate: true });
+    }
+  }, [selectedSpot]);
+
+  return <div ref={mapContainerRef} style={{ width: "100%", height: "100%", background: "#0F172A" }} />;
 }
 
 export default function FullShowcaseBoard() {
@@ -345,16 +446,8 @@ export default function FullShowcaseBoard() {
   const [durationHours, setDurationHours] = useState(4);
   const [selectedPayment, setSelectedPayment] = useState("upi");
 
-  const [selectedSpot, setSelectedSpot] = useState({
-    title: "Home Garage",
-    address: "Anna Nagar, Chennai",
-    rating: "4.8 (120)",
-    price: 40,
-    distance: "0.2 km",
-    photoComponent: <RealGaragePhoto height={200} badge="SLOT A-12 • PRIVATE GARAGE" />,
-    features: ["CCTV", "Covered", "24/7 Access", "EV Ready"],
-    about: "Private garage with 24/7 access. Safe and secure."
-  });
+  // Selected Spot State (Default to Spot 1: Home Garage Chennai)
+  const [selectedSpot, setSelectedSpot] = useState(TAMIL_NADU_SPOTS[0]);
 
   const screensList = [
     { id: "01", name: "Splash Screen" },
@@ -448,16 +541,13 @@ export default function FullShowcaseBoard() {
           {/* REAL INTERACTIVE SIDE NAVIGATION DRAWER OVERLAY */}
           {showDrawer && (
             <div style={{ position: "absolute", inset: 0, zIndex: 1000, display: "flex" }}>
-              {/* BACKDROP */}
               <div 
                 onClick={() => setShowDrawer(false)}
                 style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(4px)" }}
               />
 
-              {/* DRAWER CONTENT PANEL */}
               <div style={{ width: 300, background: "#FFF", height: "100%", position: "relative", zIndex: 10, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 24, boxShadow: "10px 0 30px rgba(0,0,0,0.2)" }}>
                 <div>
-                  {/* CLOSE BUTTON & USER HEADER */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 20 }}>
@@ -473,7 +563,6 @@ export default function FullShowcaseBoard() {
 
                   <div style={{ borderBottom: "1px solid #F1F5F9", marginBottom: 16 }} />
 
-                  {/* NAVIGATION LINKS */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {[
                       { icon: "🗺️", label: "Find Parking (Map)", action: () => { setActiveScreen("08"); setShowDrawer(false); } },
@@ -527,7 +616,6 @@ export default function FullShowcaseBoard() {
                   <RealGaragePhoto height={210} badge="500+ VERIFIED SPACES LIVE" />
                 </div>
 
-                {/* PRIMARY ACTION BUTTONS ON SPLASH SCREEN */}
                 <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
                   <button onClick={() => setActiveScreen("02")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer", boxShadow: "0 8px 20px rgba(34,197,94,0.35)" }}>
                     Get Started
@@ -620,7 +708,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── CHOOSE ROLE (BOLD, PREMIUM & ATTRACTIVE CARDS) ─── */}
+            {/* ─── CHOOSE ROLE ─── */}
             {activeScreen === "05" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 30px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
@@ -630,7 +718,6 @@ export default function FullShowcaseBoard() {
                   <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", textAlign: "center", letterSpacing: "-0.02em" }}>Choose Your Role</h2>
                   <p style={{ fontSize: 14, fontWeight: 600, color: "#64748B", textAlign: "center", margin: "0 0 28px" }}>Get started as</p>
                   
-                  {/* BOLD DRIVER ROLE CARD */}
                   <div 
                     onClick={() => { setRole("driver"); setActiveScreen("06"); }} 
                     style={{ 
@@ -643,14 +730,12 @@ export default function FullShowcaseBoard() {
                       alignItems: "center", 
                       gap: 16, 
                       cursor: "pointer", 
-                      boxShadow: "0 10px 25px rgba(34,197,94,0.15)",
-                      position: "relative"
+                      boxShadow: "0 10px 25px rgba(34,197,94,0.15)"
                     }}
                   >
                     <div style={{ width: 104, height: 80, borderRadius: 16, overflow: "hidden", flexShrink: 0, boxShadow: "0 6px 16px rgba(0,0,0,0.1)" }}>
-                      <SmartImage sources={REAL_IMAGES.whiteCar} alt="Driver Role - White SUV" />
+                      <SmartImage sources={REAL_IMAGES.whiteCar} alt="Driver Role" />
                     </div>
-
                     <div style={{ flex: 1 }}>
                       <div style={{ display: "inline-block", background: "#DCFCE7", color: "#16A34A", padding: "3px 8px", borderRadius: 8, fontSize: 10, fontWeight: 900, marginBottom: 6 }}>
                         DRIVER MODE
@@ -658,13 +743,11 @@ export default function FullShowcaseBoard() {
                       <h3 style={{ fontSize: 17, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", lineHeight: 1.2 }}>I'm Looking for Parking</h3>
                       <p style={{ fontSize: 12, color: "#64748B", margin: 0, fontWeight: 600, lineHeight: 1.3 }}>Find & book instant verified parking near you</p>
                     </div>
-
-                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", flexShrink: 0, boxShadow: "0 4px 10px rgba(34,197,94,0.4)" }}>
+                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", flexShrink: 0 }}>
                       <IconChevronRight size={18} color="#FFF" />
                     </div>
                   </div>
 
-                  {/* BOLD HOST ROLE CARD */}
                   <div 
                     onClick={() => { setRole("host"); setActiveScreen("29"); }} 
                     style={{ 
@@ -676,14 +759,12 @@ export default function FullShowcaseBoard() {
                       alignItems: "center", 
                       gap: 16, 
                       cursor: "pointer", 
-                      boxShadow: "0 10px 25px rgba(245,158,11,0.15)",
-                      position: "relative"
+                      boxShadow: "0 10px 25px rgba(245,158,11,0.15)"
                     }}
                   >
                     <div style={{ width: 104, height: 80, borderRadius: 16, overflow: "hidden", flexShrink: 0, boxShadow: "0 6px 16px rgba(0,0,0,0.1)" }}>
-                      <SmartImage sources={REAL_IMAGES.garageHouse} alt="Host Role - Garage Spot" />
+                      <SmartImage sources={REAL_IMAGES.garageHouse} alt="Host Role" />
                     </div>
-
                     <div style={{ flex: 1 }}>
                       <div style={{ display: "inline-block", background: "#FEF3C7", color: "#D97706", padding: "3px 8px", borderRadius: 8, fontSize: 10, fontWeight: 900, marginBottom: 6 }}>
                         HOST & EARN ₹
@@ -691,8 +772,7 @@ export default function FullShowcaseBoard() {
                       <h3 style={{ fontSize: 17, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", lineHeight: 1.2 }}>I Have a Parking Space</h3>
                       <p style={{ fontSize: 12, color: "#64748B", margin: 0, fontWeight: 600, lineHeight: 1.3 }}>List my space & start earning passive income</p>
                     </div>
-
-                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#F59E0B", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", flexShrink: 0, boxShadow: "0 4px 10px rgba(245,158,11,0.4)" }}>
+                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#F59E0B", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", flexShrink: 0 }}>
                       <IconChevronRight size={18} color="#FFF" />
                     </div>
                   </div>
@@ -785,9 +865,10 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── HOME / SEARCH (INTERACTIVE DARK VECTOR MAP) ─── */}
+            {/* ─── HOME / SEARCH (INTERACTIVE TAMIL NADU RAPIDO/OLA VECTOR MAP) ─── */}
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
+                {/* HEADER */}
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
                   <button onClick={() => setShowDrawer(true)} style={{ background: "none", border: "none", cursor: "pointer" }}>
                     <IconMenu size={22} color="#0F172A" />
@@ -801,29 +882,64 @@ export default function FullShowcaseBoard() {
                   </button>
                 </div>
 
-                <div style={{ padding: "8px 16px 12px", background: "#FFF" }}>
+                {/* SEARCH & CITY SELECTOR */}
+                <div style={{ padding: "8px 16px 12px", background: "#FFF", display: "flex", flexDirection: "column", gap: 8 }}>
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 14, padding: "10px 14px", alignItems: "center", gap: 10 }}>
                     <IconSearch size={18} color="#64748B" />
-                    <input type="text" placeholder="Search location" defaultValue="Anna Nagar, Chennai" style={{ border: "none", background: "transparent", outline: "none", flex: 1, fontWeight: 600 }} />
+                    <input type="text" placeholder="Search location" defaultValue={selectedSpot.address} style={{ border: "none", background: "transparent", outline: "none", flex: 1, fontWeight: 600 }} />
                     <button onClick={() => setActiveScreen("09")} style={{ background: "none", border: "none", cursor: "pointer" }}>
                       <IconFilter size={18} color="#64748B" />
                     </button>
                   </div>
+
+                  {/* TAMIL NADU CITY FILTER PILLS */}
+                  <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 2 }}>
+                    {["Chennai", "Coimbatore", "Madurai"].map((cityName) => {
+                      const spotInCity = TAMIL_NADU_SPOTS.find(s => s.city === cityName);
+                      const isSelected = selectedSpot.city === cityName;
+                      return (
+                        <button
+                          key={cityName}
+                          onClick={() => {
+                            if (spotInCity) setSelectedSpot(spotInCity);
+                          }}
+                          style={{
+                            padding: "4px 12px",
+                            borderRadius: 12,
+                            border: "none",
+                            background: isSelected ? "#22C55E" : "#F1F5F9",
+                            color: isSelected ? "#FFF" : "#475569",
+                            fontSize: 11,
+                            fontWeight: 800,
+                            cursor: "pointer",
+                            whiteSpace: "nowrap"
+                          }}
+                        >
+                          📍 {cityName}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
+                {/* HIGH-PERFORMANCE TAMIL NADU MAP CANVAS */}
                 <div style={{ flex: 1, background: "#0F172A", position: "relative", overflow: "hidden" }}>
-                  <InteractiveMap />
+                  <TamilNaduMap 
+                    selectedSpot={selectedSpot} 
+                    onSelectSpot={(spot) => setSelectedSpot(spot)} 
+                  />
 
+                  {/* FLOATING SELECTED SPOT PREVIEW CARD */}
                   <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.25)", display: "flex", gap: 12, alignItems: "center", zIndex: 500 }}>
-                    <div style={{ width: 70, height: 70, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
-                      <SmartImage sources={REAL_IMAGES.garage} alt="spot" />
+                    <div style={{ width: 74, height: 74, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
+                      <SmartImage sources={selectedSpot.imgSources} alt="spot" />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>{selectedSpot.title}</h4>
+                      <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 900, color: "#0F172A" }}>{selectedSpot.title}</h4>
                       <p style={{ margin: "0 0 4px", fontSize: 12, color: "#64748B" }}>{selectedSpot.address}</p>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: "#22C55E" }}>₹{selectedSpot.price}/hr</div>
+                      <div style={{ fontSize: 15, fontWeight: 900, color: "#22C55E" }}>₹{selectedSpot.price}/hr</div>
                     </div>
-                    <button onClick={() => setActiveScreen("10")} style={{ background: "#22C55E", border: "none", color: "#FFF", padding: "10px 14px", borderRadius: 12, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
+                    <button onClick={() => setActiveScreen("10")} style={{ background: "#22C55E", border: "none", color: "#FFF", padding: "12px 16px", borderRadius: 12, fontWeight: 900, fontSize: 13, cursor: "pointer", boxShadow: "0 4px 12px rgba(34,197,94,0.3)" }}>
                       Details
                     </button>
                   </div>
@@ -838,26 +954,22 @@ export default function FullShowcaseBoard() {
                   <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer" }}>
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
-                  <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Nearby Spaces</span>
+                  <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Nearby Tamil Nadu Spaces</span>
                   <span style={{ width: 20 }} />
                 </div>
 
                 <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
-                  {[
-                    { title: "Home Garage", loc: "Anna Nagar, Chennai", imgSources: REAL_IMAGES.garage, price: 40, photo: <RealGaragePhoto height={200} badge="SLOT A-12 • PRIVATE GARAGE" /> },
-                    { title: "Office Basement", loc: "T. Nagar, Chennai", imgSources: REAL_IMAGES.office, price: 60, photo: <RealOfficePhoto height={200} badge="OFFICE BASEMENT PARKING" /> },
-                    { title: "Apartment Parking", loc: "West Mambalam, Chennai", imgSources: REAL_IMAGES.driveway, price: 35, photo: <RealDrivewayPhoto height={200} badge="GATED RESIDENTIAL DRIVEWAY" /> },
-                  ].map((item, idx) => (
-                    <div key={idx} style={{ background: "#FFF", borderRadius: 16, padding: 12, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
+                  {TAMIL_NADU_SPOTS.map((item) => (
+                    <div key={item.id} style={{ background: "#FFF", borderRadius: 16, padding: 12, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
                       <div style={{ width: 84, height: 84, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
                         <SmartImage sources={item.imgSources} alt="spot" />
                       </div>
                       <div style={{ flex: 1 }}>
                         <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>{item.title}</h4>
-                        <p style={{ margin: "0 0 6px", fontSize: 12, color: "#64748B" }}>{item.loc}</p>
+                        <p style={{ margin: "0 0 6px", fontSize: 12, color: "#64748B" }}>{item.address}</p>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div style={{ fontWeight: 800, color: "#0F172A", fontSize: 14 }}>₹{item.price}<span style={{ fontSize: 10, color: "#64748B" }}>/hr</span></div>
-                          <button onClick={() => { setSelectedSpot({...selectedSpot, title: item.title, address: item.loc, price: item.price, photoComponent: item.photo}); setActiveScreen("10"); }} style={{ background: "#22C55E", border: "none", color: "#FFF", padding: "8px 14px", borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
+                          <div style={{ fontWeight: 900, color: "#22C55E", fontSize: 15 }}>₹{item.price}<span style={{ fontSize: 10, color: "#64748B" }}>/hr</span></div>
+                          <button onClick={() => { setSelectedSpot(item); setActiveScreen("10"); }} style={{ background: "#22C55E", border: "none", color: "#FFF", padding: "8px 14px", borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
                             Book Now
                           </button>
                         </div>
@@ -872,7 +984,6 @@ export default function FullShowcaseBoard() {
             {activeScreen === "10" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", justifyContent: "space-between" }}>
                 <div>
-                  {/* HEADER BAR */}
                   <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <button onClick={() => setActiveScreen("09")} style={{ background: "none", border: "none", cursor: "pointer" }}>
                       <IconChevronLeft size={22} color="#0F172A" />
@@ -883,12 +994,10 @@ export default function FullShowcaseBoard() {
                     </button>
                   </div>
 
-                  {/* PADDED HERO PHOTO CARD */}
                   <div style={{ padding: "0 16px 16px" }}>
                     {selectedSpot.photoComponent || <RealGaragePhoto height={200} />}
                   </div>
 
-                  {/* TITLE & RATING ROW */}
                   <div style={{ padding: "0 20px 16px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <div>
                       <h2 style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", margin: "0 0 2px" }}>{selectedSpot.title}</h2>
@@ -896,12 +1005,10 @@ export default function FullShowcaseBoard() {
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#F59E0B", fontWeight: 800, fontSize: 14 }}>
                       <span>★</span>
-                      <span style={{ color: "#0F172A" }}>4.8</span>
-                      <span style={{ color: "#94A3B8", fontWeight: 500, fontSize: 12 }}>(120)</span>
+                      <span style={{ color: "#0F172A" }}>{selectedSpot.rating}</span>
                     </div>
                   </div>
 
-                  {/* 4 FEATURE ICONS GRID */}
                   <div style={{ padding: "0 20px 20px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
                     {[
                       { icon: <IconCCTV size={22} color="#475569" />, label: "CCTV" },
@@ -918,16 +1025,14 @@ export default function FullShowcaseBoard() {
                     ))}
                   </div>
 
-                  {/* ABOUT SPACE SECTION */}
                   <div style={{ padding: "0 20px" }}>
                     <h4 style={{ fontSize: 15, fontWeight: 800, color: "#0F172A", margin: "0 0 6px" }}>About Space</h4>
                     <p style={{ fontSize: 13, color: "#64748B", lineHeight: 1.5, margin: 0 }}>
-                      Private garage with 24/7 access.<br />Safe and secure.
+                      {selectedSpot.about}
                     </p>
                   </div>
                 </div>
 
-                {/* BOTTOM STICKY ACTION FOOTER WITH PRICE AND BOOK NOW BUTTON */}
                 <div style={{ padding: "16px 20px 24px", borderTop: "1px solid #F1F5F9", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
                   <div>
                     <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600, display: "block" }}>Price</span>
@@ -956,11 +1061,10 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 11: SELECT DATE & TIME (CALENDAR & DURATION PICKER) ─── */}
+            {/* ─── SCREEN 11: SELECT DATE & TIME ─── */}
             {activeScreen === "11" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", justifyContent: "space-between" }}>
                 <div>
-                  {/* HEADER */}
                   <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", borderBottom: "1px solid #F1F5F9" }}>
                     <button onClick={() => setActiveScreen("10")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
                       <IconChevronLeft size={22} color="#0F172A" />
@@ -969,7 +1073,6 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   <div style={{ padding: "20px 20px 0" }}>
-                    {/* CALENDAR DATE SELECTION */}
                     <label style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 10 }}>Select Booking Date</label>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 24 }}>
                       {[
@@ -999,7 +1102,6 @@ export default function FullShowcaseBoard() {
                       })}
                     </div>
 
-                    {/* TIME SELECTION ROW */}
                     <label style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 10 }}>Select Start & End Time</label>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
                       <div style={{ background: "#F8FAFC", padding: 12, borderRadius: 14, border: "1px solid #E2E8F0" }}>
@@ -1033,7 +1135,6 @@ export default function FullShowcaseBoard() {
                       </div>
                     </div>
 
-                    {/* DURATION SLIDER / CHIPS */}
                     <label style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 10 }}>Quick Duration Selector</label>
                     <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
                       {[2, 4, 6, 8, 12].map((hrs) => (
@@ -1057,7 +1158,6 @@ export default function FullShowcaseBoard() {
                       ))}
                     </div>
 
-                    {/* REAL-TIME COST ESTIMATE DISPLAY CARD */}
                     <div style={{ background: "#F0FDF4", borderRadius: 16, border: "1px solid #BBF7D0", padding: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div>
                         <span style={{ fontSize: 12, fontWeight: 700, color: "#16A34A" }}>Estimated Subtotal</span>
@@ -1071,7 +1171,6 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                {/* BOTTOM ACTION BUTTON */}
                 <div style={{ padding: "16px 20px 24px", borderTop: "1px solid #F1F5F9", background: "#FFF" }}>
                   <button 
                     onClick={() => setActiveScreen("12")}
@@ -1098,7 +1197,6 @@ export default function FullShowcaseBoard() {
             {activeScreen === "12" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", justifyContent: "space-between" }}>
                 <div>
-                  {/* HEADER */}
                   <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
                     <button onClick={() => setActiveScreen("11")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
                       <IconChevronLeft size={22} color="#0F172A" />
@@ -1107,10 +1205,9 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
-                    {/* SPOT CARD SUMMARY */}
                     <div style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0", display: "flex", gap: 14, alignItems: "center" }}>
                       <div style={{ width: 70, height: 70, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
-                        <SmartImage sources={REAL_IMAGES.garage} alt="spot" />
+                        <SmartImage sources={selectedSpot.imgSources} alt="spot" />
                       </div>
                       <div>
                         <h4 style={{ margin: "0 0 2px", fontSize: 16, fontWeight: 900, color: "#0F172A" }}>{selectedSpot.title}</h4>
@@ -1119,7 +1216,6 @@ export default function FullShowcaseBoard() {
                       </div>
                     </div>
 
-                    {/* SCHEDULE CARD */}
                     <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0" }}>
                       <h4 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 800, color: "#0F172A" }}>Reservation Time</h4>
                       <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 10, borderBottom: "1px dashed #E2E8F0" }}>
@@ -1132,7 +1228,6 @@ export default function FullShowcaseBoard() {
                       </div>
                     </div>
 
-                    {/* PAYMENT BREAKDOWN CARD */}
                     <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0" }}>
                       <h4 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 800, color: "#0F172A" }}>Payment Details</h4>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
@@ -1152,7 +1247,6 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                {/* BOTTOM ACTION BUTTON */}
                 <div style={{ padding: "16px 20px 24px", borderTop: "1px solid #E2E8F0", background: "#FFF" }}>
                   <button 
                     onClick={() => setActiveScreen("13")}
@@ -1179,7 +1273,6 @@ export default function FullShowcaseBoard() {
             {activeScreen === "13" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", justifyContent: "space-between" }}>
                 <div>
-                  {/* HEADER */}
                   <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", borderBottom: "1px solid #F1F5F9" }}>
                     <button onClick={() => setActiveScreen("12")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
                       <IconChevronLeft size={22} color="#0F172A" />
@@ -1188,13 +1281,11 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   <div style={{ padding: 20 }}>
-                    {/* TOTAL DUE BANNER */}
                     <div style={{ background: "#0F172A", color: "#FFF", padding: 20, borderRadius: 20, textAlign: "center", marginBottom: 24 }}>
                       <span style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Total Amount Due</span>
                       <div style={{ fontSize: 32, fontWeight: 900, color: "#22C55E", marginTop: 4 }}>₹{calculatedTotalAmount}</div>
                     </div>
 
-                    {/* PAYMENT METHOD OPTIONS */}
                     <label style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 12 }}>Select Payment Method</label>
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {[
@@ -1227,7 +1318,6 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                {/* BOTTOM ACTION BUTTON */}
                 <div style={{ padding: "16px 20px 24px", borderTop: "1px solid #F1F5F9" }}>
                   <button 
                     onClick={() => setActiveScreen("14")}
@@ -1250,7 +1340,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 14: PAYMENT SUCCESS / BOOKING CONFIRMED ─── */}
+            {/* ─── SCREEN 14: PAYMENT SUCCESS ─── */}
             {activeScreen === "14" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 24, justifyContent: "space-between", alignItems: "center", textAlign: "center" }}>
                 <div style={{ width: "100%", marginTop: 20 }}>
@@ -1260,7 +1350,6 @@ export default function FullShowcaseBoard() {
                   <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Booking Confirmed!</h2>
                   <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>Your parking slot has been reserved successfully.</p>
 
-                  {/* PASS CARD */}
                   <div style={{ background: "#F8FAFC", borderRadius: 20, padding: 20, border: "1px solid #E2E8F0", textAlign: "left", marginBottom: 20 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                       <span style={{ fontSize: 11, fontWeight: 800, color: "#64748B" }}>PASS #PKR-89241</span>
@@ -1305,11 +1394,11 @@ export default function FullShowcaseBoard() {
                   <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                       <span style={{ fontSize: 11, fontWeight: 800, color: "#22C55E", background: "#DCFCE7", padding: "2px 8px", borderRadius: 6 }}>UPCOMING</span>
-                      <span style={{ fontSize: 12, fontWeight: 800, color: "#0F172A" }}>₹170</span>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: "#0F172A" }}>₹{calculatedTotalAmount}</span>
                     </div>
-                    <h4 style={{ margin: "0 0 2px", fontSize: 16, fontWeight: 900, color: "#0F172A" }}>Home Garage - Slot A-12</h4>
-                    <p style={{ margin: "0 0 10px", fontSize: 12, color: "#64748B" }}>Anna Nagar, Chennai</p>
-                    <div style={{ fontSize: 12, color: "#475569", fontWeight: 600 }}>📅 Today, 04 Aug • 10:00 AM - 02:00 PM</div>
+                    <h4 style={{ margin: "0 0 2px", fontSize: 16, fontWeight: 900, color: "#0F172A" }}>{selectedSpot.title}</h4>
+                    <p style={{ margin: "0 0 10px", fontSize: 12, color: "#64748B" }}>{selectedSpot.address}</p>
+                    <div style={{ fontSize: 12, color: "#475569", fontWeight: 600 }}>📅 {selectedDate} • {startTime} - {endTime}</div>
                   </div>
                 </div>
               </div>
@@ -1389,7 +1478,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 29: HOST DASHBOARD ─── */}
+            {/* ─── SCREEN 29: HOST DASHBOARD (HOST SIDE LISTING DEMO) ─── */}
             {activeScreen === "29" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
@@ -1402,21 +1491,31 @@ export default function FullShowcaseBoard() {
 
                 <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
                   <div style={{ background: "linear-gradient(135deg, #16A34A 0%, #15803D 100%)", borderRadius: 20, padding: 20, color: "#FFF" }}>
-                    <span style={{ fontSize: 12, opacity: 0.9 }}>This Month's Earnings</span>
+                    <span style={{ fontSize: 12, opacity: 0.9 }}>This Month's Passive Earnings</span>
                     <div style={{ fontSize: 32, fontWeight: 900, marginTop: 4 }}>₹12,450.00</div>
-                    <span style={{ fontSize: 11, opacity: 0.9, marginTop: 8, display: "block" }}>14 Completed Driver Bookings</span>
+                    <span style={{ fontSize: 11, opacity: 0.9, marginTop: 8, display: "block" }}>14 Driver Bookings Completed</span>
                   </div>
 
                   <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0" }}>
-                    <h4 style={{ margin: "0 0 8px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>Your Listed Spaces (1 Spot)</h4>
-                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                      <div style={{ width: 60, height: 60, borderRadius: 10, overflow: "hidden" }}>
-                        <SmartImage sources={REAL_IMAGES.garage} alt="garage" />
-                      </div>
-                      <div>
-                        <h5 style={{ margin: "0 0 2px", fontSize: 14, fontWeight: 800, color: "#0F172A" }}>Home Garage - Slot A-12</h5>
-                        <span style={{ fontSize: 11, color: "#16A34A", fontWeight: 700 }}>● Active • ₹40/hr</span>
-                      </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                      <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: "#0F172A" }}>Your Listed Spots (7 Spots Live)</h4>
+                      <button onClick={() => alert("Spot listing form demo: Fill location, photo & set hourly price (e.g. ₹65/hr).")} style={{ background: "#22C55E", border: "none", color: "#FFF", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 8, cursor: "pointer" }}>
+                        + Add Spot
+                      </button>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      {TAMIL_NADU_SPOTS.slice(0, 4).map((sp) => (
+                        <div key={sp.id} style={{ display: "flex", gap: 12, alignItems: "center", padding: "8px 0", borderBottom: "1px solid #F1F5F9" }}>
+                          <div style={{ width: 50, height: 50, borderRadius: 10, overflow: "hidden", flexShrink: 0 }}>
+                            <SmartImage sources={sp.imgSources} alt="spot" />
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <h5 style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 800, color: "#0F172A" }}>{sp.title}</h5>
+                            <span style={{ fontSize: 11, color: "#22C55E", fontWeight: 800 }}>● Live • ₹{sp.price}/hr</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
