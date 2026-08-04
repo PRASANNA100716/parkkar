@@ -13,6 +13,8 @@ import {
   saveHostVerification,
   saveDriverKyc,
   saveHostKyc,
+  saveBookingToFirebase,
+  fetchBookingsFromFirebase,
   sendTwilioOtp,
   verifyTwilioOtp,
   auth
@@ -1120,6 +1122,34 @@ export default function FullShowcaseBoard() {
   const calculatedServiceFee = 10;
   const calculatedTotalAmount = calculatedBaseAmount + calculatedServiceFee;
 
+  const handleConfirmBookingPayment = async () => {
+    const bookingRecord = {
+      spotId: selectedSpot.id,
+      spotTitle: selectedSpot.title,
+      spotAddress: selectedSpot.address,
+      spotCity: selectedSpot.city || "Chennai",
+      hostEmail: selectedSpot.hostEmail || "host@parkkar.com",
+      driverEmail: currentUser?.email || "driver@parkkar.com",
+      driverName: currentUser?.displayName || "Driver User",
+      amountPaid: calculatedTotalAmount,
+      date: selectedDate,
+      timeSlot: `${startTime} - ${endTime}`,
+      durationHours: durationHours,
+      status: "CONFIRMED",
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      await saveBookingToFirebase(bookingRecord);
+    } catch (err) {
+      console.warn("Save booking error:", err);
+    } finally {
+      const currentList = JSON.parse(localStorage.getItem("parkkar_user_bookings") || "[]");
+      localStorage.setItem("parkkar_user_bookings", JSON.stringify([bookingRecord, ...currentList]));
+      setActiveScreen("14");
+    }
+  };
+
   const handleRazorpayPayment = () => {
     const launchRazorpay = () => {
       try {
@@ -1132,13 +1162,12 @@ export default function FullShowcaseBoard() {
           image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Parkhaus_Dresden_Altmarkt.jpg/800px-Parkhaus_Dresden_Altmarkt.jpg",
           handler: function (response) {
             console.log("Razorpay Payment Success! ID:", response.razorpay_payment_id);
-            setActiveScreen("14");
+            handleConfirmBookingPayment();
           },
           modal: {
             ondismiss: function () {
               console.log("Razorpay popup closed by user");
-              // Fallback to confirm booking in test mode if modal is closed
-              setActiveScreen("14");
+              handleConfirmBookingPayment();
             }
           },
           prefill: {
@@ -1185,7 +1214,12 @@ export default function FullShowcaseBoard() {
     setIsPublishing(true);
 
     const realPhoto = resolveRealPhoto(hostForm.photoUrl, hostForm.title, hostForm.address, hostForm.city, hostForm.type);
-    const updatedForm = { ...hostForm, photoUrl: realPhoto };
+    const updatedForm = { 
+      ...hostForm, 
+      photoUrl: realPhoto,
+      hostEmail: currentUser?.email || "host@parkkar.com",
+      hostName: currentUser?.displayName || "Verified Host"
+    };
 
     let publishedId = null;
     try {

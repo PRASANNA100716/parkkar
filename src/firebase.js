@@ -353,6 +353,43 @@ export async function saveHostKyc(hostKycData) {
   return "host_kyc_" + Date.now();
 }
 
+export async function saveBookingToFirebase(bookingData) {
+  try {
+    if (db) {
+      const docRef = await withTimeout(
+        addDoc(collection(db, "bookings"), {
+          ...bookingData,
+          createdAt: new Date().toISOString()
+        }),
+        4000,
+        "Save Booking"
+      );
+      console.log("🔥 Booking saved to Firestore collection 'bookings':", docRef.id);
+      return docRef.id;
+    }
+  } catch (err) {
+    console.warn("Booking Firestore save warning:", err);
+  }
+  return "booking_" + Date.now();
+}
+
+export async function fetchBookingsFromFirebase() {
+  try {
+    if (db) {
+      const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"), limit(50));
+      const snapshot = await getDocs(q);
+      const bookings = [];
+      snapshot.forEach(doc => {
+        bookings.push({ id: doc.id, ...doc.data() });
+      });
+      return bookings;
+    }
+  } catch (err) {
+    console.warn("Firebase fetch bookings failed:", err);
+  }
+  return JSON.parse(localStorage.getItem("parkkar_user_bookings") || "[]");
+}
+
 // ─── TWILIO SMS & OTP SERVICE INTEGRATION ────────────────────────────────────
 export async function sendTwilioOtp(phone) {
   const accountSid = process.env.REACT_APP_TWILIO_ACCOUNT_SID;
