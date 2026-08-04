@@ -1440,7 +1440,7 @@ export default function FullShowcaseBoard() {
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between", overflowY: "auto" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                    <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
+                    <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
                       <IconChevronLeft size={22} color="#0F172A" />
                     </button>
                     <div>
@@ -1464,7 +1464,7 @@ export default function FullShowcaseBoard() {
                     style={{ width: "100%", padding: 12, borderRadius: 12, border: "1.5px solid #CBD5E1", outline: "none", fontSize: 14, fontWeight: 800, color: "#0F172A", marginBottom: 14 }}
                   />
 
-                  {/* 2. RC DETAILS & RC DOCUMENT PHOTO */}
+                  {/* 2. RC DETAILS & RC DOCUMENT PHOTO PREVIEW CARD */}
                   <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>RC (Registration Certificate) Number & Photo</label>
                   <input 
                     type="text" 
@@ -1478,25 +1478,59 @@ export default function FullShowcaseBoard() {
                     type="file" 
                     ref={driverRcFileRef} 
                     accept="image/*" 
-                    onChange={async (e) => {
+                    onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        const url = await uploadImageToFirebaseStorage(file, "driver_kyc_docs");
-                        setDriverKycForm(prev => ({ ...prev, rcDocUrl: url || SVG_GARAGE_DATA_URL }));
+                        const reader = new FileReader();
+                        reader.onload = (evt) => {
+                          const base64Url = evt.target?.result;
+                          setDriverKycForm(prev => ({ ...prev, rcDocUrl: base64Url }));
+                        };
+                        reader.readAsDataURL(file);
+                        uploadImageToFirebaseStorage(file, "driver_kyc_docs").then(url => {
+                          if (url) setDriverKycForm(prev => ({ ...prev, rcDocUrl: url }));
+                        });
                       }
                     }} 
                     style={{ display: "none" }} 
                   />
-                  <button 
-                    onClick={() => driverRcFileRef.current?.click()}
-                    style={{ width: "100%", padding: 10, borderRadius: 12, background: "#F1F5F9", border: "1px dashed #94A3B8", color: "#0F172A", fontWeight: 800, fontSize: 12, cursor: "pointer", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
-                  >
-                    <span>📄</span>
-                    <span>{driverKycForm.rcDocUrl ? "✓ RC Book Document Uploaded" : "Upload RC Book Photo"}</span>
-                  </button>
 
-                  {/* 3. AADHAAR CARD NUMBER & PHOTO */}
-                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Aadhaar Card Number (12 Digits)</label>
+                  {/* REAL RC DOCUMENT PHOTO PREVIEW BOX */}
+                  <div 
+                    onClick={() => driverRcFileRef.current?.click()}
+                    style={{ 
+                      width: "100%", 
+                      borderRadius: 14, 
+                      border: driverKycForm.rcDocUrl ? "2px solid #22C55E" : "2px dashed #CBD5E1", 
+                      background: driverKycForm.rcDocUrl ? "#F0FDF4" : "#F8FAFC", 
+                      padding: 12, 
+                      cursor: "pointer", 
+                      marginBottom: 14, 
+                      textAlign: "center" 
+                    }}
+                  >
+                    {driverKycForm.rcDocUrl ? (
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                        <img 
+                          src={driverKycForm.rcDocUrl} 
+                          alt="RC Book Captured Photo" 
+                          style={{ width: "100%", maxHeight: 130, objectFit: "cover", borderRadius: 10, border: "1px solid #BBF7D0" }} 
+                        />
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#16A34A", fontSize: 12, fontWeight: 800 }}>
+                          <span>✓ RC Book Captured & Verified</span>
+                          <span style={{ fontSize: 10, color: "#64748B", background: "#FFF", padding: "2px 6px", borderRadius: 6, border: "1px solid #E2E8F0" }}>Tap to retake</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ padding: "12px 0", color: "#64748B" }}>
+                        <div style={{ fontSize: 24, marginBottom: 4 }}>📄</div>
+                        <span style={{ fontSize: 12, fontWeight: 800, color: "#0F172A" }}>Tap to Capture or Upload RC Book Photo</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 3. AADHAAR CARD NUMBER & PHOTO PREVIEW CARD */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Driver Aadhaar Card Number (12 Digits)</label>
                   <input 
                     type="text" 
                     value={driverKycForm.aadhaarNo}
@@ -1509,22 +1543,56 @@ export default function FullShowcaseBoard() {
                     type="file" 
                     ref={driverAadhaarFileRef} 
                     accept="image/*" 
-                    onChange={async (e) => {
+                    onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        const url = await uploadImageToFirebaseStorage(file, "driver_kyc_docs");
-                        setDriverKycForm(prev => ({ ...prev, aadhaarDocUrl: url || SVG_GARAGE_DATA_URL }));
+                        const reader = new FileReader();
+                        reader.onload = (evt) => {
+                          const base64Url = evt.target?.result;
+                          setDriverKycForm(prev => ({ ...prev, aadhaarDocUrl: base64Url }));
+                        };
+                        reader.readAsDataURL(file);
+                        uploadImageToFirebaseStorage(file, "driver_kyc_docs").then(url => {
+                          if (url) setDriverKycForm(prev => ({ ...prev, aadhaarDocUrl: url }));
+                        });
                       }
                     }} 
                     style={{ display: "none" }} 
                   />
-                  <button 
+
+                  {/* REAL AADHAAR PHOTO PREVIEW BOX */}
+                  <div 
                     onClick={() => driverAadhaarFileRef.current?.click()}
-                    style={{ width: "100%", padding: 10, borderRadius: 12, background: "#F1F5F9", border: "1px dashed #94A3B8", color: "#0F172A", fontWeight: 800, fontSize: 12, cursor: "pointer", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                    style={{ 
+                      width: "100%", 
+                      borderRadius: 14, 
+                      border: driverKycForm.aadhaarDocUrl ? "2px solid #22C55E" : "2px dashed #CBD5E1", 
+                      background: driverKycForm.aadhaarDocUrl ? "#F0FDF4" : "#F8FAFC", 
+                      padding: 12, 
+                      cursor: "pointer", 
+                      marginBottom: 16, 
+                      textAlign: "center" 
+                    }}
                   >
-                    <span>🪪</span>
-                    <span>{driverKycForm.aadhaarDocUrl ? "✓ Aadhaar Card Uploaded" : "Upload Aadhaar Card Photo"}</span>
-                  </button>
+                    {driverKycForm.aadhaarDocUrl ? (
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                        <img 
+                          src={driverKycForm.aadhaarDocUrl} 
+                          alt="Driver Aadhaar Captured Photo" 
+                          style={{ width: "100%", maxHeight: 130, objectFit: "cover", borderRadius: 10, border: "1px solid #BBF7D0" }} 
+                        />
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#16A34A", fontSize: 12, fontWeight: 800 }}>
+                          <span>✓ Aadhaar Card Captured & Verified</span>
+                          <span style={{ fontSize: 10, color: "#64748B", background: "#FFF", padding: "2px 6px", borderRadius: 6, border: "1px solid #E2E8F0" }}>Tap to retake</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ padding: "12px 0", color: "#64748B" }}>
+                        <div style={{ fontSize: 24, marginBottom: 4 }}>🪪</div>
+                        <span style={{ fontSize: 12, fontWeight: 800, color: "#0F172A" }}>Tap to Capture or Upload Aadhaar Card Photo</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <button 
@@ -1542,7 +1610,7 @@ export default function FullShowcaseBoard() {
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between", overflowY: "auto" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                    <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
+                    <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
                       <IconChevronLeft size={22} color="#0F172A" />
                     </button>
                     <div>
@@ -1556,7 +1624,7 @@ export default function FullShowcaseBoard() {
                     <span>Required: Host Aadhaar Card & Electricity (EB) Bill / Address Proof</span>
                   </div>
 
-                  {/* 1. AADHAAR CARD NUMBER & PHOTO */}
+                  {/* 1. AADHAAR CARD NUMBER & PHOTO PREVIEW CARD */}
                   <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Host Aadhaar Card Number</label>
                   <input 
                     type="text" 
@@ -1570,24 +1638,57 @@ export default function FullShowcaseBoard() {
                     type="file" 
                     ref={hostAadhaarFileRef} 
                     accept="image/*" 
-                    onChange={async (e) => {
+                    onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        const url = await uploadImageToFirebaseStorage(file, "host_kyc_docs");
-                        setHostKycForm(prev => ({ ...prev, aadhaarDocUrl: url || SVG_GARAGE_DATA_URL }));
+                        const reader = new FileReader();
+                        reader.onload = (evt) => {
+                          const base64Url = evt.target?.result;
+                          setHostKycForm(prev => ({ ...prev, aadhaarDocUrl: base64Url }));
+                        };
+                        reader.readAsDataURL(file);
+                        uploadImageToFirebaseStorage(file, "host_kyc_docs").then(url => {
+                          if (url) setHostKycForm(prev => ({ ...prev, aadhaarDocUrl: url }));
+                        });
                       }
                     }} 
                     style={{ display: "none" }} 
                   />
-                  <button 
-                    onClick={() => hostAadhaarFileRef.current?.click()}
-                    style={{ width: "100%", padding: 10, borderRadius: 12, background: "#F1F5F9", border: "1px dashed #94A3B8", color: "#0F172A", fontWeight: 800, fontSize: 12, cursor: "pointer", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
-                  >
-                    <span>🪪</span>
-                    <span>{hostKycForm.aadhaarDocUrl ? "✓ Host Aadhaar Uploaded" : "Upload Aadhaar Card Photo"}</span>
-                  </button>
 
-                  {/* 2. EB CONSUMER NUMBER & EB BILL ADDRESS PROOF */}
+                  <div 
+                    onClick={() => hostAadhaarFileRef.current?.click()}
+                    style={{ 
+                      width: "100%", 
+                      borderRadius: 14, 
+                      border: hostKycForm.aadhaarDocUrl ? "2px solid #F59E0B" : "2px dashed #CBD5E1", 
+                      background: hostKycForm.aadhaarDocUrl ? "#FFFBEB" : "#F8FAFC", 
+                      padding: 12, 
+                      cursor: "pointer", 
+                      marginBottom: 14, 
+                      textAlign: "center" 
+                    }}
+                  >
+                    {hostKycForm.aadhaarDocUrl ? (
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                        <img 
+                          src={hostKycForm.aadhaarDocUrl} 
+                          alt="Host Aadhaar Captured Photo" 
+                          style={{ width: "100%", maxHeight: 130, objectFit: "cover", borderRadius: 10, border: "1px solid #FDE68A" }} 
+                        />
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#D97706", fontSize: 12, fontWeight: 800 }}>
+                          <span>✓ Host Aadhaar Captured & Verified</span>
+                          <span style={{ fontSize: 10, color: "#64748B", background: "#FFF", padding: "2px 6px", borderRadius: 6, border: "1px solid #E2E8F0" }}>Tap to retake</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ padding: "12px 0", color: "#64748B" }}>
+                        <div style={{ fontSize: 24, marginBottom: 4 }}>🪪</div>
+                        <span style={{ fontSize: 12, fontWeight: 800, color: "#0F172A" }}>Tap to Capture or Upload Host Aadhaar Photo</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 2. EB CONSUMER NUMBER & EB BILL ADDRESS PROOF PREVIEW CARD */}
                   <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Electricity (EB) Consumer Number</label>
                   <input 
                     type="text" 
@@ -1610,22 +1711,55 @@ export default function FullShowcaseBoard() {
                     type="file" 
                     ref={hostEbFileRef} 
                     accept="image/*" 
-                    onChange={async (e) => {
+                    onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        const url = await uploadImageToFirebaseStorage(file, "host_kyc_docs");
-                        setHostKycForm(prev => ({ ...prev, ebDocUrl: url || SVG_BASEMENT_DATA_URL }));
+                        const reader = new FileReader();
+                        reader.onload = (evt) => {
+                          const base64Url = evt.target?.result;
+                          setHostKycForm(prev => ({ ...prev, ebDocUrl: base64Url }));
+                        };
+                        reader.readAsDataURL(file);
+                        uploadImageToFirebaseStorage(file, "host_kyc_docs").then(url => {
+                          if (url) setHostKycForm(prev => ({ ...prev, ebDocUrl: url }));
+                        });
                       }
                     }} 
                     style={{ display: "none" }} 
                   />
-                  <button 
+
+                  <div 
                     onClick={() => hostEbFileRef.current?.click()}
-                    style={{ width: "100%", padding: 10, borderRadius: 12, background: "#F1F5F9", border: "1px dashed #94A3B8", color: "#0F172A", fontWeight: 800, fontSize: 12, cursor: "pointer", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                    style={{ 
+                      width: "100%", 
+                      borderRadius: 14, 
+                      border: hostKycForm.ebDocUrl ? "2px solid #F59E0B" : "2px dashed #CBD5E1", 
+                      background: hostKycForm.ebDocUrl ? "#FFFBEB" : "#F8FAFC", 
+                      padding: 12, 
+                      cursor: "pointer", 
+                      marginBottom: 16, 
+                      textAlign: "center" 
+                    }}
                   >
-                    <span>⚡</span>
-                    <span>{hostKycForm.ebDocUrl ? "✓ EB Bill / Address Proof Uploaded" : "Upload EB Bill Photo"}</span>
-                  </button>
+                    {hostKycForm.ebDocUrl ? (
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                        <img 
+                          src={hostKycForm.ebDocUrl} 
+                          alt="Host EB Bill Captured Photo" 
+                          style={{ width: "100%", maxHeight: 130, objectFit: "cover", borderRadius: 10, border: "1px solid #FDE68A" }} 
+                        />
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#D97706", fontSize: 12, fontWeight: 800 }}>
+                          <span>✓ EB Bill Photo Captured & Verified</span>
+                          <span style={{ fontSize: 10, color: "#64748B", background: "#FFF", padding: "2px 6px", borderRadius: 6, border: "1px solid #E2E8F0" }}>Tap to retake</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ padding: "12px 0", color: "#64748B" }}>
+                        <div style={{ fontSize: 24, marginBottom: 4 }}>⚡</div>
+                        <span style={{ fontSize: 12, fontWeight: 800, color: "#0F172A" }}>Tap to Capture or Upload EB Bill Photo</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <button 
@@ -1638,29 +1772,67 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 53: KYC APPROVED SUCCESS STATUS ─── */}
+            {/* ─── SCREEN 53: KYC APPROVED SUCCESS STATUS WITH CAPTURED PHOTO PREVIEWS ─── */}
             {activeScreen === "53" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 24, justifyContent: "space-between", alignItems: "center", textAlign: "center" }}>
-                <div style={{ width: "100%", marginTop: 30 }}>
-                  <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#DCFCE7", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.25)" }}>
-                    <IconCheck size={40} color="#22C55E" />
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 24, justifyContent: "space-between", alignItems: "center", textAlign: "center", overflowY: "auto" }}>
+                <div style={{ width: "100%", marginTop: 16 }}>
+                  <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#DCFCE7", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px", boxShadow: "0 10px 25px rgba(34,197,94,0.25)" }}>
+                    <IconCheck size={38} color="#22C55E" />
                   </div>
-                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>KYC Verification Approved!</h2>
-                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>
+                  <h2 style={{ fontSize: 24, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>KYC Verification Approved!</h2>
+                  <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 16px" }}>
                     Your government documents have been verified and saved to Firebase Firestore (`paarkkar-dda3d`).
                   </p>
 
-                  <div style={{ background: "#F8FAFC", borderRadius: 20, padding: 20, border: "1px solid #E2E8F0", textAlign: "left", marginBottom: 20 }}>
+                  {/* SUBMITTED DOCUMENT PREVIEW CARD */}
+                  <div style={{ background: "#F8FAFC", borderRadius: 20, padding: 16, border: "1px solid #E2E8F0", textAlign: "left", marginBottom: 16 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                      <span style={{ fontSize: 11, fontWeight: 900, background: "#22C55E", color: "#FFF", padding: "2px 8px", borderRadius: 6 }}>
+                      <span style={{ fontSize: 11, fontWeight: 900, background: role === "host" ? "#F59E0B" : "#22C55E", color: "#FFF", padding: "2px 8px", borderRadius: 6 }}>
                         VERIFIED {role === "host" ? "HOST" : "DRIVER"}
                       </span>
-                      <span style={{ fontSize: 10, color: "#64748B" }}>FIREBASE SYNCED</span>
+                      <span style={{ fontSize: 10, color: "#64748B", fontWeight: 700 }}>FIREBASE SYNCED</span>
                     </div>
-                    <h3 style={{ fontSize: 16, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>Hanush Adith</h3>
-                    <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 4px" }}>
-                      {role === "host" ? `Aadhaar: ${hostKycForm.aadhaarNo} • EB No: ${hostKycForm.ebNumber}` : `Vehicle: ${driverKycForm.vehicleNo} • RC: ${driverKycForm.rcNumber}`}
+                    <h3 style={{ fontSize: 16, fontWeight: 900, color: "#0F172A", margin: "0 0 2px" }}>Hanush Adith</h3>
+                    <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 10px" }}>
+                      {role === "host" ? `Aadhaar: ${hostKycForm.aadhaarNo || '5482 9102 3847'} • EB: ${hostKycForm.ebNumber || 'EB-04-291'}` : `Vehicle: ${driverKycForm.vehicleNo || 'TN 01 AB 8924'} • RC: ${driverKycForm.rcNumber || 'RC-99182'}`}
                     </p>
+
+                    {/* CAPTURED PHOTO THUMBNAILS PREVIEW */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10 }}>
+                      <div>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: "#475569", display: "block", marginBottom: 4 }}>
+                          {role === "host" ? "Host Aadhaar" : "Vehicle RC Book"}
+                        </span>
+                        {(role === "host" ? hostKycForm.aadhaarDocUrl : driverKycForm.rcDocUrl) ? (
+                          <img 
+                            src={role === "host" ? hostKycForm.aadhaarDocUrl : driverKycForm.rcDocUrl} 
+                            alt="Document 1 Preview" 
+                            style={{ width: "100%", height: 80, objectFit: "cover", borderRadius: 10, border: "1px solid #CBD5E1" }} 
+                          />
+                        ) : (
+                          <div style={{ width: "100%", height: 80, borderRadius: 10, background: "#E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#64748B", fontWeight: 700 }}>
+                            Doc 1 Verified
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: "#475569", display: "block", marginBottom: 4 }}>
+                          {role === "host" ? "EB Bill Address" : "Aadhaar Card"}
+                        </span>
+                        {(role === "host" ? hostKycForm.ebDocUrl : driverKycForm.aadhaarDocUrl) ? (
+                          <img 
+                            src={role === "host" ? hostKycForm.ebDocUrl : driverKycForm.aadhaarDocUrl} 
+                            alt="Document 2 Preview" 
+                            style={{ width: "100%", height: 80, objectFit: "cover", borderRadius: 10, border: "1px solid #CBD5E1" }} 
+                          />
+                        ) : (
+                          <div style={{ width: "100%", height: 80, borderRadius: 10, background: "#E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#64748B", fontWeight: 700 }}>
+                            Doc 2 Verified
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -1669,7 +1841,7 @@ export default function FullShowcaseBoard() {
                     if (role === "host") setActiveScreen("29");
                     else setActiveScreen("08");
                   }}
-                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)", marginTop: 12 }}
                 >
                   {role === "host" ? "Enter Host Dashboard ➔" : "Enter PARKKAR Map ➔"}
                 </button>
