@@ -19,10 +19,11 @@ const T = {
 };
 
 export default function FullShowcaseBoard() {
-  const [activeScreen, setActiveScreen] = useState("01"); // 01 to 50
+  const [activeScreen, setActiveScreen] = useState("01");
+  const [activeCategory, setActiveCategory] = useState("All");
   const [role, setRole] = useState(null); // driver | host
   const [otpVal, setOtpVal] = useState(["2", "4", "6", "8", "2", "1"]);
-  const [tabIndex, setTabIndex] = useState("Nearby"); // Nearby | Favorites | Recent
+  const [tabIndex, setTabIndex] = useState("Nearby");
   
   // Booking & Form state
   const [selectedDate, setSelectedDate] = useState("21 May");
@@ -51,91 +52,133 @@ export default function FullShowcaseBoard() {
   });
 
   const screensList = [
-    { id: "01", name: "01 Splash" },
-    { id: "02", name: "02 Onboard 1" },
-    { id: "03", name: "03 Onboard 2" },
-    { id: "04", name: "04 Onboard 3" },
-    { id: "05", name: "05 Role" },
-    { id: "06", name: "06 Login" },
-    { id: "07", name: "07 OTP" },
-    { id: "08", name: "08 Map View" },
-    { id: "09", name: "09 List View" },
-    { id: "10", name: "10 Details" },
-    { id: "11", name: "11 Date & Time" },
-    { id: "12", name: "12 Summary" },
-    { id: "13", name: "13 Payment" },
-    { id: "14", name: "14 Success" },
-    { id: "15", name: "15 Active Parking" },
-    { id: "16", name: "16 QR Check-in" },
-    { id: "17", name: "17 Navigation" },
-    { id: "18", name: "18 Extend Parking" },
-    { id: "19", name: "19 Complete" },
-    { id: "20", name: "20 My Bookings" },
-    { id: "21", name: "21 Wallet" },
-    { id: "22", name: "22 Notifications" },
-    { id: "23", name: "23 Favorites" },
-    { id: "24", name: "24 Profile" },
-    { id: "25", name: "25 Settings" },
-    { id: "26", name: "26 Help & Support" },
-    { id: "27", name: "27 Invite & Earn" },
-    { id: "28", name: "28 History Details" },
-    { id: "29", name: "29 Host Dashboard" },
-    { id: "30", name: "30 Add Space 1" },
-    { id: "31", name: "31 Add Location" },
-    { id: "32", name: "32 Add Pricing" },
-    { id: "33", name: "33 Add Photos" },
-    { id: "34", name: "34 Review & Publish" },
-    { id: "35", name: "35 Space Submitted" },
-    { id: "36", name: "36 My Listings" },
-    { id: "37", name: "37 Booking Requests" },
-    { id: "38", name: "38 Earnings Overview" },
-    { id: "39", name: "39 Withdraw Earnings" },
-    { id: "40", name: "40 Reviews & Ratings" },
-    { id: "41", name: "41 Analytics" },
-    { id: "42", name: "42 Payout History" },
-    { id: "43", name: "43 My Vehicles" },
-    { id: "44", name: "44 Address Book" },
-    { id: "45", name: "45 Support Center" },
-    { id: "46", name: "46 Payment Methods" },
-    { id: "47", name: "47 Offers & Promos" },
-    { id: "48", name: "48 Invite Friends" },
-    { id: "49", name: "49 Notifs (Detailed)" },
-    { id: "50", name: "50 Settings (More)" },
+    { id: "01", name: "Splash Screen", cat: "Onboarding" },
+    { id: "02", name: "Discover Spaces", cat: "Onboarding" },
+    { id: "03", name: "Host & Earn", cat: "Onboarding" },
+    { id: "04", name: "Safe & Secure", cat: "Onboarding" },
+    { id: "05", name: "Role Selector", cat: "Onboarding" },
+    { id: "06", name: "Account Login", cat: "Onboarding" },
+    { id: "07", name: "OTP Verification", cat: "Onboarding" },
+    { id: "08", name: "Map Search", cat: "Driver Flow" },
+    { id: "09", name: "List View", cat: "Driver Flow" },
+    { id: "10", name: "Space Details", cat: "Driver Flow" },
+    { id: "11", name: "Select Date & Time", cat: "Driver Flow" },
+    { id: "12", name: "Booking Summary", cat: "Driver Flow" },
+    { id: "13", name: "Payment Checkout", cat: "Driver Flow" },
+    { id: "14", name: "Payment Success", cat: "Driver Flow" },
+    { id: "15", name: "Active Parking", cat: "Driver Flow" },
+    { id: "16", name: "Host QR Check-in", cat: "Driver Flow" },
+    { id: "17", name: "GPS Navigation", cat: "Driver Flow" },
+    { id: "18", name: "Extend Parking", cat: "Driver Flow" },
+    { id: "19", name: "Parking Complete", cat: "Driver Flow" },
+    { id: "20", name: "My Bookings", cat: "Driver Flow" },
+    { id: "21", name: "Wallet Balance", cat: "Profile & Settings" },
+    { id: "22", name: "Notifications", cat: "Profile & Settings" },
+    { id: "23", name: "Saved Favorites", cat: "Driver Flow" },
+    { id: "24", name: "User Profile", cat: "Profile & Settings" },
+    { id: "25", name: "Account Settings", cat: "Profile & Settings" },
+    { id: "26", name: "Help Center", cat: "Profile & Settings" },
+    { id: "27", name: "Invite & Earn", cat: "Profile & Settings" },
+    { id: "28", name: "Booking Receipt", cat: "Driver Flow" },
+    { id: "29", name: "Host Dashboard", cat: "Host Flow" },
+    { id: "30", name: "Add Space (Intro)", cat: "Host Flow" },
+    { id: "31", name: "Add Space (Location)", cat: "Host Flow" },
+    { id: "32", name: "Add Space (Pricing)", cat: "Host Flow" },
+    { id: "33", name: "Add Space (Photos)", cat: "Host Flow" },
+    { id: "34", name: "Review & Publish", cat: "Host Flow" },
+    { id: "35", name: "Space Submitted", cat: "Host Flow" },
+    { id: "36", name: "My Space Listings", cat: "Host Flow" },
+    { id: "37", name: "Booking Requests", cat: "Host Flow" },
+    { id: "38", name: "Earnings Overview", cat: "Host Flow" },
+    { id: "39", name: "Withdraw Payout", cat: "Host Flow" },
+    { id: "40", name: "Reviews & Ratings", cat: "Host Flow" },
+    { id: "41", name: "Host Analytics", cat: "Host Flow" },
+    { id: "42", name: "Payout History", cat: "Host Flow" },
+    { id: "43", name: "My Vehicles", cat: "Profile & Settings" },
+    { id: "44", name: "Address Book", cat: "Profile & Settings" },
+    { id: "45", name: "Support Center", cat: "Profile & Settings" },
+    { id: "46", name: "Payment Methods", cat: "Profile & Settings" },
+    { id: "47", name: "Offers & Promos", cat: "Driver Flow" },
+    { id: "48", name: "Invite Friends", cat: "Profile & Settings" },
+    { id: "49", name: "Notification Log", cat: "Profile & Settings" },
+    { id: "50", name: "App Settings", cat: "Profile & Settings" },
   ];
 
+  const categories = ["All", "Onboarding", "Driver Flow", "Host Flow", "Profile & Settings"];
+
+  const filteredScreens = activeCategory === "All" 
+    ? screensList 
+    : screensList.filter(s => s.cat === activeCategory);
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#CBD5E1", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#0F172A", color: "#F8FAFC", fontFamily: "system-ui, -apple-system, sans-serif" }}>
       
-      {/* TOP SHOWCASE SWITCHER NAV BAR */}
-      <div style={{ background: "#0F172A", padding: "10px 14px", display: "flex", gap: 8, overflowX: "auto", borderBottom: "2px solid #22C55E", zIndex: 100 }}>
-        {screensList.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => setActiveScreen(s.id)}
-            style={{
-              padding: "6px 12px",
-              borderRadius: 20,
-              border: "none",
-              background: activeScreen === s.id ? "#22C55E" : "#1E293B",
-              color: activeScreen === s.id ? "#FFFFFF" : "#94A3B8",
-              fontWeight: 700,
-              fontSize: 12,
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-              transition: "all 0.2s"
-            }}
-          >
-            {s.name}
-          </button>
-        ))}
+      {/* TOP CLEAN NAVIGATION HEADER */}
+      <div style={{ background: "#1E293B", padding: "12px 18px", borderBottom: "1px solid #334155", display: "flex", flexDirection: "column", gap: 10, zIndex: 100, boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}>
+        
+        {/* BRAND LOGO & CATEGORY PILLS */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 18, boxShadow: "0 4px 12px rgba(34,197,94,0.4)" }}>P</div>
+            <span style={{ fontSize: 20, fontWeight: 900, color: "#FFF", letterSpacing: "-0.02em" }}>Paarkkar <span style={{ fontSize: 12, color: "#22C55E", fontWeight: 700 }}>50 Screens</span></span>
+          </div>
+
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                style={{
+                  padding: "5px 12px",
+                  borderRadius: 16,
+                  border: "none",
+                  background: activeCategory === cat ? "#22C55E" : "#334155",
+                  color: activeCategory === cat ? "#FFF" : "#94A3B8",
+                  fontWeight: 700,
+                  fontSize: 12,
+                  cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* SCREEN SELECTOR SCROLLBAR */}
+        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+          {filteredScreens.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setActiveScreen(s.id)}
+              style={{
+                padding: "6px 14px",
+                borderRadius: 20,
+                border: activeScreen === s.id ? "1.5px solid #22C55E" : "1px solid #334155",
+                background: activeScreen === s.id ? "rgba(34,197,94,0.15)" : "#0F172A",
+                color: activeScreen === s.id ? "#22C55E" : "#CBD5E1",
+                fontWeight: 700,
+                fontSize: 12,
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                transition: "all 0.15s"
+              }}
+            >
+              {s.name}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* MOBILE FRAME CONTAINER */}
-      <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: "12px 0" }}>
-        <div style={{ width: "100%", maxWidth: 410, height: "100%", maxHeight: 840, background: activeScreen === "15" || activeScreen === "17" ? "#0F172A" : "#FFFFFF", borderRadius: 32, boxShadow: "0 25px 60px rgba(0,0,0,0.25)", overflow: "hidden", display: "flex", flexDirection: "column", position: "relative" }}>
+      {/* MAIN RESPONSIVE CONTAINER */}
+      <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: "16px", overflow: "hidden", background: "radial-gradient(circle at center, #1E293B 0%, #0F172A 100%)" }}>
+        
+        {/* RESPONSIVE MOBILE FRAME */}
+        <div style={{ width: "100%", maxWidth: 410, height: "100%", maxHeight: 840, background: activeScreen === "15" || activeScreen === "17" ? "#0F172A" : "#FFFFFF", borderRadius: 36, boxShadow: "0 25px 60px rgba(0,0,0,0.5), 0 0 0 10px #1E293B", overflow: "hidden", display: "flex", flexDirection: "column", position: "relative", transition: "all 0.3s ease" }}>
           
           {/* STATUS BAR */}
-          <div style={{ height: 40, padding: "0 20px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, fontWeight: 700, color: activeScreen === "15" || activeScreen === "17" ? "#FFF" : "#0F172A", zIndex: 50 }}>
+          <div style={{ height: 40, padding: "0 22px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, fontWeight: 700, color: activeScreen === "15" || activeScreen === "17" ? "#FFF" : "#0F172A", zIndex: 50 }}>
             <span>9:41</span>
             <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
               <span>📶</span>
@@ -144,15 +187,15 @@ export default function FullShowcaseBoard() {
             </div>
           </div>
 
-          {/* SCREEN CONTENT SWITCHER */}
+          {/* SCREEN CONTENT AREA */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", position: "relative" }}>
             
-            {/* ─── 01: SPLASH SCREEN ─── */}
+            {/* ─── SPLASH SCREEN ─── */}
             {activeScreen === "01" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "40px 24px 30px" }}>
                 <div style={{ textAlign: "center", marginTop: 20 }}>
-                  <div style={{ width: 72, height: 72, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.35)" }}>
-                    <span style={{ color: "#FFF", fontSize: 42, fontWeight: 900 }}>P</span>
+                  <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.35)" }}>
+                    <span style={{ color: "#FFF", fontSize: 44, fontWeight: 900 }}>P</span>
                   </div>
                   <h1 style={{ fontSize: 36, fontWeight: 900, color: "#0F172A", margin: "0 0 6px", letterSpacing: "-0.03em" }}>Paarkkar</h1>
                   <p style={{ fontSize: 15, fontWeight: 600, color: "#64748B", margin: 0 }}>
@@ -189,7 +232,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 02: ONBOARDING 1 ─── */}
+            {/* ─── ONBOARDING 1 ─── */}
             {activeScreen === "02" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px" }}>
                 <div style={{ width: "100%", height: 260, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -221,7 +264,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 03: ONBOARDING 2 ─── */}
+            {/* ─── ONBOARDING 2 ─── */}
             {activeScreen === "03" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px" }}>
                 <div style={{ width: "100%", height: 260, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -250,7 +293,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 04: ONBOARDING 3 ─── */}
+            {/* ─── ONBOARDING 3 ─── */}
             {activeScreen === "04" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px" }}>
                 <div style={{ width: "100%", height: 260, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -282,7 +325,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 05: CHOOSE ROLE ─── */}
+            {/* ─── CHOOSE ROLE ─── */}
             {activeScreen === "05" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 30px", justifyContent: "space-between" }}>
                 <div>
@@ -315,7 +358,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 06: LOGIN SCREEN ─── */}
+            {/* ─── LOGIN SCREEN ─── */}
             {activeScreen === "06" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 30px", justifyContent: "space-between" }}>
                 <div>
@@ -354,7 +397,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 07: ENTER OTP ─── */}
+            {/* ─── ENTER OTP ─── */}
             {activeScreen === "07" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 20px", justifyContent: "space-between" }}>
                 <div>
@@ -400,7 +443,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 08: HOME / SEARCH (MAP VIEW) ─── */}
+            {/* ─── HOME / SEARCH (MAP VIEW) ─── */}
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
@@ -416,7 +459,7 @@ export default function FullShowcaseBoard() {
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 14, padding: "10px 14px", alignItems: "center", gap: 10 }}>
                     <span>🔍</span>
                     <input type="text" placeholder="Search location" defaultValue="Anna Nagar, Chennai" style={{ border: "none", background: "transparent", outline: "none", flex: 1, fontWeight: 600 }} />
-                    <button style={{ background: "none", border: "none", cursor: "pointer" }}>𝄯</button>
+                    <button onClick={() => setActiveScreen("09")} style={{ background: "none", border: "none", cursor: "pointer" }}>𝄯</button>
                   </div>
 
                   <div style={{ display: "flex", gap: 24, marginTop: 14, borderBottom: "1px solid #E2E8F0" }}>
@@ -468,7 +511,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 09: NEARBY SPACES (LIST VIEW) ─── */}
+            {/* ─── NEARBY SPACES (LIST VIEW) ─── */}
             {activeScreen === "09" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
@@ -477,7 +520,7 @@ export default function FullShowcaseBoard() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 16 }}>P</div>
                     <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Paarkkar</span>
                   </div>
-                  <button style={{ background: "none", border: "none", fontSize: 20 }}>🔔</button>
+                  <button onClick={() => setActiveScreen("22")} style={{ background: "none", border: "none", fontSize: 20 }}>🔔</button>
                 </div>
 
                 <div style={{ padding: "8px 16px 12px", background: "#FFF", borderBottom: "1px solid #E2E8F0" }}>
@@ -523,7 +566,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 10: PARKING DETAILS ─── */}
+            {/* ─── PARKING DETAILS ─── */}
             {activeScreen === "10" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF" }}>
                 <div style={{ height: 220, position: "relative" }}>
@@ -544,7 +587,7 @@ export default function FullShowcaseBoard() {
                   <div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                       <h2 style={{ fontSize: 22, fontWeight: 900, color: "#0F172A", margin: 0 }}>{selectedSpot.title}</h2>
-                      <span style={{ color: "#F59E0B", fontWeight: 800, fontSize: 14 }}>★ {selectedSpot.rating}</span>
+                      <span onClick={() => setActiveScreen("40")} style={{ color: "#F59E0B", fontWeight: 800, fontSize: 14, cursor: "pointer" }}>★ {selectedSpot.rating}</span>
                     </div>
                     <p style={{ color: "#64748B", fontSize: 13, margin: "0 0 16px" }}>{selectedSpot.address}</p>
 
@@ -578,7 +621,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 11: SELECT DATE & TIME ─── */}
+            {/* ─── SELECT DATE & TIME ─── */}
             {activeScreen === "11" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
@@ -661,7 +704,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 12: BOOKING SUMMARY ─── */}
+            {/* ─── BOOKING SUMMARY ─── */}
             {activeScreen === "12" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#F8FAFC" }}>
                 <div>
@@ -716,7 +759,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 13: PAYMENT METHOD ─── */}
+            {/* ─── PAYMENT METHOD ─── */}
             {activeScreen === "13" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
@@ -776,7 +819,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 14: PAYMENT SUCCESS ─── */}
+            {/* ─── PAYMENT SUCCESS ─── */}
             {activeScreen === "14" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "30px 24px", justifyContent: "space-between", background: "#F8FAFC", textAlign: "center" }}>
                 <div>
@@ -813,7 +856,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 15: ACTIVE PARKING (DARK THEME) ─── */}
+            {/* ─── ACTIVE PARKING (DARK THEME) ─── */}
             {activeScreen === "15" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#0F172A", color: "#FFF" }}>
                 <div>
@@ -876,7 +919,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 16: QR CHECK-IN ─── */}
+            {/* ─── QR CHECK-IN ─── */}
             {activeScreen === "16" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 30px", justifyContent: "space-between", background: "#FFF", textAlign: "center" }}>
                 <div>
@@ -910,7 +953,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 17: NAVIGATION TO PARKING ─── */}
+            {/* ─── NAVIGATION TO PARKING ─── */}
             {activeScreen === "17" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative", background: "#0B131F", color: "#FFF" }}>
                 <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", gap: 12, background: "#0F172A", zIndex: 10 }}>
@@ -952,7 +995,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 18: EXTEND PARKING ─── */}
+            {/* ─── EXTEND PARKING ─── */}
             {activeScreen === "18" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
@@ -1001,7 +1044,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 19: BOOKING COMPLETE ─── */}
+            {/* ─── BOOKING COMPLETE ─── */}
             {activeScreen === "19" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "30px 24px", justifyContent: "space-between", background: "#F8FAFC", textAlign: "center" }}>
                 <div>
@@ -1044,7 +1087,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 20: MY BOOKINGS (HISTORY) ─── */}
+            {/* ─── MY BOOKINGS (HISTORY) ─── */}
             {activeScreen === "20" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px 12px", background: "#FFF", borderBottom: "1px solid #E2E8F0" }}>
@@ -1125,7 +1168,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 21: WALLET ─── */}
+            {/* ─── WALLET ─── */}
             {activeScreen === "21" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1205,14 +1248,14 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 22: NOTIFICATIONS ─── */}
+            {/* ─── NOTIFICATIONS ─── */}
             {activeScreen === "22" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px 12px", background: "#FFF", borderBottom: "1px solid #E2E8F0" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                     <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
                     <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Notifications</h3>
-                    <button onClick={() => setActiveScreen("25")} style={{ background: "none", border: "none", fontSize: 18, cursor: "pointer" }}>⚙️</button>
+                    <button onClick={() => setActiveScreen("50")} style={{ background: "none", border: "none", fontSize: 18, cursor: "pointer" }}>⚙️</button>
                   </div>
 
                   <div style={{ display: "flex", gap: 10, overflowX: "auto" }}>
@@ -1278,7 +1321,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 23: FAVORITES ─── */}
+            {/* ─── FAVORITES ─── */}
             {activeScreen === "23" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1332,11 +1375,11 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 24: PROFILE ─── */}
+            {/* ─── PROFILE ─── */}
             {activeScreen === "24" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "flex-end" }}>
-                  <button onClick={() => setActiveScreen("25")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>⚙️</button>
+                  <button onClick={() => setActiveScreen("50")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>⚙️</button>
                 </div>
 
                 <div style={{ flex: 1, padding: 20, display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
@@ -1407,7 +1450,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 25: SETTINGS ─── */}
+            {/* ─── SETTINGS ─── */}
             {activeScreen === "25" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1467,7 +1510,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 26: HELP & SUPPORT ─── */}
+            {/* ─── HELP & SUPPORT ─── */}
             {activeScreen === "26" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1515,7 +1558,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 27: INVITE & EARN ─── */}
+            {/* ─── INVITE & EARN ─── */}
             {activeScreen === "27" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF", textAlign: "center" }}>
                 <div>
@@ -1559,7 +1602,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 28: PARKING HISTORY DETAILS ─── */}
+            {/* ─── PARKING HISTORY DETAILS ─── */}
             {activeScreen === "28" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF" }}>
                 <div style={{ height: 180, position: "relative" }}>
@@ -1608,17 +1651,17 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 29: HOST DASHBOARD ─── */}
+            {/* ─── HOST DASHBOARD ─── */}
             {activeScreen === "29" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>☰</button>
                   <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Host Dashboard</h3>
-                  <button style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>🔔</button>
+                  <button onClick={() => setActiveScreen("49")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>🔔</button>
                 </div>
 
                 <div style={{ flex: 1, padding: 20, display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
-                  <div style={{ background: "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)", borderRadius: 20, padding: 20, color: "#FFF", boxShadow: "0 10px 25px rgba(34,197,94,0.3)" }}>
+                  <div onClick={() => setActiveScreen("41")} style={{ background: "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)", borderRadius: 20, padding: 20, color: "#FFF", boxShadow: "0 10px 25px rgba(34,197,94,0.3)", cursor: "pointer" }}>
                     <span style={{ fontSize: 12, opacity: 0.8 }}>Total Earnings</span>
                     <h2 style={{ fontSize: 32, fontWeight: 900, margin: "4px 0 6px" }}>₹12,450</h2>
                     <span style={{ fontSize: 11, background: "rgba(255,255,255,0.2)", padding: "3px 8px", borderRadius: 10 }}>+18.5% from last month</span>
@@ -1657,10 +1700,29 @@ export default function FullShowcaseBoard() {
                     + Add New Space
                   </button>
                 </div>
+
+                <div style={{ height: 60, background: "#FFF", borderTop: "1px solid #E2E8F0", display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                  <div onClick={() => setActiveScreen("29")} style={{ textAlign: "center", cursor: "pointer", color: "#22C55E" }}>
+                    <div style={{ fontSize: 18 }}>🏠</div>
+                    <div style={{ fontSize: 10, fontWeight: 800 }}>Home</div>
+                  </div>
+                  <div onClick={() => setActiveScreen("37")} style={{ textAlign: "center", cursor: "pointer", color: "#64748B" }}>
+                    <div style={{ fontSize: 18 }}>📑</div>
+                    <div style={{ fontSize: 10, fontWeight: 600 }}>Bookings</div>
+                  </div>
+                  <div onClick={() => setActiveScreen("36")} style={{ textAlign: "center", cursor: "pointer", color: "#64748B" }}>
+                    <div style={{ fontSize: 18 }}>🏢</div>
+                    <div style={{ fontSize: 10, fontWeight: 600 }}>Listings</div>
+                  </div>
+                  <div onClick={() => setActiveScreen("41")} style={{ textAlign: "center", cursor: "pointer", color: "#64748B" }}>
+                    <div style={{ fontSize: 18 }}>📈</div>
+                    <div style={{ fontSize: 10, fontWeight: 600 }}>Earnings</div>
+                  </div>
+                </div>
               </div>
             )}
 
-            {/* ─── 30: ADD NEW SPACE (START) ─── */}
+            {/* ─── ADD NEW SPACE (START) ─── */}
             {activeScreen === "30" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
@@ -1707,7 +1769,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 31: ADD NEW SPACE (LOCATION) ─── */}
+            {/* ─── ADD NEW SPACE (LOCATION) ─── */}
             {activeScreen === "31" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
@@ -1757,7 +1819,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 32: ADD NEW SPACE (PRICING) ─── */}
+            {/* ─── ADD NEW SPACE (PRICING) ─── */}
             {activeScreen === "32" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
@@ -1829,7 +1891,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 33: ADD NEW SPACE (PHOTOS) ─── */}
+            {/* ─── ADD NEW SPACE (PHOTOS) ─── */}
             {activeScreen === "33" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
@@ -1877,7 +1939,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 34: REVIEW & PUBLISH ─── */}
+            {/* ─── REVIEW & PUBLISH ─── */}
             {activeScreen === "34" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#F8FAFC" }}>
                 <div>
@@ -1925,7 +1987,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 35: SPACE SUBMITTED ─── */}
+            {/* ─── SPACE SUBMITTED ─── */}
             {activeScreen === "35" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "30px 24px", justifyContent: "space-between", background: "#F8FAFC", textAlign: "center" }}>
                 <div>
@@ -1960,7 +2022,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 36: MY LISTINGS ─── */}
+            {/* ─── MY LISTINGS ─── */}
             {activeScreen === "36" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px 12px", background: "#FFF", borderBottom: "1px solid #E2E8F0" }}>
@@ -2013,7 +2075,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 37: BOOKING REQUESTS ─── */}
+            {/* ─── BOOKING REQUESTS ─── */}
             {activeScreen === "37" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px 12px", background: "#FFF", borderBottom: "1px solid #E2E8F0" }}>
@@ -2066,7 +2128,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 38: EARNINGS OVERVIEW ─── */}
+            {/* ─── EARNINGS OVERVIEW ─── */}
             {activeScreen === "38" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -2122,7 +2184,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 39: WITHDRAW EARNINGS ─── */}
+            {/* ─── WITHDRAW EARNINGS ─── */}
             {activeScreen === "39" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
@@ -2178,13 +2240,13 @@ export default function FullShowcaseBoard() {
                   ))}
                 </div>
 
-                <button onClick={() => { alert("Withdrawal Request Submitted!"); setActiveScreen("38"); }} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>
+                <button onClick={() => { alert("Withdrawal Request Submitted!"); setActiveScreen("42"); }} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>
                   Withdraw Now
                 </button>
               </div>
             )}
 
-            {/* ─── 40: REVIEWS & RATINGS ─── */}
+            {/* ─── REVIEWS & RATINGS ─── */}
             {activeScreen === "40" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -2239,7 +2301,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 41: ANALYTICS ─── */}
+            {/* ─── ANALYTICS ─── */}
             {activeScreen === "41" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -2313,7 +2375,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 42: PAYOUT HISTORY ─── */}
+            {/* ─── PAYOUT HISTORY ─── */}
             {activeScreen === "42" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -2352,7 +2414,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 43: MY VEHICLES ─── */}
+            {/* ─── MY VEHICLES ─── */}
             {activeScreen === "43" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -2392,7 +2454,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 44: ADDRESS BOOK ─── */}
+            {/* ─── ADDRESS BOOK ─── */}
             {activeScreen === "44" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -2430,7 +2492,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 45: SUPPORT CENTER ─── */}
+            {/* ─── SUPPORT CENTER ─── */}
             {activeScreen === "45" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -2469,7 +2531,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 46: PAYMENT METHODS ─── */}
+            {/* ─── PAYMENT METHODS ─── */}
             {activeScreen === "46" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -2507,7 +2569,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 47: OFFERS & PROMOTIONS ─── */}
+            {/* ─── OFFERS & PROMOTIONS ─── */}
             {activeScreen === "47" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px 12px", background: "#FFF", borderBottom: "1px solid #E2E8F0" }}>
@@ -2547,7 +2609,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 48: INVITE FRIENDS ─── */}
+            {/* ─── INVITE FRIENDS ─── */}
             {activeScreen === "48" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF", textAlign: "center" }}>
                 <div>
@@ -2591,14 +2653,14 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 49: NOTIFICATIONS (DETAILED) ─── */}
+            {/* ─── NOTIFICATION LOG ─── */}
             {activeScreen === "49" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px 12px", background: "#FFF", borderBottom: "1px solid #E2E8F0" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                     <button onClick={() => setActiveScreen("24")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
                     <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Notifications</h3>
-                    <button style={{ background: "none", border: "none", fontSize: 18, cursor: "pointer" }}>⚙️</button>
+                    <button onClick={() => setActiveScreen("50")} style={{ background: "none", border: "none", fontSize: 18, cursor: "pointer" }}>⚙️</button>
                   </div>
 
                   <div style={{ display: "flex", gap: 10, overflowX: "auto" }}>
@@ -2633,7 +2695,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 50: SETTINGS (MORE) ─── */}
+            {/* ─── APP SETTINGS ─── */}
             {activeScreen === "50" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
