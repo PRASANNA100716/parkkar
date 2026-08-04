@@ -914,72 +914,81 @@ const SplashScreen = ({ onDone }) => {
     <div
       style={{
         height: "100%",
-        background: `linear-gradient(150deg,#1A2332 0%,#243B55 100%)`,
+        background: `linear-gradient(145deg, #0b131f 0%, #16283d 50%, #0d1e30 100%)`,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         gap: 28,
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      {[0, 1, 2].map((i) => (
+      {[0, 1, 2, 3].map((i) => (
         <div
           key={i}
           style={{
             position: "absolute",
-            width: 180 + i * 130,
-            height: 180 + i * 130,
+            width: 180 + i * 120,
+            height: 180 + i * 120,
             borderRadius: "50%",
-            border: `1px solid rgba(37,192,90,${0.1 - i * 0.025})`,
-            animation: `pulse ${2.5 + i * 0.5}s ease infinite ${i * 0.4}s`,
+            border: `1px solid rgba(37,192,90,${0.14 - i * 0.03})`,
+            animation: `pulse ${2.5 + i * 0.4}s ease-in-out infinite ${i * 0.3}s`,
+            boxShadow: i === 0 ? `0 0 40px rgba(37,192,90,0.15)` : "none",
           }}
         />
       ))}
-      <div className="fu" style={{ textAlign: "center", position: "relative" }}>
+      <div className="fu" style={{ textAlign: "center", position: "relative", zIndex: 2 }}>
         <div
           style={{
-            width: 84,
-            height: 84,
-            borderRadius: 24,
-            background: T.green,
+            width: 88,
+            height: 88,
+            borderRadius: 26,
+            background: `linear-gradient(135deg, ${T.green} 0%, #1ba349 100%)`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            margin: "0 auto 20px",
-            boxShadow: `0 12px 40px ${T.green}60`,
+            margin: "0 auto 22px",
+            boxShadow: `0 14px 44px rgba(37,192,90,0.55)`,
+            transform: "scale(1.05)",
           }}
         >
-          <Ic n="parking" s={46} c={T.white} />
+          <Ic n="parking" s={48} c={T.white} />
         </div>
         <h1
           style={{
             color: T.white,
-            fontSize: 44,
+            fontSize: 46,
             fontWeight: 900,
             letterSpacing: "-0.05em",
             margin: "0 0 6px",
+            background: `linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 100%)`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
           }}
         >
           parkkar
         </h1>
         <p
           style={{
-            color: "rgba(255,255,255,0.45)",
-            fontSize: 11,
-            letterSpacing: "0.2em",
+            color: "rgba(255,255,255,0.7)",
+            fontSize: 12,
+            letterSpacing: "0.22em",
             textTransform: "uppercase",
+            fontWeight: 600,
+            margin: 0,
           }}
         >
-          Tamil Nadu Smart Parking
+          India's #1 P2P Parking Network
         </p>
       </div>
-      <div style={{ display: "flex", gap: 8 }}>
+      <div style={{ display: "flex", gap: 8, zIndex: 2, marginTop: 8 }}>
         {[0, 1, 2].map((i) => (
           <div
             key={i}
             style={{
-              width: 8,
-              height: 8,
+              width: 9,
+              height: 9,
               borderRadius: "50%",
               background: T.green,
               animation: `ping 1.4s ease ${i * 0.25}s infinite`,
@@ -1025,6 +1034,13 @@ const LoginScreen = ({ onLogin }) => {
     }, 900);
   };
 
+  const handleQuickGuestLogin = () => {
+    setLoading(true);
+    setTimeout(() => {
+      onLogin({ phone: "9876543210", name: "Guest User" });
+    }, 600);
+  };
+
   const handleOtpChange = (i, val) => {
     if (!/^\d?$/.test(val)) return;
     const next = [...otp];
@@ -1057,37 +1073,85 @@ const LoginScreen = ({ onLogin }) => {
         display: "flex",
         flexDirection: "column",
         background: T.white,
+        minHeight: "100%",
+        overflowY: "auto",
       }}
     >
+      {/* Header Banner */}
       <div
         style={{
-          height: 220,
-          background: `linear-gradient(150deg,#1A2332 0%,#1e3a5f 100%)`,
+          background: `linear-gradient(160deg, #0d1726 0%, #1A2332 50%, #11253c 100%)`,
+          padding: "36px 24px 32px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        {/* Ambient Glow */}
         <div
           style={{
-            width: 56,
-            height: 56,
-            borderRadius: 16,
-            background: T.green,
+            position: "absolute",
+            top: -40,
+            right: -40,
+            width: 160,
+            height: 160,
+            borderRadius: "50%",
+            background: "rgba(37,192,90,0.18)",
+            filter: "blur(40px)",
+          }}
+        />
+
+        {/* Live Network Tag */}
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            background: "rgba(37,192,90,0.15)",
+            border: "1px solid rgba(37,192,90,0.3)",
+            padding: "4px 12px",
+            borderRadius: 20,
+            fontSize: 11,
+            fontWeight: 700,
+            color: T.green,
+            marginBottom: 16,
+          }}
+        >
+          <span
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: T.green,
+              boxShadow: `0 0 8px ${T.green}`,
+            }}
+          />
+          50,000+ VERIFIED SPOTS ACTIVE
+        </div>
+
+        {/* Logo Card */}
+        <div
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: 20,
+            background: `linear-gradient(135deg, ${T.green} 0%, #189842 100%)`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            marginBottom: 14,
-            boxShadow: `0 8px 24px ${T.green}50`,
+            marginBottom: 12,
+            boxShadow: `0 10px 30px rgba(37,192,90,0.45)`,
           }}
         >
-          <Ic n="parking" s={32} c={T.white} />
+          <Ic n="parking" s={36} c={T.white} />
         </div>
+
         <h1
           style={{
             color: T.white,
-            fontSize: 30,
+            fontSize: 32,
             fontWeight: 900,
             letterSpacing: "-0.04em",
             margin: 0,
@@ -1097,47 +1161,122 @@ const LoginScreen = ({ onLogin }) => {
         </h1>
         <p
           style={{
-            color: "rgba(255,255,255,0.45)",
-            fontSize: 11,
-            letterSpacing: "0.16em",
+            color: "rgba(255,255,255,0.6)",
+            fontSize: 12,
+            fontWeight: 600,
+            letterSpacing: "0.08em",
             textTransform: "uppercase",
             margin: "4px 0 0",
           }}
         >
-          Tamil Nadu
+          India's Peer-to-Peer Parking Marketplace
         </p>
       </div>
+
+      {/* Main Body */}
       <div
         style={{
           flex: 1,
-          padding: "28px 24px",
+          padding: "24px 22px 32px",
           background: T.white,
-          borderRadius: "20px 20px 0 0",
-          marginTop: -20,
+          borderRadius: "24px 24px 0 0",
+          marginTop: -18,
+          position: "relative",
+          zIndex: 2,
         }}
       >
+        {/* Promotional Ad Banner Card */}
+        <div
+          style={{
+            background: `linear-gradient(135deg, #101c2c 0%, #1c2e44 100%)`,
+            borderRadius: 16,
+            padding: "16px 18px",
+            marginBottom: 24,
+            boxShadow: `0 8px 24px rgba(16,28,44,0.12)`,
+            border: `1px solid rgba(255,255,255,0.08)`,
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              right: -10,
+              bottom: -10,
+              opacity: 0.1,
+              transform: "rotate(-15deg)",
+            }}
+          >
+            <Ic n="parking" s={100} c={T.white} />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+            <span
+              style={{
+                background: T.amber,
+                color: T.dark,
+                fontSize: 10,
+                fontWeight: 900,
+                padding: "2px 8px",
+                borderRadius: 6,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+              }}
+            >
+              PROMO
+            </span>
+            <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 600 }}>
+              Rent Your Spot & Earn Money
+            </span>
+          </div>
+          <h4 style={{ color: T.white, fontSize: 15, fontWeight: 800, margin: "0 0 8px" }}>
+            Got an Empty Gate, Plot or Driveway? 🚗
+          </h4>
+          <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, margin: "0 0 12px", lineHeight: 1.4 }}>
+            List your space on Parkkar & earn up to <strong>₹15,000/month</strong> with zero hassle!
+          </p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {["🔒 Insured", "⚡ EV Friendly", "💰 Daily Payouts"].map((tag, idx) => (
+              <span
+                key={idx}
+                style={{
+                  background: "rgba(255,255,255,0.12)",
+                  color: "#E2E8F0",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  padding: "3px 8px",
+                  borderRadius: 6,
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
         {step === "phone" ? (
           <div className="fu">
             <h2
               style={{
-                fontSize: 24,
+                fontSize: 22,
                 fontWeight: 800,
                 color: T.dark,
-                margin: "0 0 6px",
+                margin: "0 0 4px",
               }}
             >
-              Welcome back 👋
+              Log in or Sign up 👋
             </h2>
-            <p style={{ color: T.gray4, fontSize: 14, margin: "0 0 24px" }}>
-              Enter your mobile number to continue
+            <p style={{ color: T.gray4, fontSize: 13, margin: "0 0 20px" }}>
+              Enter your mobile number to discover & book parking
             </p>
+
             <div
               style={{
                 display: "flex",
-                borderRadius: 12,
+                borderRadius: 14,
                 overflow: "hidden",
                 border: `1.5px solid ${error ? T.red : T.gray2}`,
                 marginBottom: 8,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
               }}
             >
               <div
@@ -1150,7 +1289,7 @@ const LoginScreen = ({ onLogin }) => {
                   borderRight: `1px solid ${T.gray2}`,
                 }}
               >
-                <span>🇮🇳</span>
+                <span style={{ fontSize: 16 }}>🇮🇳</span>
                 <span style={{ fontWeight: 700, fontSize: 15, color: T.dark }}>
                   +91
                 </span>
@@ -1170,29 +1309,77 @@ const LoginScreen = ({ onLogin }) => {
                   border: "none",
                   outline: "none",
                   padding: "14px 16px",
-                  fontSize: 18,
+                  fontSize: 17,
                   background: "transparent",
                   color: T.dark,
                   fontWeight: 600,
                 }}
               />
             </div>
+
             {error && (
               <p style={{ color: T.red, fontSize: 13, margin: "4px 0 10px" }}>
                 {error}
               </p>
             )}
-            <div style={{ marginTop: 20 }}>
+
+            <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 10 }}>
               <Btn onClick={sendOtp} disabled={loading}>
-                {loading ? "Sending…" : "Get OTP →"}
+                {loading ? "Sending OTP…" : "Continue with Mobile →"}
               </Btn>
+
+              {/* Quick Guest Access Button */}
+              <button
+                onClick={handleQuickGuestLogin}
+                disabled={loading}
+                style={{
+                  width: "100%",
+                  padding: "13px 16px",
+                  borderRadius: 14,
+                  background: T.gray1,
+                  border: `1.5px dashed ${T.gray2}`,
+                  color: T.dark,
+                  fontWeight: 700,
+                  fontSize: 14,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  transition: "all 0.15s",
+                }}
+              >
+                <span>⚡</span>
+                <span>One-Tap Quick Demo Access</span>
+              </button>
+            </div>
+
+            {/* Security Trust Badges */}
+            <div
+              style={{
+                marginTop: 28,
+                paddingTop: 18,
+                borderTop: `1px solid ${T.gray2}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-around",
+                color: T.gray4,
+                fontSize: 11,
+                fontWeight: 600,
+              }}
+            >
+              <span>🔒 256-bit Encrypted</span>
+              <span>•</span>
+              <span>⚡ Instant Confirmation</span>
+              <span>•</span>
+              <span>⭐ 4.9 Rating</span>
             </div>
           </div>
         ) : (
           <div className="su">
             <h2
               style={{
-                fontSize: 24,
+                fontSize: 22,
                 fontWeight: 800,
                 color: T.dark,
                 margin: "0 0 4px",
@@ -1200,7 +1387,7 @@ const LoginScreen = ({ onLogin }) => {
             >
               Verify your number
             </h2>
-            <p style={{ color: T.gray4, fontSize: 14, margin: "0 0 18px" }}>
+            <p style={{ color: T.gray4, fontSize: 13, margin: "0 0 18px" }}>
               OTP sent to +91 {phone}
             </p>
             <div
@@ -1211,23 +1398,44 @@ const LoginScreen = ({ onLogin }) => {
                 marginBottom: 20,
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "space-between",
                 gap: 10,
               }}
             >
-              <Ic n="info" s={16} c={T.green} />
-              <p
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Ic n="info" s={16} c={T.green} />
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: 13,
+                    color: T.greenDark,
+                    fontWeight: 600,
+                  }}
+                >
+                  Demo OTP:{" "}
+                  <strong style={{ fontSize: 18, letterSpacing: "0.1em" }}>
+                    {gen}
+                  </strong>
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setOtp(gen.split(""));
+                  setError("");
+                }}
                 style={{
-                  margin: 0,
-                  fontSize: 13,
-                  color: T.greenDark,
-                  fontWeight: 600,
+                  background: T.green,
+                  color: T.white,
+                  border: "none",
+                  padding: "5px 10px",
+                  borderRadius: 6,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: "pointer",
                 }}
               >
-                Demo OTP:{" "}
-                <strong style={{ fontSize: 18, letterSpacing: "0.1em" }}>
-                  {gen}
-                </strong>
-              </p>
+                Autofill
+              </button>
             </div>
             <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
               {otp.map((d, i) => (
