@@ -1219,10 +1219,10 @@ export default function FullShowcaseBoard() {
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw", background: "#0F172A", color: "#F8FAFC", fontFamily: "system-ui, -apple-system, sans-serif", overflow: "hidden" }}>
 
       {/* MAIN APPLICATION CONTAINER */}
-      <div className="app-viewport-wrapper">
+      <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: "0", background: "#0F172A" }}>
         
         {/* RESPONSIVE MOBILE APP FRAME */}
-        <div className="mobile-app-frame" style={{ background: activeScreen === "15" || activeScreen === "17" ? "#0F172A" : "#FFFFFF" }}>
+        <div style={{ width: "100%", maxWidth: 440, height: "100vh", maxHeight: "100vh", background: activeScreen === "15" || activeScreen === "17" ? "#0F172A" : "#FFFFFF", overflow: "hidden", display: "flex", flexDirection: "column", position: "relative", boxShadow: "0 0 40px rgba(0,0,0,0.5)" }}>
           
 
 
