@@ -2212,6 +2212,199 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
+            {/* ─── SCREEN 05: CHOOSE YOUR ROLE (DRIVER OR HOST) ─── */}
+            {activeScreen === "05" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", padding: "16px 20px 24px", overflowY: "auto", position: "relative" }}>
+                
+                {/* TOP HEADER WITH BACK BUTTON & ICON */}
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", position: "relative", marginBottom: 12 }}>
+                    <button 
+                      onClick={() => setActiveScreen("04")} 
+                      style={{ 
+                        width: 40, 
+                        height: 40, 
+                        borderRadius: "50%", 
+                        border: "1px solid #E2E8F0", 
+                        background: "#FFF", 
+                        display: "flex", 
+                        alignItems: "center", 
+                        justifyContent: "center", 
+                        cursor: "pointer", 
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.05)" 
+                      }}
+                    >
+                      <IconChevronLeft size={20} color="#0F172A" />
+                    </button>
+                  </div>
+
+                  {/* GLOWING ICON & TITLE HEADER */}
+                  <div style={{ textAlign: "center", marginBottom: 20 }}>
+                    <div style={{ width: 68, height: 68, borderRadius: "50%", background: "#DCFCE7", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", boxShadow: "0 8px 20px rgba(34,197,94,0.15)" }}>
+                      <IconUsers size={34} color="#16A34A" />
+                    </div>
+                    
+                    <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
+                      Choose Your Role
+                    </h2>
+                    <p style={{ fontSize: 13, color: "#64748B", margin: 0, fontWeight: 600 }}>
+                      Select your role to sign in or create an account
+                    </p>
+                    
+                    <div style={{ width: 44, height: 4, background: "#22C55E", borderRadius: 2, margin: "14px auto 0" }} />
+                  </div>
+                </div>
+
+                {/* ROLE CARDS CONTAINER */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 20 }}>
+                  
+                  {/* CARD 1: DRIVER ROLE (GREEN ACCENT) */}
+                  <div 
+                    onClick={() => {
+                      setRole("driver");
+                      setActiveScreen("06");
+                    }}
+                    style={{ 
+                      background: "#FFF", 
+                      borderRadius: 24, 
+                      border: "2px solid #22C55E", 
+                      padding: 16, 
+                      boxShadow: "0 8px 24px rgba(34,197,94,0.12)", 
+                      cursor: "pointer",
+                      transition: "transform 0.2s ease"
+                    }}
+                  >
+                    <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 14 }}>
+                      <div style={{ width: 90, height: 90, borderRadius: 18, overflow: "hidden", flexShrink: 0, border: "1px solid #E2E8F0" }}>
+                        <img 
+                          src={process.env.PUBLIC_URL + "/assets/driver_car.png"} 
+                          alt="Looking for parking" 
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                        />
+                      </div>
+
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", gap: 6, marginBottom: 6, flexWrap: "wrap" }}>
+                          <span style={{ fontSize: 10, fontWeight: 900, background: "#DCFCE7", color: "#15803D", padding: "3px 8px", borderRadius: 8, display: "flex", alignItems: "center", gap: 4 }}>
+                            <span>👤</span> DRIVER MODE
+                          </span>
+                          <span style={{ fontSize: 10, fontWeight: 900, background: "#22C55E", color: "#FFF", padding: "3px 8px", borderRadius: 8, display: "flex", alignItems: "center", gap: 4 }}>
+                            <span>🛡️</span> KYC: OK
+                          </span>
+                        </div>
+
+                        <h3 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 900, color: "#0F172A", lineHeight: 1.2 }}>
+                          I'm Looking for Parking
+                        </h3>
+                        <p style={{ margin: 0, fontSize: 11, color: "#64748B", fontWeight: 600 }}>
+                          Requires Vehicle No, RC & Aadhaar Card
+                        </p>
+                      </div>
+
+                      <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#22C55E", color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 4px 12px rgba(34,197,94,0.3)" }}>
+                        <IconChevronRight size={22} color="#FFF" />
+                      </div>
+                    </div>
+
+                    {/* BOTTOM FEATURES 4-COLUMNS GRID */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, paddingTop: 12, borderTop: "1px solid #F1F5F9", textAlign: "center" }}>
+                      {[
+                        { icon: "📍", label: "Find Nearby\nParking" },
+                        { icon: "🛡️", label: "Verified &\nSecure" },
+                        { icon: "⏱️", label: "Book in\nSeconds" },
+                        { icon: "💳", label: "Cashless\nPayments" }
+                      ].map((feat, i) => (
+                        <div key={i} style={{ padding: "4px 2px", borderRight: i < 3 ? "1px solid #F1F5F9" : "none" }}>
+                          <span style={{ fontSize: 18, display: "block", marginBottom: 3 }}>{feat.icon}</span>
+                          <span style={{ fontSize: 9, fontWeight: 800, color: "#0F172A", whiteSpace: "pre-line", lineHeight: 1.25, display: "block" }}>
+                            {feat.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* CARD 2: HOST ROLE (AMBER/GOLD ACCENT) */}
+                  <div 
+                    onClick={() => {
+                      setRole("host");
+                      setActiveScreen("06");
+                    }}
+                    style={{ 
+                      background: "#FFF", 
+                      borderRadius: 24, 
+                      border: "2px solid #F59E0B", 
+                      padding: 16, 
+                      boxShadow: "0 8px 24px rgba(245,158,11,0.12)", 
+                      cursor: "pointer",
+                      transition: "transform 0.2s ease"
+                    }}
+                  >
+                    <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 14 }}>
+                      <div style={{ width: 90, height: 90, borderRadius: 18, overflow: "hidden", flexShrink: 0, border: "1px solid #E2E8F0" }}>
+                        <img 
+                          src={process.env.PUBLIC_URL + "/assets/home_garage.png"} 
+                          alt="Have a parking space" 
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                        />
+                      </div>
+
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", gap: 6, marginBottom: 6, flexWrap: "wrap" }}>
+                          <span style={{ fontSize: 10, fontWeight: 900, background: "#FEF3C7", color: "#B45309", padding: "3px 8px", borderRadius: 8, display: "flex", alignItems: "center", gap: 4 }}>
+                            <span>🏠</span> HOST & EARN
+                          </span>
+                          <span style={{ fontSize: 10, fontWeight: 900, background: "#F59E0B", color: "#FFF", padding: "3px 8px", borderRadius: 8, display: "flex", alignItems: "center", gap: 4 }}>
+                            <span>🛡️</span> KYC: OK
+                          </span>
+                        </div>
+
+                        <h3 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 900, color: "#0F172A", lineHeight: 1.2 }}>
+                          I Have a Parking Space
+                        </h3>
+                        <p style={{ margin: 0, fontSize: 11, color: "#64748B", fontWeight: 600 }}>
+                          Requires Aadhaar Card & Self Address
+                        </p>
+                      </div>
+
+                      <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#F59E0B", color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 4px 12px rgba(245,158,11,0.3)" }}>
+                        <IconChevronRight size={22} color="#FFF" />
+                      </div>
+                    </div>
+
+                    {/* BOTTOM FEATURES 4-COLUMNS GRID */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, paddingTop: 12, borderTop: "1px solid #F1F5F9", textAlign: "center" }}>
+                      {[
+                        { icon: "₹", label: "Earn Extra\nIncome" },
+                        { icon: "📅", label: "Set Your Own\nAvailability" },
+                        { icon: "🛡️", label: "100% Safe &\nVerified" },
+                        { icon: "📊", label: "Track Earnings\nEasily" }
+                      ].map((feat, i) => (
+                        <div key={i} style={{ padding: "4px 2px", borderRight: i < 3 ? "1px solid #F1F5F9" : "none" }}>
+                          <span style={{ fontSize: 18, display: "block", marginBottom: 3, fontWeight: 900, color: "#D97706" }}>{feat.icon}</span>
+                          <span style={{ fontSize: 9, fontWeight: 800, color: "#0F172A", whiteSpace: "pre-line", lineHeight: 1.25, display: "block" }}>
+                            {feat.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* BOTTOM MANDATORY SECURITY BANNER */}
+                <div style={{ background: "#FEF2F2", border: "1px solid #FCA5A5", borderRadius: 18, padding: "12px 14px", display: "flex", alignItems: "center", gap: 12, marginTop: "auto" }}>
+                  <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#FEE2E2", color: "#EF4444", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <IconLock size={20} color="#EF4444" />
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: "#991B1B", lineHeight: 1.35 }}>
+                    Mandatory Gate: Government KYC Verification is required before access
+                  </span>
+                </div>
+
+              </div>
+            )}
+
             {/* ─── SCREEN 06: EXACT MATCH TO USER'S REFERENCE LOGIN DESIGN ─── */}
             {activeScreen === "06" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "18px 24px 28px", justifyContent: "space-between", background: "#FFF", overflowY: "auto" }}>
