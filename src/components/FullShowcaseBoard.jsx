@@ -1327,7 +1327,7 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   {/* HERO CAR PHOTOGRAPH BANNER */}
-                  <div style={{ width: "100%", height: 210, borderRadius: 24, overflow: "hidden", position: "relative", marginBottom: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.08)", border: "1px solid #F1F5F9" }}>
+                  <div style={{ width: "100%", height: 230, borderRadius: 24, overflow: "hidden", position: "relative", marginBottom: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.08)", border: "1px solid #F1F5F9" }}>
                     <SmartImage 
                       sources={[
                         process.env.PUBLIC_URL + "/assets/ola_splash.png", 
@@ -1335,6 +1335,7 @@ export default function FullShowcaseBoard() {
                         process.env.PUBLIC_URL + "/assets/splash_city_car.png"
                       ]} 
                       alt="Luxury Car in City Skyline" 
+                      style={{ objectPosition: "center 88%", objectFit: "cover" }}
                     />
                   </div>
 
