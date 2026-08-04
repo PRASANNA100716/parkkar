@@ -1291,64 +1291,96 @@ export default function FullShowcaseBoard() {
           {/* SCREEN CONTENT AREA */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
             
-            {/* ─── SCREEN 01: OLA / UBER STYLE PREMIUM SPLASH SCREEN ─── */}
+            {/* ─── SCREEN 01: OLA / UBER STYLE PREMIUM SPLASH SCREEN (EXACT MATCH TO USER REFERENCE DESIGN) ─── */}
             {activeScreen === "01" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "28px 20px 20px", background: "#FFFFFF", position: "relative", overflow: "hidden" }}>
-                
-                {/* BRAND HEADER: OFFICIAL PARKKAR LOGO */}
-                <div style={{ textAlign: "center", marginTop: 4, zIndex: 10 }}>
-                  <img 
-                    src={process.env.PUBLIC_URL + "/assets/official_logo.png"} 
-                    alt="PARKKAR Official Logo" 
-                    style={{ width: "100%", maxWidth: 260, height: "auto", display: "block", margin: "0 auto 6px", filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.08))" }} 
-                  />
-                </div>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 20px 24px", background: "#FFFFFF", overflowY: "auto" }}>
+                <div>
+                  {/* BRAND HEADER: OFFICIAL PARKKAR LOGO */}
+                  <div style={{ textAlign: "center", marginBottom: 12 }}>
+                    <img 
+                      src={process.env.PUBLIC_URL + "/assets/official_logo.png"} 
+                      alt="PARKKAR Official Logo" 
+                      style={{ width: "100%", maxWidth: 220, height: "auto", display: "block", margin: "0 auto 6px" }} 
+                    />
+                  </div>
 
-                {/* HERO CAR ILLUSTRATION CONTAINER WITH INTEGRATED PIN ON CAR ROOF */}
-                <div style={{ width: "100%", flex: 1, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", margin: "10px 0" }}>
-                  <div style={{ width: "100%", height: 310, borderRadius: 28, overflow: "hidden", position: "relative", boxShadow: "0 14px 35px rgba(0,0,0,0.08)", border: "1px solid #F1F5F9" }}>
-                    
-                    {/* FLOATING MAP PIN PINNED ACCURATELY ON TOP OF WHITE CAR ROOF */}
-                    <div style={{ 
-                      position: "absolute", 
-                      top: "22%", 
-                      left: "50%", 
-                      transform: "translateX(-50%)", 
-                      zIndex: 15,
-                      filter: "drop-shadow(0 10px 24px rgba(34,197,94,0.65))"
-                    }}>
-                      <svg viewBox="0 0 100 120" width="56" height="66" fill="none">
-                        <path d="M50 0 C22.4 0 0 22.4 0 50 C0 80 50 120 50 120 C50 120 100 80 100 50 C100 22.4 77.6 0 50 0 Z" fill="#22C55E" />
-                        <circle cx="50" cy="46" r="28" fill="#16A34A" />
-                        <text x="50" y="58" font-family="system-ui, sans-serif" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">P</text>
-                      </svg>
+                  {/* MAIN HEADLINE */}
+                  <div style={{ textAlign: "center", marginBottom: 10 }}>
+                    <h1 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 2px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
+                      Find. Book. Park.
+                    </h1>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: "#22C55E", fontStyle: "italic", position: "relative", display: "inline-block" }}>
+                      Anytime, Anywhere.
+                      <div style={{ width: 40, height: 3, background: "#22C55E", borderRadius: 2, margin: "2px auto 0" }} />
                     </div>
+                    <p style={{ fontSize: 12, color: "#64748B", margin: "8px 0 0", fontWeight: 600, lineHeight: 1.4 }}>
+                      Find nearby parking spots instantly <br/> and book with ease.
+                    </p>
+                  </div>
 
+                  {/* HERO CAR PHOTOGRAPH BANNER */}
+                  <div style={{ width: "100%", height: 210, borderRadius: 24, overflow: "hidden", position: "relative", marginBottom: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.08)", border: "1px solid #F1F5F9" }}>
                     <SmartImage 
                       sources={[
                         process.env.PUBLIC_URL + "/assets/ola_splash.png", 
-                        process.env.PUBLIC_URL + "/assets/splash_city_car.png", 
-                        process.env.PUBLIC_URL + "/assets/driver_car.png"
+                        process.env.PUBLIC_URL + "/assets/driver_car.png",
+                        process.env.PUBLIC_URL + "/assets/splash_city_car.png"
                       ]} 
-                      alt="Paarkkar Ola Style City Car" 
+                      alt="Luxury Car in City Skyline" 
                     />
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(255,255,255,0.7) 0%, transparent 50%)" }} />
+                  </div>
+
+                  {/* 4 FEATURE ICONS GRID */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 12, textAlign: "center" }}>
+                    {[
+                      { icon: <IconSearch size={16} color="#16A34A" />, title: "Find Nearby", desc: "Parking Spots", bg: "#DCFCE7" },
+                      { icon: <IconShieldCheck size={16} color="#16A34A" />, title: "Safe & Secure", desc: "Verified Hosts", bg: "#DCFCE7" },
+                      { icon: "📅", title: "Book Instantly", desc: "In Just Seconds", bg: "#DCFCE7" },
+                      { icon: <IconWalletCard size={16} color="#16A34A" />, title: "Cashless", desc: "Payments", bg: "#DCFCE7" }
+                    ].map((feat, idx) => (
+                      <div key={idx} style={{ padding: "10px 4px", borderRadius: 14, background: "#FFFFFF", border: "1px solid #F1F5F9", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
+                        <div style={{ width: 30, height: 30, borderRadius: "50%", background: feat.bg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px", fontSize: 13, color: "#16A34A" }}>
+                          {feat.icon}
+                        </div>
+                        <span style={{ fontSize: 9, fontWeight: 900, color: "#0F172A", display: "block" }}>{feat.title}</span>
+                        <span style={{ fontSize: 8, color: "#64748B", fontWeight: 600, display: "block" }}>{feat.desc}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* TRUSTED BY THOUSANDS GREEN BANNER WITH 5 STARS */}
+                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: "8px 12px", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 8, background: "#DCFCE7", color: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <IconShieldCheck size={16} color="#16A34A" />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 900, color: "#15803D", display: "block" }}>Trusted by thousands of users</span>
+                        <span style={{ fontSize: 9, color: "#64748B", fontWeight: 600 }}>Secure. Reliable. Hassle-free.</span>
+                      </div>
+                    </div>
+                    <div style={{ color: "#16A34A", fontSize: 10, letterSpacing: 1 }}>
+                      ★★★★★
+                    </div>
                   </div>
                 </div>
 
                 {/* BOTTOM ACTION BUTTONS */}
-                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10, zIndex: 20 }}>
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
                   <button 
-                    onClick={() => setActiveScreen("02")} 
-                    style={{ width: "100%", padding: "16px", borderRadius: 18, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 900, cursor: "pointer", boxShadow: "0 8px 24px rgba(34,197,94,0.38)" }}
+                    onClick={() => setActiveScreen("05")} 
+                    style={{ width: "100%", padding: "14px 20px", borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 900, cursor: "pointer", boxShadow: "0 6px 20px rgba(34,197,94,0.35)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
                   >
-                    Get Started
+                    <span>Get Started</span>
+                    <div style={{ position: "absolute", right: 14, width: 30, height: 30, borderRadius: "50%", background: "#FFF", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <IconChevronRight size={16} color="#22C55E" />
+                    </div>
                   </button>
                   <button 
                     onClick={() => setActiveScreen("06")} 
-                    style={{ width: "100%", padding: "14px", borderRadius: 18, background: "#FFFFFF", border: "1.5px solid #E2E8F0", color: "#0F172A", fontSize: 14, fontWeight: 800, cursor: "pointer", boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}
+                    style={{ width: "100%", padding: "12px", borderRadius: 16, background: "#FFFFFF", border: "1.5px solid #DCFCE7", color: "#475569", fontSize: 13, fontWeight: 800, cursor: "pointer" }}
                   >
-                    Already have an account? Sign In
+                    Already have an account? <span style={{ color: "#22C55E", fontWeight: 900 }}>Sign In</span>
                   </button>
                 </div>
 
