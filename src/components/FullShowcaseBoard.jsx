@@ -43,7 +43,7 @@ const IconMenu = ({ size = 20, color = "currentColor" }) => (
 );
 
 const IconFilter = ({ size = 18, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
   </svg>
 );
@@ -85,6 +85,17 @@ const IconCamera = ({ size = 22, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
     <circle cx="12" cy="13" r="4" />
+  </svg>
+);
+
+const IconTarget = ({ size = 18, color = "currentColor" }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="4" />
+    <line x1="12" y1="2" x2="12" y2="4" />
+    <line x1="12" y1="20" x2="12" y2="22" />
+    <line x1="2" y1="12" x2="4" y2="12" />
+    <line x1="20" y1="12" x2="22" y2="12" />
   </svg>
 );
 
@@ -333,7 +344,7 @@ const INITIAL_TAMIL_NADU_SPOTS = [
   }
 ];
 
-// ─── HIGH-PERFORMANCE RAPIDO/OLA STYLE TAMIL NADU MAP ENGINE ────────────────
+// ─── HIGH-PERFORMANCE CLEAN WHITE MAP ENGINE ────────────────
 function TamilNaduMap({ spotsList, selectedSpot, onSelectSpot }) {
   const mapContainerRef = useRef(null);
   const leafletInstanceRef = useRef(null);
@@ -364,7 +375,8 @@ function TamilNaduMap({ spotsList, selectedSpot, onSelectSpot }) {
 
       leafletInstanceRef.current = map;
 
-      window.L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      // CLEAN CRISP WHITE MAP TILE THEME (CartoDB Voyager / Positron)
+      window.L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
         subdomains: 'abcd'
       }).addTo(map);
@@ -376,15 +388,15 @@ function TamilNaduMap({ spotsList, selectedSpot, onSelectSpot }) {
           <div style="
             background: ${isSelected ? '#F59E0B' : '#22C55E'}; 
             color: #FFF; 
-            padding: 5px 10px; 
+            padding: 6px 12px; 
             border-radius: 14px; 
             font-weight: 900; 
-            font-size: 12px; 
-            box-shadow: 0 4px 14px rgba(0,0,0,0.5); 
+            font-size: 13px; 
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25); 
             border: 2px solid #FFF; 
             cursor: pointer;
             white-space: nowrap;
-            transform: ${isSelected ? 'scale(1.15)' : 'scale(1.0)'};
+            transform: ${isSelected ? 'scale(1.18)' : 'scale(1.0)'};
             transition: transform 0.2s;
           ">
             ₹${spot.price}/hr
@@ -394,8 +406,8 @@ function TamilNaduMap({ spotsList, selectedSpot, onSelectSpot }) {
         const customIcon = window.L.divIcon({
           className: `custom-price-pin-${spot.id}`,
           html: pinHtml,
-          iconSize: [70, 30],
-          iconAnchor: [35, 15]
+          iconSize: [75, 32],
+          iconAnchor: [37, 16]
         });
 
         const marker = window.L.marker([spot.lat, spot.lng], { icon: customIcon }).addTo(map);
@@ -422,7 +434,7 @@ function TamilNaduMap({ spotsList, selectedSpot, onSelectSpot }) {
     }
   }, [selectedSpot]);
 
-  return <div ref={mapContainerRef} style={{ width: "100%", height: "100%", background: "#0F172A" }} />;
+  return <div ref={mapContainerRef} style={{ width: "100%", height: "100%", background: "#F8FAFC" }} />;
 }
 
 export default function FullShowcaseBoard() {
@@ -431,6 +443,9 @@ export default function FullShowcaseBoard() {
   const [otpVal, setOtpVal] = useState(["2", "4", "6", "8", "2", "1"]);
   const [showQuickNav, setShowQuickNav] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+
+  // Hidden File Input Ref for Host Photo Upload
+  const fileInputRef = useRef(null);
 
   // Dynamic Tamil Nadu Spots Database State
   const [allSpots, setAllSpots] = useState(INITIAL_TAMIL_NADU_SPOTS);
@@ -468,6 +483,63 @@ export default function FullShowcaseBoard() {
   });
 
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+
+  // GPS Location Fetch Functionality
+  const handleFetchUserLocation = () => {
+    setIsLocating(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const userLat = pos.coords.latitude;
+          const userLng = pos.coords.longitude;
+          const userGpsSpot = {
+            id: "sp_user_gps_" + Date.now(),
+            title: "📍 My Live GPS Location",
+            address: "Live Location (Tamil Nadu)",
+            price: 50,
+            rating: "5.0 (GPS)",
+            lat: userLat,
+            lng: userLng,
+            imgSources: REAL_IMAGES.garage,
+            city: "Chennai",
+            badge: "YOUR LOCATION",
+            photoComponent: <RealGaragePhoto height={200} badge="YOUR GPS LOCATION • TAMIL NADU" />,
+            about: "Your live GPS position detected accurately."
+          };
+
+          setAllSpots(prev => [userGpsSpot, ...prev]);
+          setSelectedSpot(userGpsSpot);
+          setSearchQuery("Live GPS Location, Tamil Nadu");
+          setIsLocating(false);
+        },
+        (err) => {
+          console.warn("GPS failed, using Chennai center fallback:", err);
+          const defaultSpot = INITIAL_TAMIL_NADU_SPOTS[0];
+          setSelectedSpot(defaultSpot);
+          setSearchQuery("Anna Nagar, Chennai (Tamil Nadu)");
+          setIsLocating(false);
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    } else {
+      setIsLocating(false);
+    }
+  };
+
+  // Host Photo File Upload Handler
+  const handlePhotoFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        if (uploadEvent.target?.result) {
+          setHostForm(prev => ({ ...prev, photoUrl: uploadEvent.target.result }));
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Dynamic AI Pricing Calculation
   const aiRate = calculateAISmartPrice(hostForm.address, hostForm.city, hostForm.type, hostForm.amenities);
@@ -955,10 +1027,10 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 08: HOME / SEARCH (INTERACTIVE TAMIL NADU MAP) ─── */}
+            {/* ─── SCREEN 08: HOME / SEARCH (CLEAN WHITE MAP + LIVE GPS FETCH) ─── */}
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
-                <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
+                <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
                   <button onClick={() => setShowDrawer(true)} style={{ background: "none", border: "none", cursor: "pointer" }}>
                     <IconMenu size={22} color="#0F172A" />
                   </button>
@@ -971,16 +1043,28 @@ export default function FullShowcaseBoard() {
                   </button>
                 </div>
 
-                <div style={{ padding: "8px 16px 12px", background: "#FFF", display: "flex", flexDirection: "column", gap: 8 }}>
-                  <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 14, padding: "10px 14px", alignItems: "center", gap: 10 }}>
+                <div style={{ padding: "8px 16px 12px", background: "#FFF", display: "flex", flexDirection: "column", gap: 8, boxShadow: "0 2px 10px rgba(0,0,0,0.04)", zIndex: 10 }}>
+                  <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 14, padding: "8px 12px", alignItems: "center", gap: 8 }}>
                     <IconSearch size={18} color="#64748B" />
                     <input 
                       type="text" 
                       placeholder="Search location" 
                       value={searchQuery} 
                       onChange={(e) => setSearchQuery(e.target.value)} 
-                      style={{ border: "none", background: "transparent", outline: "none", flex: 1, fontWeight: 700, fontSize: 14, color: "#0F172A" }} 
+                      style={{ border: "none", background: "transparent", outline: "none", flex: 1, fontWeight: 700, fontSize: 13, color: "#0F172A" }} 
                     />
+
+                    {/* LIVE GPS LOCATION FETCH BUTTON */}
+                    <button 
+                      onClick={handleFetchUserLocation}
+                      disabled={isLocating}
+                      title="Fetch My Live GPS Location"
+                      style={{ background: "#DCFCE7", border: "1px solid #BBF7D0", color: "#16A34A", padding: "6px 10px", borderRadius: 10, fontWeight: 800, fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}
+                    >
+                      <IconTarget size={14} color="#16A34A" />
+                      <span>{isLocating ? "Locating..." : "GPS"}</span>
+                    </button>
+
                     <button onClick={() => setActiveScreen("09")} style={{ background: "none", border: "none", cursor: "pointer" }}>
                       <IconFilter size={18} color="#64748B" />
                     </button>
@@ -1018,7 +1102,8 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                <div style={{ flex: 1, background: "#0F172A", position: "relative", overflow: "hidden" }}>
+                {/* CLEAN CRISP WHITE MAP CONTAINER */}
+                <div style={{ flex: 1, background: "#F8FAFC", position: "relative", overflow: "hidden" }}>
                   <TamilNaduMap 
                     spotsList={allSpots}
                     selectedSpot={selectedSpot} 
@@ -1028,7 +1113,7 @@ export default function FullShowcaseBoard() {
                     }} 
                   />
 
-                  <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.25)", display: "flex", gap: 12, alignItems: "center", zIndex: 500 }}>
+                  <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.15)", display: "flex", gap: 12, alignItems: "center", zIndex: 500, border: "1px solid #E2E8F0" }}>
                     <div style={{ width: 74, height: 74, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
                       <SmartImage sources={selectedSpot.imgSources} alt="spot" />
                     </div>
@@ -1882,7 +1967,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 33: HOST FORM STEP 3 ─── */}
+            {/* ─── SCREEN 33: HOST FORM STEP 3 (REAL WORKING PHOTO UPLOADER) ─── */}
             {activeScreen === "33" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between" }}>
                 <div>
@@ -1893,22 +1978,37 @@ export default function FullShowcaseBoard() {
                     <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Step 3: Upload Space Photo</span>
                   </div>
 
-                  <div style={{ width: "100%", height: 200, borderRadius: 20, overflow: "hidden", position: "relative", marginBottom: 16, border: "2px solid #22C55E" }}>
+                  {/* REAL IMAGE PREVIEW BOX */}
+                  <div style={{ width: "100%", height: 210, borderRadius: 20, overflow: "hidden", position: "relative", marginBottom: 16, border: "2.5px solid #22C55E", boxShadow: "0 6px 20px rgba(34,197,94,0.2)" }}>
                     <SmartImage sources={[hostForm.photoUrl]} alt="Upload Preview" />
-                    <div style={{ position: "absolute", bottom: 12, left: 12, background: "rgba(15,23,42,0.85)", color: "#22C55E", padding: "4px 10px", borderRadius: 8, fontSize: 11, fontWeight: 900 }}>
-                      ✓ READY FOR UPLOAD
+                    <div style={{ position: "absolute", bottom: 12, left: 12, background: "rgba(15,23,42,0.9)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 900, backdropFilter: "blur(6px)" }}>
+                      ✓ READY FOR LIVE PUBLISH
                     </div>
                   </div>
 
-                  <div style={{ border: "2px dashed #CBD5E1", borderRadius: 16, padding: 20, textAlign: "center", background: "#F8FAFC", marginBottom: 16 }}>
-                    <div style={{ width: 50, height: 50, borderRadius: "50%", background: "#22C55E", color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
-                      <IconCamera size={24} color="#FFF" />
+                  {/* HIDDEN FILE INPUT */}
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    accept="image/*" 
+                    onChange={handlePhotoFileUpload} 
+                    style={{ display: "none" }} 
+                  />
+
+                  {/* CLICKABLE UPLOAD TARGET BOX */}
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{ border: "2px dashed #22C55E", borderRadius: 18, padding: 20, textAlign: "center", background: "#F0FDF4", marginBottom: 16, cursor: "pointer" }}
+                  >
+                    <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#22C55E", color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px", boxShadow: "0 4px 12px rgba(34,197,94,0.3)" }}>
+                      <IconCamera size={26} color="#FFF" />
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", display: "block" }}>Tap to Take or Choose Photo</span>
-                    <span style={{ fontSize: 11, color: "#94A3B8" }}>Supports JPG, PNG & Camera Snap</span>
+                    <span style={{ fontSize: 14, fontWeight: 900, color: "#16A34A", display: "block" }}>📸 Tap to Choose Photo / Take Picture</span>
+                    <span style={{ fontSize: 11, color: "#64748B", marginTop: 2, display: "block" }}>Select any image from phone storage or camera</span>
                   </div>
 
-                  <label style={{ fontSize: 11, fontWeight: 800, color: "#64748B", display: "block", marginBottom: 6 }}>Or Select Sample Photo:</label>
+                  {/* HIGH QUALITY SAMPLE PHOTO PICKER */}
+                  <label style={{ fontSize: 11, fontWeight: 800, color: "#64748B", display: "block", marginBottom: 6 }}>Or Select Sample Spot Photo:</label>
                   <div style={{ display: "flex", gap: 10 }}>
                     {[
                       "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Parkhaus_Dresden_Altmarkt.jpg/800px-Parkhaus_Dresden_Altmarkt.jpg",
@@ -1918,7 +2018,7 @@ export default function FullShowcaseBoard() {
                       <div 
                         key={i}
                         onClick={() => setHostForm({...hostForm, photoUrl: url})}
-                        style={{ width: 70, height: 60, borderRadius: 10, overflow: "hidden", border: hostForm.photoUrl === url ? "2px solid #22C55E" : "1px solid #E2E8F0", cursor: "pointer" }}
+                        style={{ width: 75, height: 60, borderRadius: 12, overflow: "hidden", border: hostForm.photoUrl === url ? "2.5px solid #22C55E" : "1px solid #E2E8F0", cursor: "pointer" }}
                       >
                         <SmartImage sources={[url]} alt="sample" />
                       </div>
@@ -1930,7 +2030,7 @@ export default function FullShowcaseBoard() {
                   onClick={() => setActiveScreen("34")}
                   style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
                 >
-                  Next: Review & Publish
+                  Next: Review & Publish ➔
                 </button>
               </div>
             )}
