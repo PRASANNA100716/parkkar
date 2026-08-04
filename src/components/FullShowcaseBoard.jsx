@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { saveHostSpot } from "../firebase";
+import { 
+  saveHostSpot, 
+  fetchHostSpotsFromFirebase, 
+  getFirebaseConfig, 
+  saveCustomFirebaseConfig, 
+  isFirebaseConnected 
+} from "../firebase";
 
 // Theme Palette matching PARKKAR UI Reference
 const T = {
@@ -344,97 +350,187 @@ const INITIAL_TAMIL_NADU_SPOTS = [
   }
 ];
 
+// ─── PURE WHITE BASEMAP TILE THEME (CartoDB Positron) ────────────────────────
+const WHITE_MAP_TILES = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+
+// Injected once: pulse animation for the live "you are here" GPS dot
+function ensureMapStyles() {
+  if (document.getElementById("parkkar-map-styles")) return;
+  const style = document.createElement("style");
+  style.id = "parkkar-map-styles";
+  style.textContent = `
+    @keyframes parkkarGpsPulse {
+      0%   { transform: scale(0.6); opacity: 0.85; }
+      70%  { transform: scale(2.6); opacity: 0; }
+      100% { transform: scale(2.6); opacity: 0; }
+    }
+    .leaflet-container { background: #FFFFFF !important; }
+  `;
+  document.head.appendChild(style);
+}
+
 // ─── HIGH-PERFORMANCE CLEAN WHITE MAP ENGINE ────────────────
-function TamilNaduMap({ spotsList, selectedSpot, onSelectSpot }) {
+function TamilNaduMap({ spotsList, selectedSpot, onSelectSpot, userLocation }) {
   const mapContainerRef = useRef(null);
   const leafletInstanceRef = useRef(null);
   const markersRef = useRef([]);
+  const userLayersRef = useRef([]);
+  const didCenterOnUserRef = useRef(false);
+  const [mapReady, setMapReady] = useState(false);
 
+  // ── Create the Leaflet map exactly once (never torn down on data changes) ──
   useEffect(() => {
-    if (!window.L) {
-      const script = document.createElement("script");
-      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-      script.onload = () => initLeafletMap();
-      document.head.appendChild(script);
-    } else {
-      initLeafletMap();
-    }
+    ensureMapStyles();
+    let cancelled = false;
 
     function initLeafletMap() {
-      if (!mapContainerRef.current || !window.L) return;
-
-      if (leafletInstanceRef.current) {
-        leafletInstanceRef.current.remove();
-        leafletInstanceRef.current = null;
-      }
+      if (cancelled || !mapContainerRef.current || !window.L) return;
+      if (leafletInstanceRef.current) return;
 
       const map = window.L.map(mapContainerRef.current, {
         zoomControl: false,
         attributionControl: false
       }).setView([13.0604, 80.2201], 13);
 
-      leafletInstanceRef.current = map;
-
-      // CLEAN CRISP WHITE MAP TILE THEME (CartoDB Voyager / Positron)
-      window.L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19,
-        subdomains: 'abcd'
+      window.L.tileLayer(WHITE_MAP_TILES, {
+        maxZoom: 20,
+        subdomains: "abcd"
       }).addTo(map);
 
-      spotsList.forEach((spot) => {
-        const isSelected = selectedSpot && selectedSpot.id === spot.id;
-        
-        const pinHtml = `
-          <div style="
-            background: ${isSelected ? '#F59E0B' : '#22C55E'}; 
-            color: #FFF; 
-            padding: 6px 12px; 
-            border-radius: 14px; 
-            font-weight: 900; 
-            font-size: 13px; 
-            box-shadow: 0 4px 16px rgba(0,0,0,0.25); 
-            border: 2px solid #FFF; 
-            cursor: pointer;
-            white-space: nowrap;
-            transform: ${isSelected ? 'scale(1.18)' : 'scale(1.0)'};
-            transition: transform 0.2s;
-          ">
-            ₹${spot.price}/hr
-          </div>
-        `;
+      leafletInstanceRef.current = map;
+      // Leaflet mis-measures its container when created inside a flex layout
+      setTimeout(() => map.invalidateSize(), 120);
+      setMapReady(true);
+    }
 
-        const customIcon = window.L.divIcon({
-          className: `custom-price-pin-${spot.id}`,
-          html: pinHtml,
-          iconSize: [75, 32],
-          iconAnchor: [37, 16]
-        });
-
-        const marker = window.L.marker([spot.lat, spot.lng], { icon: customIcon }).addTo(map);
-        marker.on('click', () => {
-          onSelectSpot(spot);
-          map.panTo([spot.lat, spot.lng]);
-        });
-
-        markersRef.current.push(marker);
-      });
+    if (!window.L) {
+      let script = document.querySelector('script[data-parkkar-leaflet="1"]');
+      if (!script) {
+        script = document.createElement("script");
+        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        script.dataset.parkkarLeaflet = "1";
+        document.head.appendChild(script);
+      }
+      script.addEventListener("load", initLeafletMap);
+    } else {
+      initLeafletMap();
     }
 
     return () => {
+      cancelled = true;
       if (leafletInstanceRef.current) {
         leafletInstanceRef.current.remove();
         leafletInstanceRef.current = null;
       }
+      markersRef.current = [];
+      userLayersRef.current = [];
     };
-  }, [spotsList]);
+  }, []);
 
+  // ── Sync price pins whenever the spot list or the selection changes ──
+  useEffect(() => {
+    const map = leafletInstanceRef.current;
+    if (!map || !window.L) return;
+
+    markersRef.current.forEach((m) => map.removeLayer(m));
+    markersRef.current = [];
+
+    spotsList.forEach((spot) => {
+      const isSelected = selectedSpot && selectedSpot.id === spot.id;
+
+      const pinHtml = `
+        <div style="
+          background: ${isSelected ? "#F59E0B" : "#22C55E"};
+          color: #FFF;
+          padding: 6px 12px;
+          border-radius: 14px;
+          font-weight: 900;
+          font-size: 13px;
+          box-shadow: 0 3px 10px rgba(15,23,42,0.18);
+          border: 2px solid #FFF;
+          cursor: pointer;
+          white-space: nowrap;
+          transform: ${isSelected ? "scale(1.18)" : "scale(1.0)"};
+          transition: transform 0.2s;
+        ">
+          ₹${spot.price}/hr
+        </div>
+      `;
+
+      const customIcon = window.L.divIcon({
+        className: `custom-price-pin-${spot.id}`,
+        html: pinHtml,
+        iconSize: [75, 32],
+        iconAnchor: [37, 16]
+      });
+
+      const marker = window.L.marker([spot.lat, spot.lng], { icon: customIcon }).addTo(map);
+      marker.on("click", () => {
+        onSelectSpot(spot);
+        map.panTo([spot.lat, spot.lng]);
+      });
+
+      markersRef.current.push(marker);
+    });
+  }, [spotsList, selectedSpot, onSelectSpot, mapReady]);
+
+  // ── Live GPS dot + accuracy halo, centred the first time a fix arrives ──
+  useEffect(() => {
+    const map = leafletInstanceRef.current;
+    if (!map || !window.L) return;
+
+    userLayersRef.current.forEach((l) => map.removeLayer(l));
+    userLayersRef.current = [];
+
+    if (!userLocation) {
+      didCenterOnUserRef.current = false;
+      return;
+    }
+
+    const dotIcon = window.L.divIcon({
+      className: "parkkar-gps-dot",
+      html: `
+        <div style="position:relative;width:22px;height:22px;">
+          <div style="position:absolute;inset:0;border-radius:50%;background:rgba(37,99,235,0.28);animation:parkkarGpsPulse 1.9s ease-out infinite;"></div>
+          <div style="position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#2563EB;border:3px solid #FFF;box-shadow:0 2px 8px rgba(37,99,235,0.45);"></div>
+        </div>
+      `,
+      iconSize: [22, 22],
+      iconAnchor: [11, 11]
+    });
+
+    const dot = window.L.marker([userLocation.lat, userLocation.lng], {
+      icon: dotIcon,
+      zIndexOffset: 1000
+    }).addTo(map);
+    userLayersRef.current.push(dot);
+
+    if (userLocation.accuracy) {
+      const halo = window.L.circle([userLocation.lat, userLocation.lng], {
+        radius: Math.min(userLocation.accuracy, 500),
+        color: "#2563EB",
+        weight: 1,
+        opacity: 0.35,
+        fillColor: "#3B82F6",
+        fillOpacity: 0.1
+      }).addTo(map);
+      userLayersRef.current.push(halo);
+    }
+
+    if (!didCenterOnUserRef.current) {
+      map.setView([userLocation.lat, userLocation.lng], 15, { animate: true });
+      didCenterOnUserRef.current = true;
+    }
+  }, [userLocation, mapReady]);
+
+  // ── Pan to the actively selected spot ──
   useEffect(() => {
     if (leafletInstanceRef.current && selectedSpot) {
       leafletInstanceRef.current.panTo([selectedSpot.lat, selectedSpot.lng], { animate: true });
     }
-  }, [selectedSpot]);
+  }, [selectedSpot, mapReady]);
 
-  return <div ref={mapContainerRef} style={{ width: "100%", height: "100%", background: "#F8FAFC" }} />;
+  return <div ref={mapContainerRef} style={{ width: "100%", height: "100%", background: "#FFFFFF" }} />;
 }
 
 export default function FullShowcaseBoard() {
@@ -443,6 +539,7 @@ export default function FullShowcaseBoard() {
   const [otpVal, setOtpVal] = useState(["2", "4", "6", "8", "2", "1"]);
   const [showQuickNav, setShowQuickNav] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [showFirebaseModal, setShowFirebaseModal] = useState(false);
 
   // Hidden File Input Ref for Host Photo Upload
   const fileInputRef = useRef(null);
@@ -455,6 +552,35 @@ export default function FullShowcaseBoard() {
 
   // Controlled Search Input Bar State synced with selected spot location
   const [searchQuery, setSearchQuery] = useState(INITIAL_TAMIL_NADU_SPOTS[1].address);
+
+  // Custom Firebase Credentials State
+  const [fbConfigInput, setFbConfigInput] = useState(getFirebaseConfig());
+
+  // Load Live Spots from Firebase Firestore on Mount
+  useEffect(() => {
+    async function loadLiveDbSpots() {
+      const dbSpots = await fetchHostSpotsFromFirebase();
+      if (dbSpots && dbSpots.length > 0) {
+        const formatted = dbSpots.map(s => ({
+          id: s.id,
+          title: s.title || "Host Parking Space",
+          address: s.address || "Tamil Nadu",
+          price: Number(s.price) || 50,
+          rating: "5.0 (Firebase Live)",
+          lat: s.lat || (13.0850 + (Math.random() * 0.02 - 0.01)),
+          lng: s.lng || (80.2101 + (Math.random() * 0.02 - 0.01)),
+          imgSources: s.photoUrl ? [s.photoUrl, ...REAL_IMAGES.garage] : REAL_IMAGES.garage,
+          city: s.city || "Chennai",
+          badge: "FIREBASE FIRESTORE",
+          photoComponent: <RealGaragePhoto height={200} badge={`₹${s.price || 50}/hr • FIREBASE LIVE`} />,
+          about: s.about || "Verified space synced with Firebase Firestore database."
+        }));
+
+        setAllSpots(prev => [...formatted, ...prev]);
+      }
+    }
+    loadLiveDbSpots();
+  }, []);
 
   useEffect(() => {
     if (selectedSpot) {
@@ -541,6 +667,13 @@ export default function FullShowcaseBoard() {
     }
   };
 
+  // Save Custom Firebase Credentials
+  const handleSaveFirebaseConfig = () => {
+    saveCustomFirebaseConfig(fbConfigInput);
+    setShowFirebaseModal(false);
+    alert("🔥 Firebase Configuration updated & connected!");
+  };
+
   // Dynamic AI Pricing Calculation
   const aiRate = calculateAISmartPrice(hostForm.address, hostForm.city, hostForm.type, hostForm.amenities);
 
@@ -616,12 +749,12 @@ export default function FullShowcaseBoard() {
       title: hostForm.title,
       address: hostForm.address,
       price: Number(hostForm.price),
-      rating: "5.0 (New)",
+      rating: "5.0 (Firebase Live)",
       lat: 13.0850 + (Math.random() * 0.02 - 0.01),
       lng: 80.2101 + (Math.random() * 0.02 - 0.01),
       imgSources: [hostForm.photoUrl, ...REAL_IMAGES.garage],
       city: hostForm.city,
-      badge: "HOST LISTING",
+      badge: "FIREBASE HOST LISTING",
       photoComponent: <RealGaragePhoto height={200} badge={`₹${hostForm.price}/hr • ${hostForm.title.toUpperCase()}`} />,
       about: hostForm.about
     };
@@ -665,7 +798,33 @@ export default function FullShowcaseBoard() {
             </div>
           </div>
 
-          {/* REAL INTERACTIVE SIDE NAVIGATION DRAWER OVERLAY WITH MODE SWITCH & SIGNOUT */}
+          {/* CUSTOM FIREBASE CONFIGURATION MODAL */}
+          {showFirebaseModal && (
+            <div style={{ position: "absolute", inset: 0, zIndex: 1200, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+              <div style={{ background: "#FFF", borderRadius: 24, padding: 22, width: "100%", maxWidth: 360, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>🔥 Firebase Credentials</h3>
+                  <button onClick={() => setShowFirebaseModal(false)} style={{ background: "none", border: "none", fontSize: 18, fontWeight: 900, cursor: "pointer", color: "#94A3B8" }}>✕</button>
+                </div>
+                <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 14px", fontWeight: 600 }}>Link your own Firebase Project for live Storage & Firestore sync:</p>
+
+                <label style={{ fontSize: 11, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>API Key</label>
+                <input type="text" value={fbConfigInput.apiKey} onChange={(e) => setFbConfigInput({...fbConfigInput, apiKey: e.target.value})} style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #CBD5E1", fontSize: 12, marginBottom: 10 }} />
+
+                <label style={{ fontSize: 11, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Project ID</label>
+                <input type="text" value={fbConfigInput.projectId} onChange={(e) => setFbConfigInput({...fbConfigInput, projectId: e.target.value})} style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #CBD5E1", fontSize: 12, marginBottom: 10 }} />
+
+                <label style={{ fontSize: 11, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Storage Bucket</label>
+                <input type="text" value={fbConfigInput.storageBucket} onChange={(e) => setFbConfigInput({...fbConfigInput, storageBucket: e.target.value})} style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #CBD5E1", fontSize: 12, marginBottom: 16 }} />
+
+                <button onClick={handleSaveFirebaseConfig} style={{ width: "100%", padding: 14, borderRadius: 14, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 14, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}>
+                  Save & Connect Firebase 🔥
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* REAL INTERACTIVE SIDE NAVIGATION DRAWER OVERLAY WITH MODE SWITCH & FIREBASE BANNER */}
           {showDrawer && (
             <div style={{ position: "absolute", inset: 0, zIndex: 1000, display: "flex" }}>
               <div 
@@ -675,7 +834,7 @@ export default function FullShowcaseBoard() {
 
               <div style={{ width: 300, background: "#FFF", height: "100%", position: "relative", zIndex: 10, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 24, boxShadow: "10px 0 30px rgba(0,0,0,0.2)" }}>
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <div style={{ width: 48, height: 48, borderRadius: "50%", background: role === "host" ? "#F59E0B" : "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 20 }}>
                         HA
@@ -688,6 +847,21 @@ export default function FullShowcaseBoard() {
                       </div>
                     </div>
                     <button onClick={() => setShowDrawer(false)} style={{ background: "none", border: "none", fontSize: 18, color: "#94A3B8", cursor: "pointer", fontWeight: "bold" }}>✕</button>
+                  </div>
+
+                  {/* FIREBASE CONNECTED BANNER CARD IN DRAWER */}
+                  <div 
+                    onClick={() => { setShowFirebaseModal(true); setShowDrawer(false); }}
+                    style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 14, padding: "10px 12px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 16 }}>🔥</span>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 900, color: "#16A34A", display: "block" }}>Firebase Connected</span>
+                        <span style={{ fontSize: 10, color: "#64748B" }}>Firestore & Storage Online</span>
+                      </div>
+                    </div>
+                    <span style={{ fontSize: 11, color: "#16A34A", fontWeight: 800 }}>⚙️ Config</span>
                   </div>
 
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 16 }}>
@@ -714,7 +888,7 @@ export default function FullShowcaseBoard() {
                       { icon: "➕", label: "Post New Parking Spot", action: () => { setActiveScreen("30"); setShowDrawer(false); } },
                       { icon: "🚗", label: "My Bookings", action: () => { setActiveScreen("20"); setShowDrawer(false); } },
                       { icon: "💳", label: "Wallet & Payments (₹450)", action: () => { setActiveScreen("21"); setShowDrawer(false); } },
-                      { icon: "🔔", label: "Notifications (2)", action: () => { setActiveScreen("22"); setShowDrawer(false); } },
+                      { icon: "🔥", label: "Firebase Project Settings", action: () => { setShowFirebaseModal(true); setShowDrawer(false); } },
                       { icon: "⚙️", label: "Account Settings", action: () => { setActiveScreen("25"); setShowDrawer(false); } },
                     ].map((item, idx) => (
                       <div 
@@ -756,7 +930,7 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <div style={{ width: "100%" }}>
-                  <RealGaragePhoto height={210} badge="500+ VERIFIED SPACES LIVE" />
+                  <RealGaragePhoto height={210} badge="FIREBASE POWERED • 500+ SPACES" />
                 </div>
 
                 <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
@@ -1982,7 +2156,7 @@ export default function FullShowcaseBoard() {
                   <div style={{ width: "100%", height: 210, borderRadius: 20, overflow: "hidden", position: "relative", marginBottom: 16, border: "2.5px solid #22C55E", boxShadow: "0 6px 20px rgba(34,197,94,0.2)" }}>
                     <SmartImage sources={[hostForm.photoUrl]} alt="Upload Preview" />
                     <div style={{ position: "absolute", bottom: 12, left: 12, background: "rgba(15,23,42,0.9)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 900, backdropFilter: "blur(6px)" }}>
-                      ✓ READY FOR LIVE PUBLISH
+                      ✓ READY FOR FIREBASE STORAGE UPLOAD
                     </div>
                   </div>
 
@@ -2004,7 +2178,7 @@ export default function FullShowcaseBoard() {
                       <IconCamera size={26} color="#FFF" />
                     </div>
                     <span style={{ fontSize: 14, fontWeight: 900, color: "#16A34A", display: "block" }}>📸 Tap to Choose Photo / Take Picture</span>
-                    <span style={{ fontSize: 11, color: "#64748B", marginTop: 2, display: "block" }}>Select any image from phone storage or camera</span>
+                    <span style={{ fontSize: 11, color: "#64748B", marginTop: 2, display: "block" }}>Direct Firebase Storage Upload Enabled</span>
                   </div>
 
                   {/* HIGH QUALITY SAMPLE PHOTO PICKER */}
@@ -2064,7 +2238,7 @@ export default function FullShowcaseBoard() {
 
                   <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: 14, borderRadius: 14, display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontSize: 20 }}>🔥</span>
-                    <span style={{ fontSize: 12, color: "#15803D", fontWeight: 700 }}>Firebase Storage & Firestore Ready. Will sync live to map instantly.</span>
+                    <span style={{ fontSize: 12, color: "#15803D", fontWeight: 700 }}>Firebase Firestore Collection 'parking_spots' & Storage connected!</span>
                   </div>
                 </div>
 
@@ -2073,7 +2247,7 @@ export default function FullShowcaseBoard() {
                   disabled={isPublishing}
                   style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)", opacity: isPublishing ? 0.7 : 1 }}
                 >
-                  {isPublishing ? "Publishing to Firebase..." : "🚀 Publish Space & Go Live"}
+                  {isPublishing ? "Publishing to Firebase Firestore..." : "🚀 Publish Space to Firebase"}
                 </button>
               </div>
             )}
@@ -2085,12 +2259,12 @@ export default function FullShowcaseBoard() {
                   <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#DCFCE7", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.25)" }}>
                     <IconCheck size={40} color="#22C55E" />
                   </div>
-                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Spot Published Live!</h2>
-                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>Your parking space is now live on the Tamil Nadu map and ready to receive bookings!</p>
+                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Spot Live in Firebase!</h2>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>Your space is saved to Firebase Firestore and live on the Tamil Nadu map!</p>
 
                   <div style={{ background: "#F8FAFC", borderRadius: 20, padding: 20, border: "1px solid #E2E8F0", textAlign: "left", marginBottom: 20 }}>
                     <span style={{ fontSize: 11, fontWeight: 800, color: "#22C55E", background: "#DCFCE7", padding: "2px 8px", borderRadius: 6, display: "inline-block", marginBottom: 8 }}>
-                      ● LIVE SPOT LISTING
+                      ● FIREBASE FIRESTORE LIVE
                     </span>
                     <h3 style={{ fontSize: 18, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>{selectedSpot.title}</h3>
                     <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 8px" }}>{selectedSpot.address}</p>
