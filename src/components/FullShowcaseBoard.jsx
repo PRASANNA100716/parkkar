@@ -1546,26 +1546,93 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 04: ONBOARDING 3 ─── */}
+            {/* ─── SCREEN 04: ONBOARDING 3 (EXACT MATCH TO TARGET REFERENCE IMAGE 3) ─── */}
             {activeScreen === "04" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
-                <div style={{ width: "100%" }}>
-                  <RealSecurityPhoto height={230} />
-                </div>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "16px 20px 24px", background: "#FFF", overflowY: "auto" }}>
+                <div>
+                  {/* TOP BANNER PHOTO WITH 100% PROTECTED BADGE */}
+                  <div style={{ width: "100%", height: 210, borderRadius: 22, overflow: "hidden", position: "relative", marginBottom: 14, boxShadow: "0 10px 25px rgba(0,0,0,0.12)", border: "1px solid #E2E8F0" }}>
+                    <SmartImage 
+                      sources={[process.env.PUBLIC_URL + "/assets/security_parking.png"]} 
+                      alt="Safe Secure Monitored Parking" 
+                    />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.5) 0%, transparent 60%)" }} />
 
-                <div style={{ textAlign: "center" }}>
-                  <h2 style={{ fontSize: 26, fontWeight: 800, color: "#0F172A", margin: "0 0 10px" }}>Safe. Secure. Monitored.</h2>
-                  <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.5, margin: 0 }}>Every space and host is verified for total peace of mind with 24/7 CCTV & gate protection.</p>
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
-                  <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>Skip</button>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
-                    <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
-                    <div style={{ width: 24, height: 8, borderRadius: 4, background: "#22C55E" }} />
+                    {/* TOP RIGHT: 100% PROTECTED BADGE */}
+                    <div style={{ position: "absolute", top: 12, right: 12, background: "#22C55E", color: "#FFF", padding: "5px 12px", borderRadius: 20, fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", gap: 5, boxShadow: "0 4px 12px rgba(34,197,94,0.35)" }}>
+                      <div style={{ width: 14, height: 14, borderRadius: "50%", background: "#FFF", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 900 }}>✓</div>
+                      <span>100% Protected</span>
+                    </div>
                   </div>
-                  <button onClick={() => setActiveScreen("06")} style={{ width: 48, height: 48, borderRadius: "50%", background: "#22C55E", border: "none", color: "#FFF", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 16px rgba(34,197,94,0.3)" }}>
+
+                  {/* CENTER SHIELD ICON WITH SOFT GREEN CIRCLE & DOTS */}
+                  <div style={{ display: "flex", justifyContent: "center", marginBottom: 8, position: "relative" }}>
+                    <div style={{ width: 54, height: 54, borderRadius: "50%", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #DCFCE7", boxShadow: "0 4px 12px rgba(34,197,94,0.1)" }}>
+                      <IconShieldCheck size={26} color="#22C55E" />
+                    </div>
+                  </div>
+
+                  {/* HEADLINE & SUBTITLE */}
+                  <div style={{ textAlign: "center", marginBottom: 12 }}>
+                    <h2 style={{ fontSize: 24, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", letterSpacing: "-0.02em" }}>
+                      Safe. <span style={{ color: "#22C55E", position: "relative", display: "inline-block" }}>
+                        Secure.
+                        <div style={{ width: "100%", height: 3, background: "#22C55E", borderRadius: 2, marginTop: 2 }} />
+                      </span> Monitored.
+                    </h2>
+                    <p style={{ fontSize: 12, color: "#64748B", lineHeight: 1.4, margin: "8px 0 0", fontWeight: 600, padding: "0 10px" }}>
+                      Every space and host is verified for total peace of mind with <span style={{ color: "#22C55E", fontWeight: 800 }}>24/7 CCTV & gate protection.</span>
+                    </p>
+                  </div>
+
+                  {/* 4 FEATURE GRID */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 12, textAlign: "center" }}>
+                    {[
+                      { icon: "📹", title: "24/7 CCTV", desc: "Continuous surveillance", bg: "#DCFCE7" },
+                      { icon: <IconShieldCheck size={16} color="#16A34A" />, title: "Verified Hosts", desc: "All hosts are verified", bg: "#DCFCE7" },
+                      { icon: "⛩️", title: "Gate Protection", desc: "Secure entry & exit", bg: "#DCFCE7" },
+                      { icon: "🎧", title: "24/7 Support", desc: "Dedicated assistance", bg: "#DCFCE7" }
+                    ].map((feat, idx) => (
+                      <div key={idx} style={{ padding: "8px 4px", borderRadius: 12, background: "#F8FAFC", border: "1px solid #F1F5F9" }}>
+                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: feat.bg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px", fontSize: 12, color: "#16A34A" }}>
+                          {feat.icon}
+                        </div>
+                        <span style={{ fontSize: 9, fontWeight: 900, color: "#0F172A", display: "block" }}>{feat.title}</span>
+                        <span style={{ fontSize: 8, color: "#64748B", fontWeight: 600, display: "block" }}>{feat.desc}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* SAFETY PRIORITY GREEN BANNER */}
+                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: "10px 14px", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", overflow: "hidden" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, zIndex: 2 }}>
+                      <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#DCFCE7", color: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <IconShieldCheck size={16} color="#16A34A" />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 900, color: "#15803D", display: "block" }}>Your safety is our priority</span>
+                        <span style={{ fontSize: 9, color: "#64748B", fontWeight: 600 }}>We ensure a secure parking experience every time, everywhere.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* BOTTOM CONTROLS: SKIP, INDICATOR DOTS, NEXT BUTTON */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
+                  <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 800, cursor: "pointer", fontSize: 14 }}>
+                    Skip
+                  </button>
+
+                  <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#CBD5E1" }} />
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#CBD5E1" }} />
+                    <div style={{ width: 22, height: 8, borderRadius: 4, background: "#22C55E" }} />
+                  </div>
+
+                  <button 
+                    onClick={() => setActiveScreen("06")} 
+                    style={{ width: 44, height: 44, borderRadius: "50%", background: "#22C55E", border: "none", color: "#FFF", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                  >
                     <IconChevronRight size={20} color="#FFF" />
                   </button>
                 </div>
