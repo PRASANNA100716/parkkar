@@ -698,13 +698,41 @@ export default function FullShowcaseBoard() {
   // Custom Firebase Credentials State (Pre-filled with user's project paarkkar-dda3d)
   const [fbConfigInput, setFbConfigInput] = useState(getFirebaseConfig());
 
+  // Helper to ensure EVERY spot (Firebase or Host) always gets a crisp real photograph image
+  const resolveRealPhoto = (photoUrl, title = "", address = "", city = "", type = "") => {
+    if (photoUrl && !photoUrl.startsWith("data:image/svg") && photoUrl.length > 25 && !photoUrl.includes("undefined")) {
+      return photoUrl;
+    }
+    const textStr = `${title} ${address} ${city} ${type}`.toLowerCase();
+    if (textStr.includes("coimbatore") || textStr.includes("sipco") || textStr.includes("singanallur")) {
+      return process.env.PUBLIC_URL + "/assets/coimbatore_garage.png";
+    }
+    if (textStr.includes("madurai")) {
+      return process.env.PUBLIC_URL + "/assets/madurai_bay.png";
+    }
+    if (textStr.includes("ev") || textStr.includes("charge")) {
+      return process.env.PUBLIC_URL + "/assets/ev_hub.png";
+    }
+    if (textStr.includes("basement") || textStr.includes("office") || textStr.includes("underground")) {
+      return process.env.PUBLIC_URL + "/assets/office_basement.png";
+    }
+    if (textStr.includes("driveway") || textStr.includes("residential")) {
+      return process.env.PUBLIC_URL + "/assets/residential_driveway.png";
+    }
+    if (textStr.includes("apartment")) {
+      return process.env.PUBLIC_URL + "/assets/apartment_bay.png";
+    }
+    return process.env.PUBLIC_URL + "/assets/home_garage.png";
+  };
+
   // Load Live Spots from Firebase Firestore on Mount
   useEffect(() => {
     async function loadLiveDbSpots() {
       const dbSpots = await fetchHostSpotsFromFirebase();
       if (dbSpots && dbSpots.length > 0) {
         const formatted = dbSpots.map(s => {
-          const photoSources = s.photoUrl ? [s.photoUrl, SVG_GARAGE_DATA_URL] : [SVG_GARAGE_DATA_URL];
+          const realPhoto = resolveRealPhoto(s.photoUrl, s.title, s.address, s.city, s.type);
+          const photoSources = [realPhoto, SVG_GARAGE_DATA_URL];
           return {
             id: s.id,
             title: s.title || "Host Parking Space",
@@ -720,7 +748,7 @@ export default function FullShowcaseBoard() {
               <HostUploadedPhoto
                 sources={photoSources}
                 height={200}
-                badge={`₹${s.price || 50}/hr • FIREBASE STORAGE`}
+                badge={`₹${s.price || 50}/hr • FIREBASE LIVE`}
               />
             ),
             about: s.about || "Verified space synced with Firebase Firestore database (paarkkar-dda3d)."
@@ -1088,34 +1116,37 @@ export default function FullShowcaseBoard() {
   const handlePublishHostSpot = async () => {
     setIsPublishing(true);
 
+    const realPhoto = resolveRealPhoto(hostForm.photoUrl, hostForm.title, hostForm.address, hostForm.city, hostForm.type);
+    const updatedForm = { ...hostForm, photoUrl: realPhoto };
+
     let publishedId = null;
     try {
-      publishedId = await saveHostSpot(hostForm);
+      publishedId = await saveHostSpot(updatedForm);
     } catch (err) {
       console.warn("Publish persistence failed, listing stays live in this session:", err);
     }
 
-    const hostPhotoSources = [hostForm.photoUrl, SVG_GARAGE_DATA_URL].filter(Boolean);
+    const hostPhotoSources = [realPhoto, SVG_GARAGE_DATA_URL];
 
     const newSpot = {
       id: publishedId || "sp_custom_" + Date.now(),
-      title: hostForm.title,
-      address: hostForm.address,
-      price: Number(hostForm.price),
+      title: hostForm.title || `Parking at ${hostForm.address || 'Tamil Nadu'}`,
+      address: hostForm.address || "Tamil Nadu",
+      price: Number(hostForm.price) || 50,
       rating: "5.0 (Firebase Live)",
       lat: userLocation ? userLocation.lat : 13.0850 + (Math.random() * 0.02 - 0.01),
       lng: userLocation ? userLocation.lng : 80.2101 + (Math.random() * 0.02 - 0.01),
       imgSources: hostPhotoSources,
-      city: hostForm.city,
+      city: hostForm.city || "Chennai",
       badge: "FIREBASE HOST LISTING",
       photoComponent: (
         <HostUploadedPhoto
           sources={hostPhotoSources}
           height={200}
-          badge={`₹${hostForm.price}/hr • ${hostForm.title.toUpperCase()}`}
+          badge={`₹${hostForm.price}/hr • FIREBASE LIVE`}
         />
       ),
-      about: hostForm.about
+      about: hostForm.about || "Verified space synced with Firebase Firestore database (paarkkar-dda3d)."
     };
 
     setAllSpots(prev => [newSpot, ...prev]);
