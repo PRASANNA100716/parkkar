@@ -2400,43 +2400,153 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 14: PAYMENT SUCCESS ─── */}
+            {/* ─── SCREEN 14: PAYMENT SUCCESS & E-WAY TICKET TRIGGER ─── */}
             {activeScreen === "14" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 24, justifyContent: "space-between", alignItems: "center", textAlign: "center" }}>
-                <div style={{ width: "100%", marginTop: 20 }}>
-                  <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#DCFCE7", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.25)" }}>
-                    <IconCheck size={40} color="#22C55E" />
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", padding: 20, justifyContent: "space-between", alignItems: "center", textAlign: "center" }}>
+                <div style={{ width: "100%", marginTop: 10 }}>
+                  <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#DCFCE7", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px", boxShadow: "0 10px 25px rgba(34,197,94,0.25)" }}>
+                    <IconCheck size={38} color="#22C55E" />
                   </div>
-                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Booking Confirmed!</h2>
-                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>Your parking slot has been reserved successfully via Razorpay.</p>
+                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>Booking Confirmed!</h2>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 16px" }}>Your parking slot has been reserved successfully via Razorpay.</p>
 
-                  <div style={{ background: "#F8FAFC", borderRadius: 20, padding: 20, border: "1px solid #E2E8F0", textAlign: "left", marginBottom: 20 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                      <span style={{ fontSize: 11, fontWeight: 800, color: "#64748B" }}>PASS #PKR-89241</span>
-                      <span style={{ fontSize: 11, fontWeight: 800, background: "#22C55E", color: "#FFF", padding: "2px 8px", borderRadius: 6 }}>RAZORPAY PAID</span>
+                  <div style={{ background: "#FFF", borderRadius: 20, padding: 18, border: "1px solid #E2E8F0", textAlign: "left", boxShadow: "0 4px 16px rgba(0,0,0,0.05)", marginBottom: 16 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                      <span style={{ fontSize: 11, fontWeight: 900, color: "#64748B" }}>PASS #PKR-89241</span>
+                      <span style={{ fontSize: 11, fontWeight: 800, background: "#DCFCE7", color: "#16A34A", padding: "2px 8px", borderRadius: 6 }}>RAZORPAY PAID ✓</span>
                     </div>
                     <h3 style={{ fontSize: 18, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>{selectedSpot.title}</h3>
-                    <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 12px" }}>{selectedSpot.address}</p>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>
+                    <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 10px" }}>📍 {selectedSpot.address}</p>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: "#0F172A", background: "#F1F5F9", padding: "8px 12px", borderRadius: 10 }}>
                       📅 {selectedDate} • {startTime} - {endTime}
                     </div>
                   </div>
                 </div>
 
-                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
                   <button 
-                    onClick={() => setActiveScreen("20")}
-                    style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 15, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                    onClick={() => setActiveScreen("EWAY_TICKET")}
+                    style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 15, cursor: "pointer", boxShadow: "0 8px 24px rgba(34,197,94,0.38)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
                   >
-                    View My Bookings
+                    🎫 View & Download Digital E-Way Ticket Pass
                   </button>
                   <button 
                     onClick={() => handleAccessApp("driver")}
-                    style={{ width: "100%", padding: 14, borderRadius: 16, background: "transparent", border: "1.5px solid #E2E8F0", color: "#0F172A", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
+                    style={{ width: "100%", padding: 14, borderRadius: 16, background: "#FFF", border: "1.5px solid #E2E8F0", color: "#0F172A", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
                   >
                     Back to Home Map
                   </button>
                 </div>
+              </div>
+            )}
+
+            {/* ─── OFFICIAL PARKKAR E-WAY DIGITAL TICKET PASS SCREEN ─── */}
+            {activeScreen === "EWAY_TICKET" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#0F172A", padding: 16, justifyContent: "space-between", overflowY: "auto" }}>
+                
+                {/* TOP E-TICKET HEADER BAR */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                  <button onClick={() => setActiveScreen("14")} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#FFF", width: 36, height: 36, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <IconChevronLeft size={20} color="#FFF" />
+                  </button>
+                  <span style={{ fontSize: 16, fontWeight: 900, color: "#FFF", letterSpacing: "-0.01em" }}>PARKKAR E-Way Pass</span>
+                  <button onClick={() => window.print()} style={{ background: "rgba(34,197,94,0.2)", border: "1px solid #22C55E", color: "#22C55E", padding: "6px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, cursor: "pointer" }}>
+                    🖨️ Print / Save
+                  </button>
+                </div>
+
+                {/* DIGITAL E-WAY TICKET CARD CONTAINER */}
+                <div style={{ background: "#FFFFFF", borderRadius: 24, padding: 20, boxShadow: "0 20px 50px rgba(0,0,0,0.5)", border: "2px solid #22C55E", position: "relative" }}>
+                  
+                  {/* TICKET CARD HEADER */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: 14, borderBottom: "2px dashed #E2E8F0" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#22C55E", color: "#FFF", fontWeight: 900, fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>P</div>
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: 15, fontWeight: 900, color: "#0F172A" }}>PARKKAR E-WAY TICKET</h4>
+                        <span style={{ fontSize: 10, color: "#64748B", fontWeight: 700 }}>PASS #PKR-89241-EWAY</span>
+                      </div>
+                    </div>
+                    <span style={{ background: "#DCFCE7", color: "#16A34A", fontSize: 10, fontWeight: 900, padding: "4px 8px", borderRadius: 8 }}>
+                      ● VERIFIED ENTRY
+                    </span>
+                  </div>
+
+                  {/* QR CODE SCANNER SECTION */}
+                  <div style={{ textAlign: "center", margin: "16px 0", padding: "12px", background: "#F8FAFC", borderRadius: 16, border: "1px solid #E2E8F0" }}>
+                    <svg viewBox="0 0 100 100" width="130" height="130" style={{ margin: "0 auto", display: "block" }}>
+                      <rect x="0" y="0" width="100" height="100" fill="#F8FAFC" />
+                      <path d="M10 10 h30 v30 h-30 z M15 15 v20 h20 v-20 z M22 22 h6 v6 h-6 z" fill="#0F172A" />
+                      <path d="M60 10 h30 v30 h-30 z M65 15 v20 h20 v-20 z M72 22 h6 v6 h-6 z" fill="#0F172A" />
+                      <path d="M10 60 h30 v30 h-30 z M15 65 v20 h20 v-20 z M22 72 h6 v6 h-6 z" fill="#0F172A" />
+                      <rect x="45" y="12" width="8" height="8" fill="#0F172A" />
+                      <rect x="52" y="24" width="6" height="16" fill="#0F172A" />
+                      <rect x="12" y="45" width="16" height="8" fill="#0F172A" />
+                      <rect x="32" y="48" width="12" height="12" fill="#0F172A" />
+                      <rect x="68" y="48" width="20" height="8" fill="#0F172A" />
+                      <rect x="48" y="65" width="14" height="14" fill="#0F172A" />
+                      <rect x="75" y="70" width="12" height="18" fill="#0F172A" />
+                      <circle cx="50" cy="50" r="14" fill="#22C55E" />
+                      <text x="50" y="55" font-family="sans-serif" font-size="16" font-weight="900" fill="#FFFFFF" text-anchor="middle">P</text>
+                    </svg>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: "#475569", marginTop: 6, display: "block" }}>
+                      📷 Scan at Boom Barrier / Parking Gate
+                    </span>
+                  </div>
+
+                  {/* TICKET DETAILS TABLE */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, fontSize: 12 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #F1F5F9", paddingBottom: 6 }}>
+                      <span style={{ color: "#64748B", fontWeight: 600 }}>Parking Venue:</span>
+                      <strong style={{ color: "#0F172A", fontWeight: 900 }}>{selectedSpot.title}</strong>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #F1F5F9", paddingBottom: 6 }}>
+                      <span style={{ color: "#64748B", fontWeight: 600 }}>Address:</span>
+                      <span style={{ color: "#0F172A", fontWeight: 700, maxWidth: 180, textAlign: "right" }}>{selectedSpot.address}</span>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #F1F5F9", paddingBottom: 6 }}>
+                      <span style={{ color: "#64748B", fontWeight: 600 }}>Vehicle Reg No:</span>
+                      <strong style={{ color: "#22C55E", fontWeight: 900, background: "#F0FDF4", padding: "2px 8px", borderRadius: 6 }}>TN 01 AB 8924</strong>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #F1F5F9", paddingBottom: 6 }}>
+                      <span style={{ color: "#64748B", fontWeight: 600 }}>Booking Slot:</span>
+                      <strong style={{ color: "#0F172A" }}>{selectedDate} ({startTime} - {endTime})</strong>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #F1F5F9", paddingBottom: 6 }}>
+                      <span style={{ color: "#64748B", fontWeight: 600 }}>Amount Paid:</span>
+                      <strong style={{ color: "#16A34A", fontWeight: 900 }}>₹{calculatedTotalAmount}.00 (Razorpay)</strong>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 2 }}>
+                      <span style={{ color: "#64748B", fontWeight: 600 }}>Razorpay Txn ID:</span>
+                      <span style={{ color: "#64748B", fontSize: 10, fontWeight: 700, fontFamily: "monospace" }}>pay_Rzp981249712</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* BOTTOM ACTION BUTTONS */}
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
+                  <button 
+                    onClick={() => {
+                      alert("📥 E-Way Ticket PDF downloaded! Show this QR pass at the parking gate.");
+                      window.print();
+                    }}
+                    style={{ width: "100%", padding: 15, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 15, cursor: "pointer", boxShadow: "0 8px 24px rgba(34,197,94,0.4)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                  >
+                    📥 Download / Print E-Way PDF Pass
+                  </button>
+                  <button 
+                    onClick={() => handleAccessApp("driver")}
+                    style={{ width: "100%", padding: 14, borderRadius: 16, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: "#FFF", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
+                  >
+                    🗺️ Navigate to Parking Spot on Map
+                  </button>
+                </div>
+
               </div>
             )}
 
