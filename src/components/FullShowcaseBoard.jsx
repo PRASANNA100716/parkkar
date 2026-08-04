@@ -242,6 +242,22 @@ const REAL_IMAGES = {
     process.env.PUBLIC_URL + "/assets/residential_driveway.png",
     SVG_DRIVEWAY_DATA_URL
   ],
+  apartment: [
+    process.env.PUBLIC_URL + "/assets/apartment_bay.png",
+    SVG_GARAGE_DATA_URL
+  ],
+  evHub: [
+    process.env.PUBLIC_URL + "/assets/ev_hub.png",
+    SVG_BASEMENT_DATA_URL
+  ],
+  coimbatore: [
+    process.env.PUBLIC_URL + "/assets/coimbatore_garage.png",
+    SVG_DRIVEWAY_DATA_URL
+  ],
+  madurai: [
+    process.env.PUBLIC_URL + "/assets/madurai_bay.png",
+    SVG_GARAGE_DATA_URL
+  ],
   security: [
     process.env.PUBLIC_URL + "/assets/security_parking.png",
     SVG_GARAGE_DATA_URL
@@ -314,6 +330,58 @@ const RealDrivewayPhoto = ({ height = 200, badge = "GATED RESIDENTIAL DRIVEWAY" 
     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
     <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       EV ⚡ READY
+    </div>
+    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
+      {badge}
+    </div>
+  </div>
+);
+
+const RealApartmentPhoto = ({ height = 200, badge = "APARTMENT COVERED SLOT" }) => (
+  <div style={{ width: "100%", height, borderRadius: 20, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
+    <SmartImage sources={REAL_IMAGES.apartment} alt="Real Apartment Parking Bay" />
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
+    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
+      ● LIVE
+    </div>
+    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
+      {badge}
+    </div>
+  </div>
+);
+
+const RealEvHubPhoto = ({ height = 200, badge = "EV ⚡ FAST CHARGE HUB" }) => (
+  <div style={{ width: "100%", height, borderRadius: 20, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
+    <SmartImage sources={REAL_IMAGES.evHub} alt="Real EV Fast Charging Station Hub" />
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
+    <div style={{ position: "absolute", top: 12, right: 12, background: "#22C55E", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
+      60kW FAST CHARGE
+    </div>
+    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
+      {badge}
+    </div>
+  </div>
+);
+
+const RealCoimbatorePhoto = ({ height = 200, badge = "COIMBATORE SUBURBAN GARAGE" }) => (
+  <div style={{ width: "100%", height, borderRadius: 20, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
+    <SmartImage sources={REAL_IMAGES.coimbatore} alt="Real Coimbatore Garage" />
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
+    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(245,158,11,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
+      VERIFIED HOST
+    </div>
+    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#F59E0B", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
+      {badge}
+    </div>
+  </div>
+);
+
+const RealMaduraiPhoto = ({ height = 200, badge = "MADURAI SHADED BAY" }) => (
+  <div style={{ width: "100%", height, borderRadius: 20, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
+    <SmartImage sources={REAL_IMAGES.madurai} alt="Real Madurai Shaded Parking Bay" />
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
+    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
+      SHADED
     </div>
     <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       {badge}
@@ -400,10 +468,10 @@ const INITIAL_TAMIL_NADU_SPOTS = [
     rating: "4.6 (64)",
     lat: 13.0368,
     lng: 80.2185,
-    imgSources: REAL_IMAGES.garage,
+    imgSources: REAL_IMAGES.apartment,
     city: "Chennai",
     badge: "APARTMENT SLOT",
-    photoComponent: <RealGaragePhoto height={200} badge="APARTMENT COVERED SLOT" />,
+    photoComponent: <RealApartmentPhoto height={200} badge="APARTMENT COVERED SLOT" />,
     about: "Gated apartment parking bay with 24/7 security guard and easy main road access."
   },
   {
@@ -414,10 +482,10 @@ const INITIAL_TAMIL_NADU_SPOTS = [
     rating: "5.0 (310)",
     lat: 13.0102,
     lng: 80.2157,
-    imgSources: REAL_IMAGES.security,
+    imgSources: REAL_IMAGES.evHub,
     city: "Chennai",
     badge: "EV ⚡ FAST CHARGE",
-    photoComponent: <RealSecurityPhoto height={230} />,
+    photoComponent: <RealEvHubPhoto height={200} badge="EV ⚡ FAST CHARGE HUB" />,
     about: "High-tech commercial parking hub with 60kW EV fast chargers, solar canopy, and lounge."
   },
   {
@@ -428,10 +496,10 @@ const INITIAL_TAMIL_NADU_SPOTS = [
     rating: "4.8 (95)",
     lat: 11.0168,
     lng: 76.9558,
-    imgSources: REAL_IMAGES.driveway,
+    imgSources: REAL_IMAGES.coimbatore,
     city: "Coimbatore",
     badge: "PRIVATE DRIVEWAY",
-    photoComponent: <RealDrivewayPhoto height={200} badge="COIMBATORE DRIVEWAY" />,
+    photoComponent: <RealCoimbatorePhoto height={200} badge="COIMBATORE DRIVEWAY" />,
     about: "Secure covered house garage near Gandhipuram bus stand with 24/7 CCTV."
   },
   {
@@ -442,10 +510,10 @@ const INITIAL_TAMIL_NADU_SPOTS = [
     rating: "4.7 (110)",
     lat: 9.9252,
     lng: 78.1198,
-    imgSources: REAL_IMAGES.garage,
+    imgSources: REAL_IMAGES.madurai,
     city: "Madurai",
     badge: "SHADED PARKING",
-    photoComponent: <RealGaragePhoto height={200} badge="MADURAI SHADED BAY" />,
+    photoComponent: <RealMaduraiPhoto height={200} badge="MADURAI SHADED BAY" />,
     about: "Shaded residential parking slot near KK Nagar park with lockable gate."
   }
 ];
