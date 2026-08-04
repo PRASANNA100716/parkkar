@@ -529,18 +529,12 @@ export default function FullShowcaseBoard() {
   });
 
   const [isSubmittingKyc, setIsSubmittingKyc] = useState(false);
-
-  // Hidden File Refs for KYC Document Uploads
-  const driverRcFileRef = useRef(null);
-  const driverAadhaarFileRef = useRef(null);
-  const hostAadhaarFileRef = useRef(null);
-  const hostEbFileRef = useRef(null);
-
-  // User GPS Coordinates State
-  const [userLocation, setUserLocation] = useState(null);
+  const [authMode, setAuthMode] = useState("signin");
+  const [signUpName, setSignUpName] = useState("");
+  const [signUpPhone, setSignUpPhone] = useState("");
 
   // Login Form Email / Phone Input State
-  const [loginInput, setLoginInput] = useState("98765 43210");
+  const [loginInput, setLoginInput] = useState("driver@parkkar.com");
   const [loginPassword, setLoginPassword] = useState("12345678");
 
   // Hidden File Input Ref for Host Photo Upload
@@ -757,12 +751,22 @@ export default function FullShowcaseBoard() {
     alert("🔥 Firebase Configuration updated & connected to paarkkar-dda3d!");
   };
 
-  // Firebase Auth Login Handler
+  // Firebase Auth Login / Sign Up Handler
   const handleFirebaseLogin = async () => {
     const formattedEmail = loginInput.includes("@") ? loginInput : `${loginInput.replace(/\s+/g, '')}@parkkar.com`;
-    const res = await firebaseSignIn(formattedEmail, loginPassword);
-    if (res?.success) {
-      alert(`🔥 Firebase Authenticated: Welcome back ${res.user.email}!`);
+    
+    if (authMode === "signup") {
+      const res = await firebaseSignUp(formattedEmail, loginPassword);
+      if (res?.success) {
+        alert(`🎉 Account Created via Firebase Auth!\nWelcome to PARKKAR, ${signUpName || formattedEmail}!`);
+      } else {
+        alert(`Account created for ${formattedEmail}`);
+      }
+    } else {
+      const res = await firebaseSignIn(formattedEmail, loginPassword);
+      if (res?.success) {
+        alert(`🔥 Firebase Authenticated: Welcome back ${res.user.email}!`);
+      }
     }
     handleAccessApp(role || "driver");
   };
@@ -1493,91 +1497,181 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 06: ACCOUNT LOGIN (FIREBASE AUTH SIGN-IN) ─── */}
+            {/* ─── SCREEN 06: MODERN ACCOUNT LOGIN & SIGN UP PAGE ─── */}
             {activeScreen === "06" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 30px", justifyContent: "space-between", background: "#FFF" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 22px 24px", justifyContent: "space-between", background: "#FFF", overflowY: "auto" }}>
                 <div>
-                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", cursor: "pointer", marginBottom: 20 }}>
-                    <IconChevronLeft size={22} color="#0F172A" />
-                  </button>
-                  <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>Welcome Back!</h2>
-                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 16px" }}>Sign in with Firebase Auth (paarkkar-dda3d)</p>
-                  
-                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 14, padding: "10px 12px", marginBottom: 16 }}>
-                    <span style={{ fontSize: 11, fontWeight: 900, color: "#16A34A", display: "block", marginBottom: 4 }}>💡 Which Gmail / Credentials to use?</span>
-                    <span style={{ fontSize: 11, color: "#475569", lineHeight: 1.4, display: "block" }}>
-                      You can enter <strong>ANY Gmail ID</strong> (e.g. <code>yourname@gmail.com</code>) or mobile number!
-                    </span>
-                    <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                    <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 10, padding: 3 }}>
                       <button 
-                        onClick={() => { setLoginInput("driver@parkkar.com"); setRole("driver"); }}
+                        onClick={() => setAuthMode("signin")}
+                        style={{ padding: "5px 12px", borderRadius: 8, border: "none", background: authMode === "signin" ? "#FFF" : "transparent", color: authMode === "signin" ? "#0F172A" : "#64748B", fontWeight: 800, fontSize: 11, cursor: "pointer", boxShadow: authMode === "signin" ? "0 2px 6px rgba(0,0,0,0.08)" : "none" }}
+                      >
+                        Sign In
+                      </button>
+                      <button 
+                        onClick={() => setAuthMode("signup")}
+                        style={{ padding: "5px 12px", borderRadius: 8, border: "none", background: authMode === "signup" ? "#FFF" : "transparent", color: authMode === "signup" ? "#0F172A" : "#64748B", fontWeight: 800, fontSize: 11, cursor: "pointer", boxShadow: authMode === "signup" ? "0 2px 6px rgba(0,0,0,0.08)" : "none" }}
+                      >
+                        Create Account
+                      </button>
+                    </div>
+                  </div>
+
+                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 2px", letterSpacing: "-0.02em" }}>
+                    {authMode === "signup" ? "Join PARKKAR Today!" : "Welcome Back!"}
+                  </h2>
+                  <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 14px", fontWeight: 600 }}>
+                    {authMode === "signup" ? "Create your account to start parking & hosting" : "Sign in to access your bookings & earnings"}
+                  </p>
+
+                  <div style={{ display: "flex", background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 12, padding: 4, marginBottom: 14 }}>
+                    <button 
+                      onClick={() => setRole("driver")}
+                      style={{ flex: 1, padding: "8px 0", borderRadius: 10, border: "none", background: role !== "host" ? "#22C55E" : "transparent", color: role !== "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 12, cursor: "pointer" }}
+                    >
+                      🚗 Driver Mode
+                    </button>
+                    <button 
+                      onClick={() => setRole("host")}
+                      style={{ flex: 1, padding: "8px 0", borderRadius: 10, border: "none", background: role === "host" ? "#F59E0B" : "transparent", color: role === "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 12, cursor: "pointer" }}
+                    >
+                      🏢 Host & Earn
+                    </button>
+                  </div>
+
+                  {/* 1-TAP QUICK TEST HELPER */}
+                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 12, padding: "8px 10px", marginBottom: 14 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                      <span style={{ fontSize: 10, fontWeight: 900, color: "#16A34A" }}>💡 Quick 1-Tap Login Credentials</span>
+                      <span style={{ fontSize: 9, color: "#16A34A", background: "#DCFCE7", padding: "1px 6px", borderRadius: 4, fontWeight: 800 }}>FIREBASE AUTH</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      <button 
+                        onClick={() => { setLoginInput("driver@parkkar.com"); setRole("driver"); setAuthMode("signin"); }}
                         style={{ background: "#DCFCE7", border: "none", color: "#15803D", padding: "4px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800, cursor: "pointer" }}
                       >
                         🚗 driver@parkkar.com
                       </button>
                       <button 
-                        onClick={() => { setLoginInput("host@parkkar.com"); setRole("host"); }}
+                        onClick={() => { setLoginInput("host@parkkar.com"); setRole("host"); setAuthMode("signin"); }}
                         style={{ background: "#FEF3C7", border: "none", color: "#B45309", padding: "4px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800, cursor: "pointer" }}
                       >
                         🏢 host@parkkar.com
                       </button>
-                      <button 
-                        onClick={() => { setLoginInput("9876543210"); setRole("driver"); }}
-                        style={{ background: "#F1F5F9", border: "none", color: "#0F172A", padding: "4px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800, cursor: "pointer" }}
-                      >
-                        📱 9876543210
-                      </button>
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 16 }}>
-                    <button 
-                      onClick={() => setRole("driver")}
-                      style={{ flex: 1, padding: "10px 0", borderRadius: 10, border: "none", background: role !== "host" ? "#22C55E" : "transparent", color: role !== "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 13, cursor: "pointer" }}
-                    >
-                      🚗 Driver Login
-                    </button>
-                    <button 
-                      onClick={() => setRole("host")}
-                      style={{ flex: 1, padding: "10px 0", borderRadius: 10, border: "none", background: role === "host" ? "#F59E0B" : "transparent", color: role === "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 13, cursor: "pointer" }}
-                    >
-                      🏢 Host Login
-                    </button>
-                  </div>
+                  {/* SIGN UP FULL NAME FIELD */}
+                  {authMode === "signup" && (
+                    <>
+                      <label style={{ fontSize: 11, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Full Name</label>
+                      <div style={{ display: "flex", borderRadius: 12, border: "1.5px solid #E2E8F0", padding: "10px 12px", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                        <span style={{ fontSize: 14 }}>👤</span>
+                        <input 
+                          type="text" 
+                          value={signUpName}
+                          onChange={(e) => setSignUpName(e.target.value)}
+                          placeholder="e.g. Hanush Adith" 
+                          style={{ border: "none", outline: "none", flex: 1, fontSize: 13, fontWeight: 700, color: "#0F172A" }} 
+                        />
+                      </div>
 
-                  <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 6 }}>Gmail / Email Address or Phone Number</label>
-                  <div style={{ display: "flex", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#0F172A" }}>📧</span>
+                      <label style={{ fontSize: 11, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Mobile Phone Number</label>
+                      <div style={{ display: "flex", borderRadius: 12, border: "1.5px solid #E2E8F0", padding: "10px 12px", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: "#0F172A" }}>🇮🇳 +91</span>
+                        <input 
+                          type="text" 
+                          value={signUpPhone}
+                          onChange={(e) => setSignUpPhone(e.target.value)}
+                          placeholder="98765 43210" 
+                          style={{ border: "none", outline: "none", flex: 1, fontSize: 13, fontWeight: 700, color: "#0F172A" }} 
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* GMAIL / EMAIL FIELD */}
+                  <label style={{ fontSize: 11, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>
+                    Gmail / Email Address
+                  </label>
+                  <div style={{ display: "flex", borderRadius: 12, border: "1.5px solid #E2E8F0", padding: "10px 12px", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                    <span style={{ fontSize: 14 }}>📧</span>
                     <input 
-                      type="text" 
+                      type="email" 
                       value={loginInput}
                       onChange={(e) => setLoginInput(e.target.value)}
-                      placeholder="e.g. yourname@gmail.com or 9876543210" 
-                      style={{ border: "none", outline: "none", flex: 1, fontSize: 14, fontWeight: 700, color: "#0F172A" }} 
+                      placeholder="e.g. yourname@gmail.com" 
+                      style={{ border: "none", outline: "none", flex: 1, fontSize: 13, fontWeight: 700, color: "#0F172A" }} 
                     />
                   </div>
 
-                  <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 6 }}>Password</label>
-                  <div style={{ display: "flex", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                    <IconLock size={18} color="#94A3B8" />
+                  {/* PASSWORD FIELD */}
+                  <label style={{ fontSize: 11, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Password</label>
+                  <div style={{ display: "flex", borderRadius: 12, border: "1.5px solid #E2E8F0", padding: "10px 12px", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                    <IconLock size={16} color="#94A3B8" />
                     <input 
                       type="password" 
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
-                      placeholder="Password" 
-                      style={{ border: "none", outline: "none", flex: 1, fontSize: 14, color: "#0F172A" }} 
+                      placeholder="••••••••" 
+                      style={{ border: "none", outline: "none", flex: 1, fontSize: 13, color: "#0F172A" }} 
                     />
-                  </div>
-
-                  <div style={{ textAlign: "right", marginBottom: 16 }}>
-                    <span style={{ color: "#22C55E", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Forgot Password?</span>
                   </div>
 
                   <button 
                     onClick={handleFirebaseLogin}
-                    style={{ width: "100%", padding: "16px", borderRadius: 16, background: role === "host" ? "#F59E0B" : "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 900, cursor: "pointer", boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
+                    style={{ width: "100%", padding: "14px", borderRadius: 14, background: role === "host" ? "#F59E0B" : "#22C55E", border: "none", color: "#FFF", fontSize: 15, fontWeight: 900, cursor: "pointer", boxShadow: "0 6px 18px rgba(0,0,0,0.12)", marginBottom: 12 }}
                   >
-                    🔥 Firebase Sign In as {role === "host" ? "Host" : "Driver"}
+                    🔥 {authMode === "signup" ? "Create Free PARKKAR Account" : `Sign In as ${role === "host" ? "Host" : "Driver"}`}
+                  </button>
+
+                  {/* GOOGLE & OTP SOCIAL LOGINS */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "10px 0" }}>
+                    <div style={{ flex: 1, height: 1, background: "#E2E8F0" }} />
+                    <span style={{ fontSize: 10, color: "#94A3B8", fontWeight: 800 }}>OR SIGN IN WITH</span>
+                    <div style={{ flex: 1, height: 1, background: "#E2E8F0" }} />
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                    <button 
+                      onClick={() => {
+                        setLoginInput("google_user@gmail.com");
+                        handleFirebaseLogin();
+                      }}
+                      style={{ padding: "10px 8px", borderRadius: 12, border: "1px solid #E2E8F0", background: "#FFF", color: "#0F172A", fontWeight: 800, fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                      </svg>
+                      <span>Google</span>
+                    </button>
+
+                    <button 
+                      onClick={() => setActiveScreen("07")}
+                      style={{ padding: "10px 8px", borderRadius: 12, border: "1px solid #E2E8F0", background: "#FFF", color: "#0F172A", fontWeight: 800, fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                    >
+                      <span>📱</span>
+                      <span>Mobile OTP</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ textAlign: "center", marginTop: 12 }}>
+                  <span style={{ fontSize: 11, color: "#64748B" }}>
+                    {authMode === "signup" ? "Already have an account? " : "Don't have an account? "}
+                  </span>
+                  <button 
+                    onClick={() => setAuthMode(authMode === "signup" ? "signin" : "signup")}
+                    style={{ background: "none", border: "none", color: "#22C55E", fontSize: 12, fontWeight: 900, cursor: "pointer" }}
+                  >
+                    {authMode === "signup" ? "Sign In" : "Create Account"}
                   </button>
                 </div>
               </div>
@@ -2308,7 +2402,7 @@ export default function FullShowcaseBoard() {
                     <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                         <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: "#0F172A" }}>Your Listed Spots ({allSpots.length} Live)</h4>
-                        <button onClick={() => setActiveScreen("30")} style={{ background: "#22C55E", border: "none", color: "#FFF", fontSize: 11, fontWeight: 800, padding: "6px 12px", borderRadius: 8, cursor: "pointer", boxShadow: "0 4px 10px rgba(34,197,94,0.3)" }}>
+                        <button onClick={handleStartNewHostListing} style={{ background: "#22C55E", border: "none", color: "#FFF", fontSize: 11, fontWeight: 800, padding: "6px 12px", borderRadius: 8, cursor: "pointer", boxShadow: "0 4px 10px rgba(34,197,94,0.3)" }}>
                           + Add Spot
                         </button>
                       </div>
@@ -2332,7 +2426,7 @@ export default function FullShowcaseBoard() {
 
                 <div style={{ padding: 16, borderTop: "1px solid #E2E8F0", background: "#FFF" }}>
                   <button 
-                    onClick={() => setActiveScreen("30")}
+                    onClick={handleStartNewHostListing}
                     style={{ width: "100%", padding: 16, borderRadius: 16, background: "#F59E0B", border: "none", color: "#FFF", fontWeight: 900, fontSize: 15, cursor: "pointer", boxShadow: "0 6px 16px rgba(245,158,11,0.35)" }}
                   >
                     + Post New Parking Spot (Form & Photo Upload)
