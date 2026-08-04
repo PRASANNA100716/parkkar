@@ -611,60 +611,167 @@ export default function FullShowcaseBoard() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
 
-  // GPS Location Fetch Functionality
-  const handleFetchUserLocation = () => {
-    setIsLocating(true);
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const userLat = pos.coords.latitude;
-          const userLng = pos.coords.longitude;
-          const userGpsSpot = {
-            id: "sp_user_gps_" + Date.now(),
-            title: "📍 My Live GPS Location",
-            address: "Live Location (Tamil Nadu)",
-            price: 50,
-            rating: "5.0 (GPS)",
-            lat: userLat,
-            lng: userLng,
-            imgSources: REAL_IMAGES.garage,
-            city: "Chennai",
-            badge: "YOUR LOCATION",
-            photoComponent: <RealGaragePhoto height={200} badge="YOUR GPS LOCATION • TAMIL NADU" />,
-            about: "Your live GPS position detected accurately."
-          };
+  // Live GPS State: real coordinates + resolved street address + failure reason
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationLabel, setLocationLabel] = useState("");
+  const [locationError, setLocationError] = useState("");
+  const autoLocateDoneRef = useRef(false);
 
-          setAllSpots(prev => [userGpsSpot, ...prev]);
-          setSelectedSpot(userGpsSpot);
-          setSearchQuery("Live GPS Location, Tamil Nadu");
-          setIsLocating(false);
-        },
-        (err) => {
-          console.warn("GPS failed, using Chennai center fallback:", err);
-          const defaultSpot = INITIAL_TAMIL_NADU_SPOTS[0];
-          setSelectedSpot(defaultSpot);
-          setSearchQuery("Anna Nagar, Chennai (Tamil Nadu)");
-          setIsLocating(false);
-        },
-        { enableHighAccuracy: true, timeout: 8000 }
+  // Reverse geocode coordinates into a human readable Indian street address
+  const resolveAddressLabel = async (lat, lng) => {
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=17&addressdetails=1`,
+        { headers: { Accept: "application/json" } }
       );
-    } else {
-      setIsLocating(false);
+      if (!res.ok) throw new Error("reverse geocode failed");
+      const data = await res.json();
+      const a = data.address || {};
+      const parts = [
+        a.road || a.neighbourhood || a.suburb,
+        a.suburb && a.suburb !== a.road ? a.suburb : null,
+        a.city || a.town || a.village || a.county,
+        a.state
+      ].filter(Boolean);
+      return parts.length ? parts.join(", ") : data.display_name || "";
+    } catch (err) {
+      console.warn("Reverse geocoding unavailable:", err);
+      return "";
     }
   };
 
-  // Host Photo File Upload Handler
-  const handlePhotoFileUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (uploadEvent) => {
-        if (uploadEvent.target?.result) {
-          setHostForm(prev => ({ ...prev, photoUrl: uploadEvent.target.result }));
-        }
-      };
-      reader.readAsDataURL(file);
+  // GPS Location Fetch Functionality (real browser geolocation)
+  const handleFetchUserLocation = () => {
+    setLocationError("");
+
+    if (!navigator.geolocation) {
+      setLocationError("This browser does not support location access.");
+      return;
     }
+    if (!window.isSecureContext) {
+      setLocationError("Location needs HTTPS or localhost. Open the app on a secure URL.");
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude, accuracy } = pos.coords;
+        setUserLocation({ lat: latitude, lng: longitude, accuracy });
+        setIsLocating(false);
+
+        // Select the closest real parking spot to where the user actually is
+        const nearest = findNearestSpot(allSpots, latitude, longitude);
+        if (nearest) setSelectedSpot(nearest);
+
+        const label = await resolveAddressLabel(latitude, longitude);
+        const finalLabel =
+          label || `${latitude.toFixed(5)}, ${longitude.toFixed(5)} (live GPS)`;
+        setLocationLabel(finalLabel);
+        setSearchQuery(finalLabel);
+      },
+      (err) => {
+        setIsLocating(false);
+        const messages = {
+          1: "Location permission blocked. Allow location for this site in your browser, then tap GPS again.",
+          2: "Location unavailable right now. Check that GPS / location services are switched on.",
+          3: "Locating timed out. Move near a window or try again."
+        };
+        setLocationError(messages[err.code] || "Could not fetch your location.");
+      },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
+    );
+  };
+
+  // Ask for the live location once, the first time the map screen is opened
+  useEffect(() => {
+    if (activeScreen === "08" && !autoLocateDoneRef.current) {
+      autoLocateDoneRef.current = true;
+      handleFetchUserLocation();
+    }
+  }, [activeScreen]);
+
+  // Host Photo Upload: validate, downscale, then preview — works with any phone photo
+  const [photoStatus, setPhotoStatus] = useState("");
+  const [photoError, setPhotoError] = useState("");
+  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
+
+  const acceptPhotoFile = (file) => {
+    setPhotoError("");
+    setPhotoStatus("");
+
+    if (!file) {
+      setPhotoError("No file selected. Tap the green box and pick an image.");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setPhotoError(`"${file.name}" is not an image. Choose a JPG, PNG, HEIC or WebP photo.`);
+      return;
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      setPhotoError("That photo is over 25MB. Pick a smaller one.");
+      return;
+    }
+
+    setIsProcessingPhoto(true);
+    const reader = new FileReader();
+
+    reader.onerror = () => {
+      setIsProcessingPhoto(false);
+      setPhotoError("Could not read that file. Try choosing the photo again.");
+    };
+
+    reader.onload = (ev) => {
+      const rawDataUrl = ev.target?.result;
+      if (!rawDataUrl) {
+        setIsProcessingPhoto(false);
+        setPhotoError("The photo came back empty. Please try another image.");
+        return;
+      }
+
+      // Downscale so a 10MP phone photo stays small enough to store and publish
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const maxEdge = 1280;
+          const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const compressed = canvas.toDataURL("image/jpeg", 0.82);
+          const used = compressed.length < rawDataUrl.length ? compressed : rawDataUrl;
+          setHostForm((prev) => ({ ...prev, photoUrl: used }));
+          setPhotoStatus(`✓ ${file.name} added (${Math.round(used.length / 1024)} KB)`);
+        } catch (err) {
+          console.warn("Canvas downscale failed, using original photo:", err);
+          setHostForm((prev) => ({ ...prev, photoUrl: rawDataUrl }));
+          setPhotoStatus(`✓ ${file.name} added`);
+        }
+        setIsProcessingPhoto(false);
+      };
+      img.onerror = () => {
+        // HEIC and other formats the canvas cannot decode still preview natively
+        setHostForm((prev) => ({ ...prev, photoUrl: rawDataUrl }));
+        setPhotoStatus(`✓ ${file.name} added`);
+        setIsProcessingPhoto(false);
+      };
+      img.src = rawDataUrl;
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const handlePhotoFileUpload = (e) => {
+    acceptPhotoFile(e.target.files?.[0]);
+    // Reset so re-picking the same file still fires onChange
+    e.target.value = "";
+  };
+
+  const handlePhotoDrop = (e) => {
+    e.preventDefault();
+    acceptPhotoFile(e.dataTransfer?.files?.[0]);
   };
 
   // Save Custom Firebase Credentials
