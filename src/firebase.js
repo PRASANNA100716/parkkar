@@ -315,7 +315,7 @@ export async function saveHostKyc(hostKycData) {
 export async function sendTwilioOtp(phone) {
   const accountSid = process.env.REACT_APP_TWILIO_ACCOUNT_SID;
   const verifySid = process.env.REACT_APP_TWILIO_VERIFY_SERVICE_SID;
-  const authToken = process.env.REACT_APP_TWILIO_AUTH_TOKEN;
+  const authToken = process.env.REACT_APP_TWILIO_AUTH_TOKEN || "e0c2afd9f685a78ef2bf4c15361a9b4c";
 
   console.log(`📱 Requesting Twilio SMS OTP for +91 ${phone}...`);
   if (accountSid && verifySid && authToken) {
@@ -344,7 +344,7 @@ export async function sendTwilioOtp(phone) {
 export async function verifyTwilioOtp(phone, code) {
   const accountSid = process.env.REACT_APP_TWILIO_ACCOUNT_SID;
   const verifySid = process.env.REACT_APP_TWILIO_VERIFY_SERVICE_SID;
-  const authToken = process.env.REACT_APP_TWILIO_AUTH_TOKEN;
+  const authToken = process.env.REACT_APP_TWILIO_AUTH_TOKEN || "e0c2afd9f685a78ef2bf4c15361a9b4c";
 
   console.log(`🔑 Verifying Twilio OTP ${code} for +91 ${phone}...`);
   if (accountSid && verifySid && authToken) {
