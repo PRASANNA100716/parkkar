@@ -147,34 +147,36 @@ function calculateAISmartPrice(address, city, type, amenities) {
   return { recommendedPrice: baseRate, areaTier, surgeMultiplier, estimatedMonthly };
 }
 
-// ─── HIGH-RELIABILITY MULTI-SOURCE REAL PHOTO COMPONENT ──────────────────────
+// ─── 100% BULLETPROOF EMBEDDED SVG DATA URLS FOR HIGH-RELIABILITY DISPLAY ────
+const SVG_GARAGE_DATA_URL = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="%230F172A"/><rect x="40" y="40" width="720" height="520" rx="30" fill="%231E293B" stroke="%2322C55E" stroke-width="4"/><path d="M150 450 L400 150 L650 450 Z" fill="none" stroke="%2322C55E" stroke-width="12" stroke-linecap="round"/><rect x="250" y="320" width="300" height="180" rx="16" fill="%230F172A" stroke="%2322C55E" stroke-width="6"/><circle cx="400" cy="270" r="40" fill="%2322C55E"/><text x="400" y="282" font-family="sans-serif" font-size="36" font-weight="900" fill="%23FFFFFF" text-anchor="middle">P</text><text x="400" y="550" font-family="sans-serif" font-size="26" font-weight="800" fill="%2394A3B8" text-anchor="middle">PARKKAR PRIVATE GARAGE SPOT</text></svg>`;
+
+const SVG_BASEMENT_DATA_URL = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="%230284C7"/><rect x="40" y="40" width="720" height="520" rx="30" fill="%230F172A" stroke="%2338BDF8" stroke-width="4"/><circle cx="400" cy="250" r="70" fill="%230284C7"/><text x="400" y="270" font-family="sans-serif" font-size="64" font-weight="900" fill="%23FFFFFF" text-anchor="middle">P</text><text x="400" y="420" font-family="sans-serif" font-size="30" font-weight="900" fill="%23FFFFFF" text-anchor="middle">UNDERGROUND BASEMENT PARKING</text><text x="400" y="480" font-family="sans-serif" font-size="22" font-weight="700" fill="%2338BDF8" text-anchor="middle">24/7 Security Guard &amp; CCTV</text></svg>`;
+
+const SVG_DRIVEWAY_DATA_URL = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="%23F59E0B"/><rect x="40" y="40" width="720" height="520" rx="30" fill="%231E293B" stroke="%23F59E0B" stroke-width="4"/><circle cx="400" cy="250" r="70" fill="%23F59E0B"/><text x="400" y="270" font-family="sans-serif" font-size="64" font-weight="900" fill="%23FFFFFF" text-anchor="middle">P</text><text x="400" y="420" font-family="sans-serif" font-size="30" font-weight="900" fill="%23FFFFFF" text-anchor="middle">GATED RESIDENTIAL DRIVEWAY</text><text x="400" y="480" font-family="sans-serif" font-size="22" font-weight="700" fill="%23FEF3C7" text-anchor="middle">EV ⚡ Fast Charge Available</text></svg>`;
+
 const REAL_IMAGES = {
   whiteCar: [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/2018_Tesla_Model_3_Front.jpg/800px-2018_Tesla_Model_3_Front.jpg",
-    "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=800"
+    SVG_GARAGE_DATA_URL,
+    "https://images.unsplash.com/photo-1506521782020-18925f4bfa55?auto=format&fit=crop&w=800&q=80"
   ],
   garageHouse: [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Parkhaus_Dresden_Altmarkt.jpg/800px-Parkhaus_Dresden_Altmarkt.jpg",
-    "https://images.pexels.com/photos/1004409/pexels-photo-1004409.jpeg?auto=compress&cs=tinysrgb&w=800"
+    SVG_GARAGE_DATA_URL,
+    "https://images.unsplash.com/photo-1590674899484-13da0d1b58f5?auto=format&fit=crop&w=800&q=80"
   ],
   garage: [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Parkhaus_Dresden_Altmarkt.jpg/800px-Parkhaus_Dresden_Altmarkt.jpg",
-    "https://images.pexels.com/photos/753876/pexels-photo-753876.jpeg?auto=compress&cs=tinysrgb&w=800",
+    SVG_GARAGE_DATA_URL,
     "https://images.unsplash.com/photo-1506521782020-18925f4bfa55?auto=format&fit=crop&w=800&q=80"
   ],
   office: [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Underground_parking_in_Krak%C3%B3w.jpg/800px-Underground_parking_in_Krak%C3%B3w.jpg",
-    "https://images.pexels.com/photos/1756957/pexels-photo-1756957.jpeg?auto=compress&cs=tinysrgb&w=800",
+    SVG_BASEMENT_DATA_URL,
     "https://images.unsplash.com/photo-1590674899484-13da0d1b58f5?auto=format&fit=crop&w=800&q=80"
   ],
   driveway: [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Parking_lot_in_Fresno%2C_California.jpg/800px-Parking_lot_in_Fresno%2C_California.jpg",
-    "https://images.pexels.com/photos/1004409/pexels-photo-1004409.jpeg?auto=compress&cs=tinysrgb&w=800",
+    SVG_DRIVEWAY_DATA_URL,
     "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?auto=format&fit=crop&w=800&q=80"
   ],
   security: [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Automatic_number_plate_recognition_barrier_parking.jpg/800px-Automatic_number_plate_recognition_barrier_parking.jpg",
-    "https://images.pexels.com/photos/4481326/pexels-photo-4481326.jpeg?auto=compress&cs=tinysrgb&w=800",
+    SVG_GARAGE_DATA_URL,
     "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80"
   ]
 };
@@ -182,14 +184,26 @@ const REAL_IMAGES = {
 const SmartImage = ({ sources = [], alt, style }) => {
   const [sourceIndex, setSourceIndex] = useState(0);
 
-  const srcList = Array.isArray(sources) ? sources : [sources];
-  const currentSrc = srcList[sourceIndex] || srcList[0];
+  const srcList = Array.isArray(sources) && sources.length > 0 ? sources : [SVG_GARAGE_DATA_URL];
+  const currentSrc = srcList[sourceIndex] || SVG_GARAGE_DATA_URL;
 
   const handleError = () => {
     if (sourceIndex < srcList.length - 1) {
       setSourceIndex(prev => prev + 1);
+    } else {
+      setSourceIndex(srcList.length); // Trigger embedded SVG fallback
     }
   };
+
+  if (sourceIndex >= srcList.length) {
+    return (
+      <img
+        src={SVG_GARAGE_DATA_URL}
+        alt={alt}
+        style={{ width: "100%", height: "100%", objectFit: "cover", ...style }}
+      />
+    );
+  }
 
   return (
     <img
@@ -526,7 +540,7 @@ export default function FullShowcaseBoard() {
       const dbSpots = await fetchHostSpotsFromFirebase();
       if (dbSpots && dbSpots.length > 0) {
         const formatted = dbSpots.map(s => {
-          const photoSources = s.photoUrl ? [s.photoUrl, ...REAL_IMAGES.garage] : REAL_IMAGES.garage;
+          const photoSources = s.photoUrl ? [s.photoUrl, SVG_GARAGE_DATA_URL] : [SVG_GARAGE_DATA_URL];
           return {
             id: s.id,
             title: s.title || "Host Parking Space",
@@ -576,7 +590,7 @@ export default function FullShowcaseBoard() {
     city: "Chennai",
     price: 55,
     type: "Private Garage",
-    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Parkhaus_Dresden_Altmarkt.jpg/800px-Parkhaus_Dresden_Altmarkt.jpg",
+    photoUrl: SVG_GARAGE_DATA_URL,
     amenities: ["CCTV", "Covered", "24/7 Access", "EV Ready"],
     about: "Clean private covered garage spot in Anna Nagar with 24/7 security guard and easy access."
   });
@@ -821,7 +835,7 @@ export default function FullShowcaseBoard() {
       console.warn("Publish persistence failed, listing stays live in this session:", err);
     }
 
-    const hostPhotoSources = [hostForm.photoUrl, ...REAL_IMAGES.garage].filter(Boolean);
+    const hostPhotoSources = [hostForm.photoUrl, SVG_GARAGE_DATA_URL].filter(Boolean);
 
     const newSpot = {
       id: publishedId || "sp_custom_" + Date.now(),
@@ -2226,7 +2240,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 33: HOST FORM STEP 3 (REAL WORKING FIREBASE STORAGE UPLOADER) ─── */}
+            {/* ─── SCREEN 33: HOST FORM STEP 3 (REAL WORKING FIREBASE STORAGE UPLOADER & BULLETPROOF SVG SAMPLES) ─── */}
             {activeScreen === "33" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between" }}>
                 <div>
@@ -2276,23 +2290,26 @@ export default function FullShowcaseBoard() {
                     <span style={{ fontSize: 11, color: "#64748B", marginTop: 2, display: "block" }}>Direct Firebase Storage Upload Enabled</span>
                   </div>
 
-                  {/* HIGH QUALITY SAMPLE PHOTO PICKER */}
+                  {/* HIGH QUALITY SAMPLE PHOTO PICKER WITH BULLETPROOF EMBEDDED URIS */}
                   <label style={{ fontSize: 11, fontWeight: 800, color: "#64748B", display: "block", marginBottom: 6 }}>Or Select Sample Spot Photo:</label>
                   <div style={{ display: "flex", gap: 10 }}>
                     {[
-                      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Parkhaus_Dresden_Altmarkt.jpg/800px-Parkhaus_Dresden_Altmarkt.jpg",
-                      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Underground_parking_in_Krak%C3%B3w.jpg/800px-Underground_parking_in_Krak%C3%B3w.jpg",
-                      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Parking_lot_in_Fresno%2C_California.jpg/800px-Parking_lot_in_Fresno%2C_California.jpg"
-                    ].map((url, i) => (
+                      { name: "Garage", url: SVG_GARAGE_DATA_URL },
+                      { name: "Basement", url: SVG_BASEMENT_DATA_URL },
+                      { name: "Driveway", url: SVG_DRIVEWAY_DATA_URL }
+                    ].map((item, i) => (
                       <div 
                         key={i}
                         onClick={() => {
-                          setHostForm({...hostForm, photoUrl: url});
-                          setPhotoStatus("✓ Sample image selected");
+                          setHostForm({...hostForm, photoUrl: item.url});
+                          setPhotoStatus(`✓ ${item.name} sample photo selected`);
                         }}
-                        style={{ width: 75, height: 60, borderRadius: 12, overflow: "hidden", border: hostForm.photoUrl === url ? "2.5px solid #22C55E" : "1px solid #E2E8F0", cursor: "pointer" }}
+                        style={{ width: 85, height: 60, borderRadius: 12, overflow: "hidden", border: hostForm.photoUrl === item.url ? "2.5px solid #22C55E" : "1.5px solid #E2E8F0", cursor: "pointer", position: "relative" }}
                       >
-                        <SmartImage sources={[url]} alt="sample" />
+                        <SmartImage sources={[item.url]} alt={item.name} />
+                        <div style={{ position: "absolute", bottom: 2, left: 2, right: 2, background: "rgba(15,23,42,0.85)", color: "#FFF", fontSize: 9, fontWeight: 900, textAlign: "center", padding: "1px 0", borderRadius: 4 }}>
+                          {item.name}
+                        </div>
                       </div>
                     ))}
                   </div>
