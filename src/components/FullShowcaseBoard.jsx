@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { saveHostSpot } from "../firebase";
 
 // Theme Palette matching Paarkkar UI Reference
 const T = {
@@ -67,12 +68,6 @@ const IconCar = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
-const IconShield = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-  </svg>
-);
-
 const IconLock = ({ size = 16, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -122,6 +117,13 @@ const IconShare = ({ size = 20, color = "currentColor" }) => (
 const IconCheck = ({ size = 20, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+const IconCamera = ({ size = 22, color = "currentColor" }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+    <circle cx="12" cy="13" r="4" />
   </svg>
 );
 
@@ -232,8 +234,8 @@ const RealSecurityPhoto = ({ height = 230 }) => (
   </div>
 );
 
-// ─── TAMIL NADU SPOTS DATABASE (HOST LISTINGS) ───────────────────────────────
-const TAMIL_NADU_SPOTS = [
+// ─── INITIAL TAMIL NADU SPOTS DATABASE ───────────────────────────────────────
+const INITIAL_TAMIL_NADU_SPOTS = [
   {
     id: "sp1",
     title: "Home Garage",
@@ -335,7 +337,7 @@ const TAMIL_NADU_SPOTS = [
 ];
 
 // ─── HIGH-PERFORMANCE RAPIDO/OLA STYLE TAMIL NADU MAP ENGINE ────────────────
-function TamilNaduMap({ selectedSpot, onSelectSpot }) {
+function TamilNaduMap({ spotsList, selectedSpot, onSelectSpot }) {
   const mapContainerRef = useRef(null);
   const leafletInstanceRef = useRef(null);
   const markersRef = useRef([]);
@@ -370,7 +372,7 @@ function TamilNaduMap({ selectedSpot, onSelectSpot }) {
         subdomains: 'abcd'
       }).addTo(map);
 
-      TAMIL_NADU_SPOTS.forEach((spot) => {
+      spotsList.forEach((spot) => {
         const isSelected = selectedSpot && selectedSpot.id === spot.id;
         
         const pinHtml = `
@@ -415,7 +417,7 @@ function TamilNaduMap({ selectedSpot, onSelectSpot }) {
         leafletInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [spotsList]);
 
   useEffect(() => {
     if (leafletInstanceRef.current && selectedSpot) {
@@ -428,10 +430,13 @@ function TamilNaduMap({ selectedSpot, onSelectSpot }) {
 
 export default function FullShowcaseBoard() {
   const [activeScreen, setActiveScreen] = useState("01");
-  const [role, setRole] = useState(null);
+  const [role, setRole] = useState(null); // "driver" or "host"
   const [otpVal, setOtpVal] = useState(["2", "4", "6", "8", "2", "1"]);
   const [showQuickNav, setShowQuickNav] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+
+  // Dynamic Tamil Nadu Spots Database State
+  const [allSpots, setAllSpots] = useState(INITIAL_TAMIL_NADU_SPOTS);
 
   // Booking Flow State
   const [selectedDate, setSelectedDate] = useState("Today, 04 Aug");
@@ -440,8 +445,22 @@ export default function FullShowcaseBoard() {
   const [durationHours, setDurationHours] = useState(4);
   const [selectedPayment, setSelectedPayment] = useState("upi");
 
-  // Selected Spot State (Default to Spot 2: Subterranean Office Basement T. Nagar)
-  const [selectedSpot, setSelectedSpot] = useState(TAMIL_NADU_SPOTS[1]);
+  // Selected Spot State
+  const [selectedSpot, setSelectedSpot] = useState(INITIAL_TAMIL_NADU_SPOTS[1]);
+
+  // Host Space Form State
+  const [hostForm, setHostForm] = useState({
+    title: "My Anna Nagar Private Garage",
+    address: "12th Main Road, Anna Nagar, Chennai",
+    city: "Chennai",
+    price: 55,
+    type: "Private Garage",
+    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Parkhaus_Dresden_Altmarkt.jpg/800px-Parkhaus_Dresden_Altmarkt.jpg",
+    amenities: ["CCTV", "Covered", "24/7 Access", "EV Ready"],
+    about: "Clean private covered garage spot in Anna Nagar with 24/7 security guard and easy access."
+  });
+
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const screensList = [
     { id: "01", name: "Splash Screen" },
@@ -500,6 +519,32 @@ export default function FullShowcaseBoard() {
   const calculatedServiceFee = 10;
   const calculatedTotalAmount = calculatedBaseAmount + calculatedServiceFee;
 
+  // Publish Host Spot to Firebase & Tamil Nadu Map
+  const handlePublishHostSpot = async () => {
+    setIsPublishing(true);
+    const publishedId = await saveHostSpot(hostForm);
+
+    const newSpot = {
+      id: publishedId || "sp_custom_" + Date.now(),
+      title: hostForm.title,
+      address: hostForm.address,
+      price: Number(hostForm.price),
+      rating: "5.0 (New)",
+      lat: 13.0850 + (Math.random() * 0.02 - 0.01),
+      lng: 80.2101 + (Math.random() * 0.02 - 0.01),
+      imgSources: [hostForm.photoUrl, ...REAL_IMAGES.garage],
+      city: hostForm.city,
+      badge: "HOST LISTING",
+      photoComponent: <RealGaragePhoto height={200} badge={`₹${hostForm.price}/hr • ${hostForm.title.toUpperCase()}`} />,
+      about: hostForm.about
+    };
+
+    setAllSpots(prev => [newSpot, ...prev]);
+    setSelectedSpot(newSpot);
+    setIsPublishing(false);
+    setActiveScreen("35");
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw", background: "#0F172A", color: "#F8FAFC", fontFamily: "system-ui, -apple-system, sans-serif", overflow: "hidden" }}>
 
@@ -532,7 +577,7 @@ export default function FullShowcaseBoard() {
             </div>
           </div>
 
-          {/* REAL INTERACTIVE SIDE NAVIGATION DRAWER OVERLAY */}
+          {/* REAL INTERACTIVE SIDE NAVIGATION DRAWER OVERLAY WITH MODE SWITCH & SIGNOUT */}
           {showDrawer && (
             <div style={{ position: "absolute", inset: 0, zIndex: 1000, display: "flex" }}>
               <div 
@@ -544,15 +589,33 @@ export default function FullShowcaseBoard() {
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 20 }}>
+                      <div style={{ width: 48, height: 48, borderRadius: "50%", background: role === "host" ? "#F59E0B" : "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 20 }}>
                         HA
                       </div>
                       <div>
                         <h3 style={{ margin: "0 0 2px", fontSize: 16, fontWeight: 900, color: "#0F172A" }}>Hanush Adith</h3>
-                        <span style={{ fontSize: 11, color: "#22C55E", fontWeight: 800, background: "#DCFCE7", padding: "2px 8px", borderRadius: 6 }}>VERIFIED DRIVER</span>
+                        <span style={{ fontSize: 11, color: role === "host" ? "#D97706" : "#22C55E", fontWeight: 800, background: role === "host" ? "#FEF3C7" : "#DCFCE7", padding: "2px 8px", borderRadius: 6 }}>
+                          {role === "host" ? "● HOST MODE" : "● DRIVER MODE"}
+                        </span>
                       </div>
                     </div>
                     <button onClick={() => setShowDrawer(false)} style={{ background: "none", border: "none", fontSize: 18, color: "#94A3B8", cursor: "pointer", fontWeight: "bold" }}>✕</button>
+                  </div>
+
+                  {/* MODE SWITCHER TOGGLE BAR */}
+                  <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 16 }}>
+                    <button 
+                      onClick={() => { setRole("driver"); setActiveScreen("08"); setShowDrawer(false); }}
+                      style={{ flex: 1, padding: "8px 0", borderRadius: 10, border: "none", background: role !== "host" ? "#22C55E" : "transparent", color: role !== "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 12, cursor: "pointer" }}
+                    >
+                      🚗 Driver
+                    </button>
+                    <button 
+                      onClick={() => { setRole("host"); setActiveScreen("29"); setShowDrawer(false); }}
+                      style={{ flex: 1, padding: "8px 0", borderRadius: 10, border: "none", background: role === "host" ? "#F59E0B" : "transparent", color: role === "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 12, cursor: "pointer" }}
+                    >
+                      🏢 Host Mode
+                    </button>
                   </div>
 
                   <div style={{ borderBottom: "1px solid #F1F5F9", marginBottom: 16 }} />
@@ -560,13 +623,12 @@ export default function FullShowcaseBoard() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {[
                       { icon: "🗺️", label: "Find Parking (Map)", action: () => { setActiveScreen("08"); setShowDrawer(false); } },
+                      { icon: "🏢", label: "Host Dashboard", action: () => { setActiveScreen("29"); setShowDrawer(false); } },
+                      { icon: "➕", label: "Post New Parking Spot", action: () => { setActiveScreen("30"); setShowDrawer(false); } },
                       { icon: "🚗", label: "My Bookings", action: () => { setActiveScreen("20"); setShowDrawer(false); } },
                       { icon: "💳", label: "Wallet & Payments (₹450)", action: () => { setActiveScreen("21"); setShowDrawer(false); } },
                       { icon: "🔔", label: "Notifications (2)", action: () => { setActiveScreen("22"); setShowDrawer(false); } },
-                      { icon: "❤️", label: "Saved Favorites", action: () => { setActiveScreen("23"); setShowDrawer(false); } },
-                      { icon: "🏢", label: "Switch to Host Mode", action: () => { setActiveScreen("29"); setShowDrawer(false); } },
                       { icon: "⚙️", label: "Account Settings", action: () => { setActiveScreen("25"); setShowDrawer(false); } },
-                      { icon: "🎁", label: "Invite & Earn ₹100", action: () => { setActiveScreen("27"); setShowDrawer(false); } },
                     ].map((item, idx) => (
                       <div 
                         key={idx}
@@ -580,8 +642,9 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
+                {/* SIGN OUT BUTTON */}
                 <button 
-                  onClick={() => { setActiveScreen("01"); setShowDrawer(false); }}
+                  onClick={() => { setRole(null); setActiveScreen("06"); setShowDrawer(false); }}
                   style={{ width: "100%", padding: 14, borderRadius: 14, background: "#FEF2F2", border: "none", color: "#EF4444", fontWeight: 800, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
                 >
                   🚪 Sign Out
@@ -786,8 +849,24 @@ export default function FullShowcaseBoard() {
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
                   <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Welcome Back!</h2>
-                  <p style={{ fontSize: 14, color: "#64748B", margin: "0 0 28px" }}>Sign in to continue your parking experience</p>
+                  <p style={{ fontSize: 14, color: "#64748B", margin: "0 0 24px" }}>Sign in to continue to Paarkkar</p>
                   
+                  {/* ROLE MODE SWITCHER IN LOGIN */}
+                  <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 20 }}>
+                    <button 
+                      onClick={() => setRole("driver")}
+                      style={{ flex: 1, padding: "10px 0", borderRadius: 10, border: "none", background: role !== "host" ? "#22C55E" : "transparent", color: role !== "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 13, cursor: "pointer" }}
+                    >
+                      🚗 Driver Login
+                    </button>
+                    <button 
+                      onClick={() => setRole("host")}
+                      style={{ flex: 1, padding: "10px 0", borderRadius: 10, border: "none", background: role === "host" ? "#F59E0B" : "transparent", color: role === "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 13, cursor: "pointer" }}
+                    >
+                      🏢 Host Login
+                    </button>
+                  </div>
+
                   <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 6 }}>Phone Number</label>
                   <div style={{ display: "flex", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", alignItems: "center", gap: 10, marginBottom: 16 }}>
                     <span style={{ fontSize: 14, fontWeight: 800, color: "#0F172A" }}>🇮🇳 +91</span>
@@ -804,8 +883,14 @@ export default function FullShowcaseBoard() {
                     <span style={{ color: "#22C55E", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Forgot Password?</span>
                   </div>
 
-                  <button onClick={() => setActiveScreen("07")} style={{ width: "100%", padding: "16px", borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer", boxShadow: "0 8px 20px rgba(34,197,94,0.3)" }}>
-                    Login
+                  <button 
+                    onClick={() => {
+                      if (role === "host") setActiveScreen("29");
+                      else setActiveScreen("07");
+                    }} 
+                    style={{ width: "100%", padding: "16px", borderRadius: 16, background: role === "host" ? "#F59E0B" : "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 900, cursor: "pointer", boxShadow: "0 8px 20px rgba(0,0,0,0.15)" }}
+                  >
+                    {role === "host" ? "Sign In as Host" : "Login as Driver"}
                   </button>
                 </div>
               </div>
@@ -886,7 +971,7 @@ export default function FullShowcaseBoard() {
 
                   <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 2 }}>
                     {["Chennai", "Coimbatore", "Madurai"].map((cityName) => {
-                      const spotInCity = TAMIL_NADU_SPOTS.find(s => s.city === cityName);
+                      const spotInCity = allSpots.find(s => s.city === cityName);
                       const isSelected = selectedSpot.city === cityName;
                       return (
                         <button
@@ -915,6 +1000,7 @@ export default function FullShowcaseBoard() {
 
                 <div style={{ flex: 1, background: "#0F172A", position: "relative", overflow: "hidden" }}>
                   <TamilNaduMap 
+                    spotsList={allSpots}
                     selectedSpot={selectedSpot} 
                     onSelectSpot={(spot) => setSelectedSpot(spot)} 
                   />
@@ -948,7 +1034,7 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
-                  {TAMIL_NADU_SPOTS.map((item) => (
+                  {allSpots.map((item) => (
                     <div key={item.id} style={{ background: "#FFF", borderRadius: 16, padding: 12, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
                       <div style={{ width: 84, height: 84, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
                         <SmartImage sources={item.imgSources} alt="spot" />
@@ -972,10 +1058,7 @@ export default function FullShowcaseBoard() {
             {/* ─── PARKING DETAILS (ULTRA-RICH RAPIDO/UBER STYLE DETAIL VIEW WITH FIXED BOTTOM FOOTER) ─── */}
             {activeScreen === "10" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", height: "100%", overflow: "hidden" }}>
-                
-                {/* SCROLLABLE MIDDLE CONTENT AREA */}
                 <div style={{ flex: 1, overflowY: "auto", paddingBottom: 16 }}>
-                  {/* HEADER BAR */}
                   <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
                     <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer" }}>
                       <IconChevronLeft size={22} color="#0F172A" />
@@ -986,12 +1069,10 @@ export default function FullShowcaseBoard() {
                     </button>
                   </div>
 
-                  {/* HERO PHOTO CARD */}
                   <div style={{ padding: "14px 16px 10px" }}>
                     {selectedSpot.photoComponent || <RealGaragePhoto height={210} />}
                   </div>
 
-                  {/* TITLE, LOCATION & RATING ROW */}
                   <div style={{ padding: "0 20px 14px", background: "#FFF", marginBottom: 12, borderBottom: "1px solid #F1F5F9" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                       <h2 style={{ fontSize: 22, fontWeight: 900, color: "#0F172A", margin: 0, lineHeight: 1.2 }}>{selectedSpot.title}</h2>
@@ -1007,7 +1088,6 @@ export default function FullShowcaseBoard() {
                     </div>
                   </div>
 
-                  {/* LIVE AVAILABILITY BANNER */}
                   <div style={{ margin: "0 16px 14px" }}>
                     <div style={{ background: "#DCFCE7", border: "1.5px solid #BBF7D0", padding: "12px 16px", borderRadius: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -1018,7 +1098,6 @@ export default function FullShowcaseBoard() {
                     </div>
                   </div>
 
-                  {/* HOST INFORMATION PROFILE CARD */}
                   <div style={{ margin: "0 16px 14px", background: "#FFF", padding: 14, borderRadius: 16, border: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#0F172A", color: "#22C55E", fontWeight: 900, fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -1034,7 +1113,6 @@ export default function FullShowcaseBoard() {
                     </button>
                   </div>
 
-                  {/* 4 RICH SPECS CARDS GRID */}
                   <div style={{ padding: "0 16px 14px" }}>
                     <h4 style={{ fontSize: 14, fontWeight: 900, color: "#0F172A", margin: "0 0 10px" }}>Space Amenities & Specifications</h4>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
@@ -1053,7 +1131,6 @@ export default function FullShowcaseBoard() {
                     </div>
                   </div>
 
-                  {/* ABOUT SPACE SECTION */}
                   <div style={{ margin: "0 16px 14px", background: "#FFF", padding: 16, borderRadius: 16, border: "1px solid #E2E8F0" }}>
                     <h4 style={{ fontSize: 14, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>About this Space</h4>
                     <p style={{ fontSize: 13, color: "#475569", lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
@@ -1061,7 +1138,6 @@ export default function FullShowcaseBoard() {
                     </p>
                   </div>
 
-                  {/* DRIVER REVIEW PREVIEW */}
                   <div style={{ margin: "0 16px 20px", background: "#F0FDF4", padding: 14, borderRadius: 16, border: "1px solid #BBF7D0" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
                       <span style={{ fontSize: 12, fontWeight: 900, color: "#16A34A" }}>Verified Driver Review</span>
@@ -1073,7 +1149,6 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                {/* STICKY FIXED BOTTOM ACTION FOOTER WITH PRICE AND BOOK SPOT NOW BUTTON */}
                 <div style={{ padding: "16px 20px 24px", borderTop: "1.5px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", boxShadow: "0 -6px 20px rgba(0,0,0,0.08)", zIndex: 100 }}>
                   <div>
                     <span style={{ fontSize: 11, color: "#16A34A", fontWeight: 800, display: "block" }}>● Instant Approval • Free Cancel</span>
@@ -1099,7 +1174,6 @@ export default function FullShowcaseBoard() {
                     Book Spot Now
                   </button>
                 </div>
-
               </div>
             )}
 
@@ -1422,6 +1496,380 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
+            {/* ─── SCREEN 29: HOST DASHBOARD ─── */}
+            {activeScreen === "29" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
+                    <button onClick={() => setShowDrawer(true)} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                      <IconMenu size={22} color="#0F172A" />
+                    </button>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Host Dashboard</span>
+                    <span style={{ fontSize: 11, fontWeight: 800, background: "#FEF3C7", color: "#D97706", padding: "4px 8px", borderRadius: 6 }}>HOST MODE</span>
+                  </div>
+
+                  <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
+                    <div style={{ background: "linear-gradient(135deg, #16A34A 0%, #15803D 100%)", borderRadius: 20, padding: 20, color: "#FFF", boxShadow: "0 10px 25px rgba(22,163,74,0.25)" }}>
+                      <span style={{ fontSize: 12, opacity: 0.9 }}>This Month's Earnings</span>
+                      <div style={{ fontSize: 32, fontWeight: 900, marginTop: 4 }}>₹12,450.00</div>
+                      <span style={{ fontSize: 11, opacity: 0.9, marginTop: 8, display: "block" }}>14 Driver Bookings Completed</span>
+                    </div>
+
+                    <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                        <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: "#0F172A" }}>Your Listed Spots ({allSpots.length} Live)</h4>
+                        <button onClick={() => setActiveScreen("30")} style={{ background: "#22C55E", border: "none", color: "#FFF", fontSize: 11, fontWeight: 800, padding: "6px 12px", borderRadius: 8, cursor: "pointer", boxShadow: "0 4px 10px rgba(34,197,94,0.3)" }}>
+                          + Add Spot
+                        </button>
+                      </div>
+
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 220, overflowY: "auto" }}>
+                        {allSpots.map((sp) => (
+                          <div key={sp.id} style={{ display: "flex", gap: 12, alignItems: "center", padding: "8px 0", borderBottom: "1px solid #F1F5F9" }}>
+                            <div style={{ width: 50, height: 50, borderRadius: 10, overflow: "hidden", flexShrink: 0 }}>
+                              <SmartImage sources={sp.imgSources} alt="spot" />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <h5 style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 800, color: "#0F172A" }}>{sp.title}</h5>
+                              <span style={{ fontSize: 11, color: "#22C55E", fontWeight: 800 }}>● Live • ₹{sp.price}/hr</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ padding: 16, borderTop: "1px solid #E2E8F0", background: "#FFF" }}>
+                  <button 
+                    onClick={() => setActiveScreen("30")}
+                    style={{ width: "100%", padding: 16, borderRadius: 16, background: "#F59E0B", border: "none", color: "#FFF", fontWeight: 900, fontSize: 15, cursor: "pointer", boxShadow: "0 6px 16px rgba(245,158,11,0.35)" }}
+                  >
+                    + Post New Parking Spot (Form & Photo Upload)
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 30: ADD SPACE INTRO ─── */}
+            {activeScreen === "30" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between" }}>
+                <div>
+                  <button onClick={() => setActiveScreen("29")} style={{ background: "none", border: "none", cursor: "pointer", marginBottom: 12 }}>
+                    <IconChevronLeft size={22} color="#0F172A" />
+                  </button>
+                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Host Your Parking Space</h2>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 20px" }}>Turn your unused garage or driveway into steady monthly income</p>
+
+                  <div style={{ width: "100%", marginBottom: 20 }}>
+                    <RealGaragePhoto height={210} badge="HOST & EARN ₹15,000 / MONTH" />
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {[
+                      { icon: "📍", title: "1. Add Location & Details", desc: "Specify address, city & space type" },
+                      { icon: "💰", title: "2. Set Your Hourly Rate", desc: "Flexible pricing from ₹30 to ₹100/hr" },
+                      { icon: "📸", title: "3. Take & Upload Photo", desc: "Snap a photo of your garage or slot" },
+                      { icon: "🔥", title: "4. Save to Firebase Firestore", desc: "Instant live publish on Tamil Nadu Map" }
+                    ].map((step, i) => (
+                      <div key={i} style={{ display: "flex", gap: 12, alignItems: "center", background: "#F8FAFC", padding: 12, borderRadius: 14, border: "1px solid #E2E8F0" }}>
+                        <span style={{ fontSize: 20 }}>{step.icon}</span>
+                        <div>
+                          <h4 style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 800, color: "#0F172A" }}>{step.title}</h4>
+                          <p style={{ margin: 0, fontSize: 11, color: "#64748B" }}>{step.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => setActiveScreen("31")}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                >
+                  Start Listing My Space
+                </button>
+              </div>
+            )}
+
+            {/* ─── SCREEN 31: HOST FORM STEP 1 (LOCATION & TITLE) ─── */}
+            {activeScreen === "31" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+                    <button onClick={() => setActiveScreen("30")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Step 1: Location & Details</span>
+                  </div>
+
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Parking Spot Title</label>
+                  <input 
+                    type="text" 
+                    value={hostForm.title}
+                    onChange={(e) => setHostForm({...hostForm, title: e.target.value})}
+                    placeholder="e.g. My Anna Nagar Private Garage"
+                    style={{ width: "100%", padding: 14, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 14, fontWeight: 700, color: "#0F172A", marginBottom: 16 }}
+                  />
+
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Select Tamil Nadu City</label>
+                  <select
+                    value={hostForm.city}
+                    onChange={(e) => setHostForm({...hostForm, city: e.target.value})}
+                    style={{ width: "100%", padding: 14, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 14, fontWeight: 700, color: "#0F172A", marginBottom: 16 }}
+                  >
+                    <option value="Chennai">Chennai</option>
+                    <option value="Coimbatore">Coimbatore</option>
+                    <option value="Madurai">Madurai</option>
+                  </select>
+
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Full Address</label>
+                  <input 
+                    type="text" 
+                    value={hostForm.address}
+                    onChange={(e) => setHostForm({...hostForm, address: e.target.value})}
+                    placeholder="e.g. 12th Main Road, Anna Nagar, Chennai"
+                    style={{ width: "100%", padding: 14, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 14, fontWeight: 700, color: "#0F172A", marginBottom: 16 }}
+                  />
+
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Space Type</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    {["Private Garage", "Underground Basement", "Driveway Spot", "Gated Bay"].map((t) => (
+                      <div 
+                        key={t}
+                        onClick={() => setHostForm({...hostForm, type: t})}
+                        style={{ 
+                          padding: 12, 
+                          borderRadius: 12, 
+                          border: hostForm.type === t ? "2px solid #22C55E" : "1px solid #E2E8F0", 
+                          background: hostForm.type === t ? "#DCFCE7" : "#F8FAFC", 
+                          color: hostForm.type === t ? "#16A34A" : "#475569", 
+                          fontWeight: 800, 
+                          fontSize: 12, 
+                          textAlign: "center", 
+                          cursor: "pointer" 
+                        }}
+                      >
+                        {t}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => setActiveScreen("32")}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                >
+                  Next: Set Pricing & Specs
+                </button>
+              </div>
+            )}
+
+            {/* ─── SCREEN 32: HOST FORM STEP 2 (PRICING & AMENITIES) ─── */}
+            {activeScreen === "32" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+                    <button onClick={() => setActiveScreen("31")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Step 2: Pricing & Features</span>
+                  </div>
+
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Set Hourly Rate (₹)</label>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+                    <input 
+                      type="number" 
+                      value={hostForm.price}
+                      onChange={(e) => setHostForm({...hostForm, price: e.target.value})}
+                      style={{ width: 100, padding: 14, borderRadius: 14, border: "2px solid #22C55E", outline: "none", fontSize: 20, fontWeight: 900, color: "#22C55E", textAlign: "center" }}
+                    />
+                    <span style={{ fontSize: 14, fontWeight: 800, color: "#64748B" }}>₹ / Hour</span>
+                  </div>
+
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 10 }}>Select Amenities</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+                    {["CCTV", "Covered", "24/7 Access", "EV Ready"].map((am) => {
+                      const isSelected = hostForm.amenities.includes(am);
+                      return (
+                        <div 
+                          key={am}
+                          onClick={() => {
+                            if (isSelected) setHostForm({...hostForm, amenities: hostForm.amenities.filter(x => x !== am)});
+                            else setHostForm({...hostForm, amenities: [...hostForm.amenities, am]});
+                          }}
+                          style={{ 
+                            padding: 12, 
+                            borderRadius: 12, 
+                            border: isSelected ? "2px solid #22C55E" : "1px solid #E2E8F0", 
+                            background: isSelected ? "#F0FDF4" : "#F8FAFC", 
+                            color: isSelected ? "#16A34A" : "#475569", 
+                            fontWeight: 800, 
+                            fontSize: 12, 
+                            textAlign: "center", 
+                            cursor: "pointer" 
+                          }}
+                        >
+                          {isSelected ? "✓ " : ""}{am}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Space Description</label>
+                  <textarea 
+                    rows={3}
+                    value={hostForm.about}
+                    onChange={(e) => setHostForm({...hostForm, about: e.target.value})}
+                    style={{ width: "100%", padding: 12, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 13, color: "#0F172A", fontWeight: 600 }}
+                  />
+                </div>
+
+                <button 
+                  onClick={() => setActiveScreen("33")}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                >
+                  Next: Upload Photo
+                </button>
+              </div>
+            )}
+
+            {/* ─── SCREEN 33: HOST FORM STEP 3 (PHOTO UPLOAD / CAMERA CAPTURE) ─── */}
+            {activeScreen === "33" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+                    <button onClick={() => setActiveScreen("32")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Step 3: Upload Space Photo</span>
+                  </div>
+
+                  {/* PREVIEW CONTAINER */}
+                  <div style={{ width: "100%", height: 200, borderRadius: 20, overflow: "hidden", position: "relative", marginBottom: 16, border: "2px solid #22C55E" }}>
+                    <SmartImage sources={[hostForm.photoUrl]} alt="Upload Preview" />
+                    <div style={{ position: "absolute", bottom: 12, left: 12, background: "rgba(15,23,42,0.85)", color: "#22C55E", padding: "4px 10px", borderRadius: 8, fontSize: 11, fontWeight: 900 }}>
+                      ✓ READY FOR UPLOAD
+                    </div>
+                  </div>
+
+                  {/* UPLOAD CAMERA BUTTON SIMULATOR */}
+                  <div style={{ border: "2px dashed #CBD5E1", borderRadius: 16, padding: 20, textAlign: "center", background: "#F8FAFC", marginBottom: 16 }}>
+                    <div style={{ width: 50, height: 50, borderRadius: "50%", background: "#22C55E", color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
+                      <IconCamera size={24} color="#FFF" />
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", display: "block" }}>Tap to Take or Choose Photo</span>
+                    <span style={{ fontSize: 11, color: "#94A3B8" }}>Supports JPG, PNG & Camera Snap</span>
+                  </div>
+
+                  {/* SAMPLE TAMIL NADU GARAGE PHOTO SELECTOR */}
+                  <label style={{ fontSize: 11, fontWeight: 800, color: "#64748B", display: "block", marginBottom: 6 }}>Or Select Sample Photo:</label>
+                  <div style={{ display: "flex", gap: 10 }}>
+                    {[
+                      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Parkhaus_Dresden_Altmarkt.jpg/800px-Parkhaus_Dresden_Altmarkt.jpg",
+                      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Underground_parking_in_Krak%C3%B3w.jpg/800px-Underground_parking_in_Krak%C3%B3w.jpg",
+                      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Parking_lot_in_Fresno%2C_California.jpg/800px-Parking_lot_in_Fresno%2C_California.jpg"
+                    ].map((url, i) => (
+                      <div 
+                        key={i}
+                        onClick={() => setHostForm({...hostForm, photoUrl: url})}
+                        style={{ width: 70, height: 60, borderRadius: 10, overflow: "hidden", border: hostForm.photoUrl === url ? "2px solid #22C55E" : "1px solid #E2E8F0", cursor: "pointer" }}
+                      >
+                        <SmartImage sources={[url]} alt="sample" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => setActiveScreen("34")}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                >
+                  Next: Review & Publish
+                </button>
+              </div>
+            )}
+
+            {/* ─── SCREEN 34: REVIEW & FIREBASE PUBLISH ─── */}
+            {activeScreen === "34" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", padding: 20, justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+                    <button onClick={() => setActiveScreen("33")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Review Your Listing</span>
+                  </div>
+
+                  <div style={{ background: "#FFF", borderRadius: 20, padding: 16, border: "1px solid #E2E8F0", boxShadow: "0 4px 14px rgba(0,0,0,0.05)", marginBottom: 16 }}>
+                    <div style={{ width: "100%", height: 160, borderRadius: 14, overflow: "hidden", marginBottom: 12 }}>
+                      <SmartImage sources={[hostForm.photoUrl]} alt="final" />
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                      <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>{hostForm.title}</h3>
+                      <span style={{ fontSize: 18, fontWeight: 900, color: "#22C55E" }}>₹{hostForm.price}/hr</span>
+                    </div>
+                    <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 10px" }}>📍 {hostForm.address}</p>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      {hostForm.amenities.map(a => (
+                        <span key={a} style={{ fontSize: 10, fontWeight: 800, background: "#DCFCE7", color: "#16A34A", padding: "2px 8px", borderRadius: 6 }}>{a}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: 14, borderRadius: 14, display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontSize: 20 }}>🔥</span>
+                    <span style={{ fontSize: 12, color: "#15803D", fontWeight: 700 }}>Firebase Storage & Firestore Ready. Will sync live to map instantly.</span>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={handlePublishHostSpot}
+                  disabled={isPublishing}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)", opacity: isPublishing ? 0.7 : 1 }}
+                >
+                  {isPublishing ? "Publishing to Firebase..." : "🚀 Publish Space & Go Live"}
+                </button>
+              </div>
+            )}
+
+            {/* ─── SCREEN 35: SPACE SUBMITTED SUCCESS ─── */}
+            {activeScreen === "35" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 24, justifyContent: "space-between", alignItems: "center", textAlign: "center" }}>
+                <div style={{ width: "100%", marginTop: 30 }}>
+                  <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#DCFCE7", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.25)" }}>
+                    <IconCheck size={40} color="#22C55E" />
+                  </div>
+                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Spot Published Live!</h2>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>Your parking space is now live on the Tamil Nadu map and ready to receive bookings!</p>
+
+                  <div style={{ background: "#F8FAFC", borderRadius: 20, padding: 20, border: "1px solid #E2E8F0", textAlign: "left", marginBottom: 20 }}>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: "#22C55E", background: "#DCFCE7", padding: "2px 8px", borderRadius: 6, display: "inline-block", marginBottom: 8 }}>
+                      ● LIVE SPOT LISTING
+                    </span>
+                    <h3 style={{ fontSize: 18, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>{selectedSpot.title}</h3>
+                    <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 8px" }}>{selectedSpot.address}</p>
+                    <div style={{ fontSize: 16, fontWeight: 900, color: "#22C55E" }}>₹{selectedSpot.price}/hr</div>
+                  </div>
+                </div>
+
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
+                  <button 
+                    onClick={() => setActiveScreen("08")}
+                    style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 15, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                  >
+                    🗺️ View My Spot on Live Tamil Nadu Map
+                  </button>
+                  <button 
+                    onClick={() => setActiveScreen("29")}
+                    style={{ width: "100%", padding: 14, borderRadius: 16, background: "transparent", border: "1.5px solid #E2E8F0", color: "#0F172A", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
+                  >
+                    Back to Host Dashboard
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* ─── SCREEN 20: MY BOOKINGS ─── */}
             {activeScreen === "20" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
@@ -1520,53 +1968,9 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 29: HOST DASHBOARD (HOST SIDE LISTING DEMO) ─── */}
-            {activeScreen === "29" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
-                <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
-                  <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer" }}>
-                    <IconChevronLeft size={22} color="#0F172A" />
-                  </button>
-                  <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Host Dashboard</span>
-                  <span style={{ fontSize: 11, fontWeight: 800, background: "#FEF3C7", color: "#D97706", padding: "4px 8px", borderRadius: 6 }}>HOST MODE</span>
-                </div>
-
-                <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
-                  <div style={{ background: "linear-gradient(135deg, #16A34A 0%, #15803D 100%)", borderRadius: 20, padding: 20, color: "#FFF" }}>
-                    <span style={{ fontSize: 12, opacity: 0.9 }}>This Month's Passive Earnings</span>
-                    <div style={{ fontSize: 32, fontWeight: 900, marginTop: 4 }}>₹12,450.00</div>
-                    <span style={{ fontSize: 11, opacity: 0.9, marginTop: 8, display: "block" }}>14 Driver Bookings Completed</span>
-                  </div>
-
-                  <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                      <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: "#0F172A" }}>Your Listed Spots (7 Spots Live)</h4>
-                      <button onClick={() => alert("Spot listing form demo: Fill location, photo & set hourly price (e.g. ₹65/hr).")} style={{ background: "#22C55E", border: "none", color: "#FFF", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 8, cursor: "pointer" }}>
-                        + Add Spot
-                      </button>
-                    </div>
-
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                      {TAMIL_NADU_SPOTS.slice(0, 4).map((sp) => (
-                        <div key={sp.id} style={{ display: "flex", gap: 12, alignItems: "center", padding: "8px 0", borderBottom: "1px solid #F1F5F9" }}>
-                          <div style={{ width: 50, height: 50, borderRadius: 10, overflow: "hidden", flexShrink: 0 }}>
-                            <SmartImage sources={sp.imgSources} alt="spot" />
-                          </div>
-                          <div style={{ flex: 1 }}>
-                            <h5 style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 800, color: "#0F172A" }}>{sp.title}</h5>
-                            <span style={{ fontSize: 11, color: "#22C55E", fontWeight: 800 }}>● Live • ₹{sp.price}/hr</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* DEFAULT FALLBACK FOR OTHER UNRENDERED SCREENS */}
             {![
-              "01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","20","21","22","24","29"
+              "01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","20","21","22","24","29","30","31","32","33","34","35"
             ].includes(activeScreen) && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
