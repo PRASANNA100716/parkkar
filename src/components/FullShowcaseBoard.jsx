@@ -185,72 +185,108 @@ const RealDrivewayPhoto = ({ height = 200, badge = "GATED RESIDENTIAL DRIVEWAY" 
   </div>
 );
 
-// ─── GOOGLE MAPS COMPONENT WITH API KEY ───────────────────────────────────────
-function GoogleMapView() {
+// ─── RESILIENT DUAL MAP COMPONENT (GOOGLE MAPS + LEAFLET FALLBACK) ───────────
+function InteractiveMap() {
   const mapRef = useRef(null);
+  const [mapType, setMapType] = useState("google");
 
   useEffect(() => {
+    window.gm_authFailure = () => {
+      console.warn("Google Maps Key Auth Failed. Seamlessly switching to Leaflet Dark Tile Map.");
+      setMapType("leaflet");
+    };
+
     if (!window.google) {
       const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}`;
       script.async = true;
-      script.onload = () => initMap();
+      script.onerror = () => setMapType("leaflet");
+      script.onload = () => {
+        if (window.google && window.google.maps) {
+          initGoogleMap();
+        } else {
+          setMapType("leaflet");
+        }
+      };
       document.head.appendChild(script);
     } else {
-      initMap();
+      initGoogleMap();
     }
 
-    function initMap() {
-      if (!mapRef.current || !window.google) return;
-      const annaNagar = { lat: 13.0850, lng: 80.2101 };
-      const map = new window.google.maps.Map(mapRef.current, {
-        center: annaNagar,
-        zoom: 14,
-        disableDefaultUI: true,
-        styles: [
-          { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
-          { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
-          { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
-          { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
-          { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] }
-        ]
-      });
+    function initGoogleMap() {
+      if (!mapRef.current || !window.google || !window.google.maps) return;
+      try {
+        const center = { lat: 13.0850, lng: 80.2101 };
+        const map = new window.google.maps.Map(mapRef.current, {
+          center,
+          zoom: 14,
+          disableDefaultUI: true,
+          styles: [
+            { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
+            { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
+            { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
+            { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
+            { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] }
+          ]
+        });
 
-      // Parking spot markers
-      new window.google.maps.Marker({
-        position: { lat: 13.0850, lng: 80.2101 },
-        map,
-        title: "Home Garage (₹40/hr)",
-      });
-      new window.google.maps.Marker({
-        position: { lat: 13.0890, lng: 80.2150 },
-        map,
-        title: "Office Basement (₹60/hr)",
-      });
-      new window.google.maps.Marker({
-        position: { lat: 13.0810, lng: 80.2050 },
-        map,
-        title: "Apartment Parking (₹35/hr)",
-      });
+        new window.google.maps.Marker({ position: { lat: 13.0850, lng: 80.2101 }, map, title: "Home Garage (₹40/hr)" });
+        new window.google.maps.Marker({ position: { lat: 13.0890, lng: 80.2150 }, map, title: "Office Basement (₹60/hr)" });
+        new window.google.maps.Marker({ position: { lat: 13.0810, lng: 80.2050 }, map, title: "Apartment Parking (₹35/hr)" });
+      } catch (err) {
+        setMapType("leaflet");
+      }
     }
   }, []);
 
-  return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
+  useEffect(() => {
+    if (mapType === "leaflet" && mapRef.current) {
+      if (!window.L) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+        document.head.appendChild(link);
+
+        const script = document.createElement("script");
+        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        script.onload = () => initLeaflet();
+        document.head.appendChild(script);
+      } else {
+        initLeaflet();
+      }
+    }
+
+    function initLeaflet() {
+      if (!mapRef.current || !window.L || mapRef.current._leaflet_id) return;
+      const map = window.L.map(mapRef.current, { zoomControl: false }).setView([13.0850, 80.2101], 14);
+      
+      window.L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      // Add custom green price markers
+      const customIcon = (price) => window.L.divIcon({
+        className: 'custom-map-pin',
+        html: `<div style="background:#22C55E; color:#FFF; padding:4px 8px; border-radius:12px; font-weight:800; font-size:11px; box-shadow:0 4px 10px rgba(0,0,0,0.4); border:1px solid #FFF;">${price}</div>`,
+        iconSize: [60, 24],
+        iconAnchor: [30, 12]
+      });
+
+      window.L.marker([13.0850, 80.2101], { icon: customIcon("₹40/hr") }).addTo(map);
+      window.L.marker([13.0890, 80.2150], { icon: customIcon("₹60/hr") }).addTo(map);
+      window.L.marker([13.0810, 80.2050], { icon: customIcon("₹35/hr") }).addTo(map);
+    }
+  }, [mapType]);
+
+  return <div ref={mapRef} style={{ width: "100%", height: "100%", position: "relative" }} />;
 }
 
 export default function FullShowcaseBoard() {
   const [activeScreen, setActiveScreen] = useState("01");
   const [role, setRole] = useState(null);
   const [otpVal, setOtpVal] = useState(["2", "4", "6", "8", "2", "1"]);
-  const [tabIndex, setTabIndex] = useState("Nearby");
   const [showQuickNav, setShowQuickNav] = useState(false);
-  
-  // Booking & Form state
-  const [selectedDate, setSelectedDate] = useState("21 May");
-  const [selectedTime, setSelectedTime] = useState("10:00 AM");
-  const [durationHours, setDurationHours] = useState(2);
-  const [paymentMethod, setPaymentMethod] = useState("upi");
-  const [extendOption, setExtendOption] = useState("1 Hour");
 
   const [selectedSpot, setSelectedSpot] = useState({
     title: "Home Garage",
@@ -590,7 +626,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── HOME / SEARCH (REAL GOOGLE MAP VIEW WITH API KEY) ─── */}
+            {/* ─── HOME / SEARCH (INTERACTIVE DARK VECTOR MAP) ─── */}
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
@@ -617,11 +653,9 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <div style={{ flex: 1, background: "#0F172A", position: "relative", overflow: "hidden" }}>
-                  <GoogleMapView />
+                  <InteractiveMap />
 
-                  <div style={{ position: "absolute", top: 16, left: 16, background: "#22C55E", color: "#FFF", padding: "6px 12px", borderRadius: 16, fontWeight: 900, fontSize: 13, boxShadow: "0 4px 14px rgba(34,197,94,0.4)" }}>₹40/hr</div>
-
-                  <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.25)", display: "flex", gap: 12, alignItems: "center" }}>
+                  <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.25)", display: "flex", gap: 12, alignItems: "center", zIndex: 500 }}>
                     <img src={REAL_IMAGES.garage} alt="spot" style={{ width: 70, height: 70, borderRadius: 12, objectFit: "cover" }} />
                     <div style={{ flex: 1 }}>
                       <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>{selectedSpot.title}</h4>
