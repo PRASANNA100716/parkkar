@@ -543,6 +543,9 @@ export default function FullShowcaseBoard() {
   const hostAadhaarFileRef = useRef(null);
   const hostEbFileRef = useRef(null);
 
+  // User GPS Coordinates State
+  const [userLocation, setUserLocation] = useState(null);
+
   // Hidden File Input Ref for Host Photo Upload
   const fileInputRef = useRef(null);
 
