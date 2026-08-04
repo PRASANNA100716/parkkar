@@ -650,19 +650,19 @@ export default function FullShowcaseBoard() {
   const [isHostKycVerified, setIsHostKycVerified] = useState(() => !!localStorage.getItem("parkkar_host_kyc"));
 
   const [driverKycForm, setDriverKycForm] = useState({
-    vehicleNo: "TN 01 AB 8924",
-    rcNumber: "RC-99182371",
-    rcDocUrl: SVG_GARAGE_DATA_URL,
-    aadhaarNo: "5482 9102 3847",
-    aadhaarDocUrl: SVG_GARAGE_DATA_URL
+    vehicleNo: "",
+    rcNumber: "",
+    rcDocUrl: process.env.PUBLIC_URL + "/assets/home_garage.png",
+    aadhaarNo: "",
+    aadhaarDocUrl: process.env.PUBLIC_URL + "/assets/coimbatore_garage.png"
   });
 
   const [hostKycForm, setHostKycForm] = useState({
-    aadhaarNo: "5482 9102 3847",
-    aadhaarDocUrl: SVG_GARAGE_DATA_URL,
-    ebNumber: "EB-04-291-8849",
-    ebDocUrl: SVG_BASEMENT_DATA_URL,
-    ebAddress: "12th Main Road, Anna Nagar, Chennai"
+    aadhaarNo: "",
+    aadhaarDocUrl: process.env.PUBLIC_URL + "/assets/madurai_bay.png",
+    ebNumber: "",
+    ebDocUrl: process.env.PUBLIC_URL + "/assets/office_basement.png",
+    ebAddress: ""
   });
 
   const [isSubmittingKyc, setIsSubmittingKyc] = useState(false);
@@ -2404,7 +2404,296 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 08: HOME / SEARCH (CLEAN WHITE MAP + LIVE GPS FETCH) ─── */}
+            {/* ─── SCREEN 51: MANDATORY DRIVER KYC VERIFICATION ─── */}
+            {activeScreen === "51" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFFFFF", padding: 20, justifyContent: "space-between", overflowY: "auto" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                    <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <div>
+                      <h2 style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", margin: 0 }}>Driver KYC Verification</h2>
+                      <span style={{ fontSize: 11, color: "#64748B", fontWeight: 600 }}>Vehicle, RC Book, Aadhaar & Face Scan required</span>
+                    </div>
+                  </div>
+
+                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: "10px 14px", borderRadius: 14, marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
+                    <IconShieldCheck size={20} color="#16A34A" />
+                    <div>
+                      <span style={{ fontSize: 11, fontWeight: 900, color: "#15803D", display: "block" }}>Mandatory Security Check</span>
+                      <span style={{ fontSize: 10, color: "#64748B", fontWeight: 600 }}>Complete verification to unlock map & spot booking</span>
+                    </div>
+                  </div>
+
+                  {/* FIELD 1: VEHICLE NUMBER */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>1. Vehicle Number Plate</label>
+                  <input 
+                    type="text" 
+                    value={driverKycForm.vehicleNo}
+                    onChange={(e) => setDriverKycForm({...driverKycForm, vehicleNo: e.target.value})}
+                    placeholder="e.g. TN 01 AB 8924"
+                    style={{ width: "100%", padding: 14, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 15, fontWeight: 800, color: "#0F172A", marginBottom: 14, background: "#F8FAFC" }}
+                  />
+
+                  {/* FIELD 2: RC BOOK NUMBER & PHOTO */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>2. RC Book Number & Photo</label>
+                  <input 
+                    type="text" 
+                    value={driverKycForm.rcNumber}
+                    onChange={(e) => setDriverKycForm({...driverKycForm, rcNumber: e.target.value})}
+                    placeholder="e.g. RC-99182371"
+                    style={{ width: "100%", padding: 12, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 14, fontWeight: 700, color: "#0F172A", marginBottom: 8, background: "#F8FAFC" }}
+                  />
+
+                  <div style={{ border: "1.5px dashed #22C55E", borderRadius: 16, padding: 12, background: "#F0FDF4", marginBottom: 16, display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => driverRcFileRef.current?.click()}>
+                    <input type="file" ref={driverRcFileRef} accept="image/*" style={{ display: "none" }} onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setDriverKycForm(prev => ({ ...prev, rcDocUrl: ev.target.result }));
+                        reader.readAsDataURL(file);
+                      }
+                    }} />
+                    <div style={{ width: 50, height: 50, borderRadius: 12, overflow: "hidden", border: "1px solid #BBF7D0", background: "#FFF", flexShrink: 0 }}>
+                      <img src={driverKycForm.rcDocUrl || process.env.PUBLIC_URL + "/assets/home_garage.png"} alt="RC Book" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    </div>
+                    <div>
+                      <span style={{ fontSize: 12, fontWeight: 900, color: "#16A34A", display: "block" }}>✓ RC Book Photo Captured</span>
+                      <span style={{ fontSize: 10, color: "#64748B" }}>Tap to upload or retake RC document</span>
+                    </div>
+                  </div>
+
+                  {/* FIELD 3: AADHAAR CARD NUMBER & PHOTO */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>3. Aadhaar Card Number & Photo</label>
+                  <input 
+                    type="text" 
+                    value={driverKycForm.aadhaarNo}
+                    onChange={(e) => setDriverKycForm({...driverKycForm, aadhaarNo: e.target.value})}
+                    placeholder="e.g. 5482 9102 3847"
+                    style={{ width: "100%", padding: 12, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 14, fontWeight: 700, color: "#0F172A", marginBottom: 8, background: "#F8FAFC" }}
+                  />
+
+                  <div style={{ border: "1.5px dashed #22C55E", borderRadius: 16, padding: 12, background: "#F0FDF4", marginBottom: 16, display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => driverAadhaarFileRef.current?.click()}>
+                    <input type="file" ref={driverAadhaarFileRef} accept="image/*" style={{ display: "none" }} onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setDriverKycForm(prev => ({ ...prev, aadhaarDocUrl: ev.target.result }));
+                        reader.readAsDataURL(file);
+                      }
+                    }} />
+                    <div style={{ width: 50, height: 50, borderRadius: 12, overflow: "hidden", border: "1px solid #BBF7D0", background: "#FFF", flexShrink: 0 }}>
+                      <img src={driverKycForm.aadhaarDocUrl || process.env.PUBLIC_URL + "/assets/coimbatore_garage.png"} alt="Aadhaar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    </div>
+                    <div>
+                      <span style={{ fontSize: 12, fontWeight: 900, color: "#16A34A", display: "block" }}>✓ Aadhaar Card Photo Captured</span>
+                      <span style={{ fontSize: 10, color: "#64748B" }}>Tap to upload or retake Aadhaar photo</span>
+                    </div>
+                  </div>
+
+                  {/* FIELD 4: LIVE FACE SCANNER & VERIFICATION 100% */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>4. Live Facial Verification Scan</label>
+                  <div style={{ background: "#0F172A", borderRadius: 20, padding: 16, color: "#FFF", textAlign: "center", marginBottom: 16, border: "2px solid #22C55E", boxShadow: "0 8px 24px rgba(34,197,94,0.2)" }}>
+                    <div style={{ width: 80, height: 80, borderRadius: "50%", margin: "0 auto 10px", overflow: "hidden", border: "3px solid #22C55E", boxShadow: "0 0 20px #22C55E", position: "relative" }}>
+                      <img src={currentUser?.photoURL || process.env.PUBLIC_URL + "/assets/driver_car.png"} alt="Face Scan" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <div style={{ position: "absolute", inset: 0, background: "rgba(34,197,94,0.15)" }} />
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 6 }}>
+                      <span style={{ fontSize: 14, fontWeight: 900, color: "#22C55E" }}>100% Face Verified</span>
+                      <span style={{ background: "#22C55E", color: "#FFF", borderRadius: "50%", width: 18, height: 18, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 900 }}>✓</span>
+                    </div>
+
+                    <div style={{ width: "100%", height: 6, background: "rgba(255,255,255,0.2)", borderRadius: 3, overflow: "hidden" }}>
+                      <div style={{ width: "100%", height: "100%", background: "#22C55E", borderRadius: 3 }} />
+                    </div>
+                  </div>
+
+                </div>
+
+                <button 
+                  onClick={handleDriverKycSubmit}
+                  disabled={isSubmittingKyc}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 20px rgba(34,197,94,0.35)", marginTop: 10 }}
+                >
+                  {isSubmittingKyc ? "Verifying KYC Details..." : "✓ Submit & Verify Driver KYC 🚀"}
+                </button>
+              </div>
+            )}
+
+            {/* ─── SCREEN 52: MANDATORY HOST PROPERTY KYC VERIFICATION ─── */}
+            {activeScreen === "52" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFFFFF", padding: 20, justifyContent: "space-between", overflowY: "auto" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                    <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <div>
+                      <h2 style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", margin: 0 }}>Host Property KYC</h2>
+                      <span style={{ fontSize: 11, color: "#64748B", fontWeight: 600 }}>Aadhaar & EB Bill verification mandatory for Hosts</span>
+                    </div>
+                  </div>
+
+                  <div style={{ background: "#FEF3C7", border: "1px solid #FDE68A", padding: "10px 14px", borderRadius: 14, marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
+                    <IconBuildingCheck size={20} color="#D97706" />
+                    <div>
+                      <span style={{ fontSize: 11, fontWeight: 900, color: "#B45309", display: "block" }}>Property Verification Required</span>
+                      <span style={{ fontSize: 10, color: "#78350F", fontWeight: 600 }}>Verify address & EB bill to list parking spaces</span>
+                    </div>
+                  </div>
+
+                  {/* FIELD 1: HOST AADHAAR CARD */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Host Aadhaar Card Number</label>
+                  <input 
+                    type="text" 
+                    value={hostKycForm.aadhaarNo}
+                    onChange={(e) => setHostKycForm({...hostKycForm, aadhaarNo: e.target.value})}
+                    placeholder="e.g. 5482 9102 3847"
+                    style={{ width: "100%", padding: 14, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 15, fontWeight: 800, color: "#0F172A", marginBottom: 8, background: "#F8FAFC" }}
+                  />
+
+                  <div style={{ border: "1.5px dashed #F59E0B", borderRadius: 16, padding: 12, background: "#FEF3C7", marginBottom: 16, display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => hostAadhaarFileRef.current?.click()}>
+                    <input type="file" ref={hostAadhaarFileRef} accept="image/*" style={{ display: "none" }} onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setHostKycForm(prev => ({ ...prev, aadhaarDocUrl: ev.target.result }));
+                        reader.readAsDataURL(file);
+                      }
+                    }} />
+                    <div style={{ width: 50, height: 50, borderRadius: 12, overflow: "hidden", border: "1px solid #FDE68A", background: "#FFF", flexShrink: 0 }}>
+                      <img src={hostKycForm.aadhaarDocUrl || process.env.PUBLIC_URL + "/assets/madurai_bay.png"} alt="Host Aadhaar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    </div>
+                    <div>
+                      <span style={{ fontSize: 12, fontWeight: 900, color: "#D97706", display: "block" }}>✓ Host Aadhaar Captured & Verified</span>
+                      <span style={{ fontSize: 10, color: "#78350F" }}>Tap to retake or replace Aadhaar card photo</span>
+                    </div>
+                  </div>
+
+                  {/* FIELD 2: ELECTRICITY (EB) CONSUMER NUMBER */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Electricity (EB) Consumer Number</label>
+                  <input 
+                    type="text" 
+                    value={hostKycForm.ebNumber}
+                    onChange={(e) => setHostKycForm({...hostKycForm, ebNumber: e.target.value})}
+                    placeholder="e.g. EB-04-291-8849"
+                    style={{ width: "100%", padding: 14, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 14, fontWeight: 700, color: "#0F172A", marginBottom: 10, background: "#F8FAFC" }}
+                  />
+
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>EB Bill Service Address</label>
+                  <input 
+                    type="text" 
+                    value={hostKycForm.ebAddress}
+                    onChange={(e) => setHostKycForm({...hostKycForm, ebAddress: e.target.value})}
+                    placeholder="e.g. 12th Main Road, Anna Nagar, Chennai"
+                    style={{ width: "100%", padding: 14, borderRadius: 14, border: "1.5px solid #E2E8F0", outline: "none", fontSize: 14, fontWeight: 700, color: "#0F172A", marginBottom: 8, background: "#F8FAFC" }}
+                  />
+
+                  <div style={{ border: "1.5px dashed #F59E0B", borderRadius: 16, padding: 12, background: "#FEF3C7", marginBottom: 16, display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => hostEbFileRef.current?.click()}>
+                    <input type="file" ref={hostEbFileRef} accept="image/*" style={{ display: "none" }} onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setHostKycForm(prev => ({ ...prev, ebDocUrl: ev.target.result }));
+                        reader.readAsDataURL(file);
+                      }
+                    }} />
+                    <div style={{ width: 50, height: 50, borderRadius: 12, overflow: "hidden", border: "1px solid #FDE68A", background: "#FFF", flexShrink: 0 }}>
+                      <img src={hostKycForm.ebDocUrl || process.env.PUBLIC_URL + "/assets/office_basement.png"} alt="EB Bill" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    </div>
+                    <div>
+                      <span style={{ fontSize: 12, fontWeight: 900, color: "#D97706", display: "block" }}>✓ EB Bill Photo Captured & Verified</span>
+                      <span style={{ fontSize: 10, color: "#78350F" }}>Tap to upload or retake EB bill document</span>
+                    </div>
+                  </div>
+
+                  {/* FIELD 3: LIVE FACE SCANNER & VERIFICATION 100% */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 6 }}>Host Live Face Verification</label>
+                  <div style={{ background: "#0F172A", borderRadius: 20, padding: 16, color: "#FFF", textAlign: "center", marginBottom: 16, border: "2px solid #F59E0B", boxShadow: "0 8px 24px rgba(245,158,11,0.2)" }}>
+                    <div style={{ width: 80, height: 80, borderRadius: "50%", margin: "0 auto 10px", overflow: "hidden", border: "3px solid #F59E0B", boxShadow: "0 0 20px #F59E0B", position: "relative" }}>
+                      <img src={currentUser?.photoURL || process.env.PUBLIC_URL + "/assets/driver_car.png"} alt="Face Scan" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <div style={{ position: "absolute", inset: 0, background: "rgba(245,158,11,0.15)" }} />
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 6 }}>
+                      <span style={{ fontSize: 14, fontWeight: 900, color: "#F59E0B" }}>100% Host Face Verified</span>
+                      <span style={{ background: "#F59E0B", color: "#FFF", borderRadius: "50%", width: 18, height: 18, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 900 }}>✓</span>
+                    </div>
+
+                    <div style={{ width: "100%", height: 6, background: "rgba(255,255,255,0.2)", borderRadius: 3, overflow: "hidden" }}>
+                      <div style={{ width: "100%", height: "100%", background: "#F59E0B", borderRadius: 3 }} />
+                    </div>
+                  </div>
+
+                </div>
+
+                <button 
+                  onClick={handleHostKycSubmit}
+                  disabled={isSubmittingKyc}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#F59E0B", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 20px rgba(245,158,11,0.35)", marginTop: 10 }}
+                >
+                  {isSubmittingKyc ? "Verifying Host KYC Details..." : "✓ Submit & Verify Host KYC 🚀"}
+                </button>
+              </div>
+            )}
+
+            {/* ─── SCREEN 53: KYC APPROVED SUCCESS SCREEN ─── */}
+            {activeScreen === "53" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 24, justifyContent: "space-between", alignItems: "center", textAlign: "center" }}>
+                <div style={{ width: "100%", marginTop: 20 }}>
+                  <div style={{ width: 84, height: 84, borderRadius: "50%", background: "#DCFCE7", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.25)" }}>
+                    <IconShieldCheck size={44} color="#22C55E" />
+                  </div>
+
+                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>
+                    KYC 100% Verified! 🎉
+                  </h2>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 20px" }}>
+                    Your documents and facial recognition scan are verified and synced with Firebase security vault!
+                  </p>
+
+                  <div style={{ background: "#F8FAFC", borderRadius: 20, padding: 16, border: "1px solid #E2E8F0", textAlign: "left", marginBottom: 20 }}>
+                    <span style={{ fontSize: 11, fontWeight: 900, color: "#22C55E", background: "#DCFCE7", padding: "3px 10px", borderRadius: 8, display: "inline-block", marginBottom: 10 }}>
+                      ● 100% FULLY APPROVED
+                    </span>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 12 }}>
+                      <div style={{ borderRadius: 12, overflow: "hidden", height: 60, border: "1px solid #CBD5E1" }}>
+                        <img src={role === "host" ? (hostKycForm.aadhaarDocUrl || process.env.PUBLIC_URL + "/assets/madurai_bay.png") : (driverKycForm.aadhaarDocUrl || process.env.PUBLIC_URL + "/assets/coimbatore_garage.png")} alt="Aadhaar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
+                      <div style={{ borderRadius: 12, overflow: "hidden", height: 60, border: "1px solid #CBD5E1" }}>
+                        <img src={role === "host" ? (hostKycForm.ebDocUrl || process.env.PUBLIC_URL + "/assets/office_basement.png") : (driverKycForm.rcDocUrl || process.env.PUBLIC_URL + "/assets/home_garage.png")} alt="Document" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
+                      <div style={{ borderRadius: 12, overflow: "hidden", height: 60, border: "2px solid #22C55E" }}>
+                        <img src={currentUser?.photoURL || process.env.PUBLIC_URL + "/assets/driver_car.png"} alt="Face" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: 12, fontWeight: 800, color: "#0F172A" }}>
+                      User: {currentUser?.displayName || (loginInput ? loginInput.split("@")[0] : "PARKKAR User")}
+                    </div>
+                    <div style={{ fontSize: 11, color: "#64748B" }}>
+                      Status: {role === "host" ? "Verified Host Property Owner" : "Verified Vehicle Driver"}
+                    </div>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => {
+                    if (role === "host") {
+                      setActiveScreen("29");
+                    } else {
+                      setActiveScreen("08");
+                    }
+                  }}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 20px rgba(34,197,94,0.35)" }}
+                >
+                  🚀 Proceed to {role === "host" ? "Host Dashboard" : "Parking Map"} ➔
+                </button>
+              </div>
+            )}
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
                 <div style={{ padding: "10px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
