@@ -993,19 +993,25 @@ export default function FullShowcaseBoard() {
 
               <div style={{ width: 300, background: "#FFF", height: "100%", position: "relative", zIndex: 10, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 24, boxShadow: "10px 0 30px rgba(0,0,0,0.2)" }}>
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <div style={{ width: 48, height: 48, borderRadius: "50%", background: role === "host" ? "#F59E0B" : "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 20 }}>
-                        HA
-                      </div>
-                      <div>
-                        <h3 style={{ margin: "0 0 2px", fontSize: 16, fontWeight: 900, color: "#0F172A" }}>Hanush Adith</h3>
-                        <span style={{ fontSize: 11, color: role === "host" ? "#D97706" : "#22C55E", fontWeight: 800, background: role === "host" ? "#FEF3C7" : "#DCFCE7", padding: "2px 8px", borderRadius: 6 }}>
-                          {role === "host" ? (isHostKycVerified ? "● VERIFIED HOST" : "⚠️ HOST KYC REQUIRED") : (isDriverKycVerified ? "● VERIFIED DRIVER" : "⚠️ DRIVER KYC REQUIRED")}
-                        </span>
-                      </div>
-                    </div>
+                  <div style={{ paddingBottom: 14, marginBottom: 14, borderBottom: "1px solid #F1F5F9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <img 
+                      src={process.env.PUBLIC_URL + "/assets/official_logo.png"} 
+                      alt="PARKKAR" 
+                      style={{ height: 38, width: "auto", objectFit: "contain" }} 
+                    />
                     <button onClick={() => setShowDrawer(false)} style={{ background: "none", border: "none", fontSize: 18, color: "#94A3B8", cursor: "pointer", fontWeight: "bold" }}>✕</button>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                    <div style={{ width: 44, height: 44, borderRadius: "50%", background: role === "host" ? "#F59E0B" : "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 18 }}>
+                      HA
+                    </div>
+                    <div>
+                      <h3 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 900, color: "#0F172A" }}>Hanush Adith</h3>
+                      <span style={{ fontSize: 10, color: role === "host" ? "#D97706" : "#22C55E", fontWeight: 800, background: role === "host" ? "#FEF3C7" : "#DCFCE7", padding: "2px 8px", borderRadius: 6 }}>
+                        {role === "host" ? (isHostKycVerified ? "● VERIFIED HOST" : "⚠️ HOST KYC REQUIRED") : (isDriverKycVerified ? "● VERIFIED DRIVER" : "⚠️ DRIVER KYC REQUIRED")}
+                      </span>
+                    </div>
                   </div>
 
 
@@ -1066,27 +1072,13 @@ export default function FullShowcaseBoard() {
             {activeScreen === "01" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "28px 20px 20px", background: "#FFFFFF", position: "relative", overflow: "hidden" }}>
                 
-                {/* BRAND HEADER: GREEN MAP PIN + PAARKKAR LOGO & TAGLINE */}
-                <div style={{ textAlign: "center", marginTop: 10, zIndex: 10 }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 12 }}>
-                    {/* GREEN MAP PIN LOGO WITH WHITE P */}
-                    <div style={{ position: "relative", width: 54, height: 64, display: "flex", alignItems: "center", justifyContent: "center", filter: "drop-shadow(0 8px 18px rgba(34,197,94,0.4))" }}>
-                      <svg viewBox="0 0 100 120" width="54" height="64" fill="none">
-                        <path d="M50 0 C22.4 0 0 22.4 0 50 C0 80 50 120 50 120 C50 120 100 80 100 50 C100 22.4 77.6 0 50 0 Z" fill="#22C55E" />
-                        <circle cx="50" cy="46" r="28" fill="#16A34A" />
-                        <text x="50" y="58" font-family="system-ui, sans-serif" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">P</text>
-                      </svg>
-                    </div>
-
-                    <h1 style={{ fontSize: 36, fontWeight: 900, color: "#0F172A", margin: 0, letterSpacing: "-0.03em", fontFamily: "system-ui, sans-serif" }}>
-                      Paarkkar
-                    </h1>
-                  </div>
-
-                  <p style={{ fontSize: 15, fontWeight: 700, color: "#475569", margin: 0, lineHeight: 1.45, letterSpacing: "-0.01em" }}>
-                    Park Anywhere.<br />
-                    Earn Everywhere.
-                  </p>
+                {/* BRAND HEADER: OFFICIAL PARKKAR LOGO */}
+                <div style={{ textAlign: "center", marginTop: 4, zIndex: 10 }}>
+                  <img 
+                    src={process.env.PUBLIC_URL + "/assets/official_logo.png"} 
+                    alt="PARKKAR Official Logo" 
+                    style={{ width: "100%", maxWidth: 260, height: "auto", display: "block", margin: "0 auto 6px", filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.08))" }} 
+                  />
                 </div>
 
                 {/* HERO CAR ILLUSTRATION CONTAINER WITH INTEGRATED PIN ON CAR ROOF */}
@@ -1584,10 +1576,18 @@ export default function FullShowcaseBoard() {
                     </div>
                   </div>
 
-                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 2px", letterSpacing: "-0.02em" }}>
+                  <div style={{ textAlign: "center", marginBottom: 10 }}>
+                    <img 
+                      src={process.env.PUBLIC_URL + "/assets/official_logo.png"} 
+                      alt="PARKKAR Logo" 
+                      style={{ width: "100%", maxWidth: 190, height: "auto", display: "block", margin: "0 auto 6px" }} 
+                    />
+                  </div>
+
+                  <h2 style={{ fontSize: 24, fontWeight: 900, color: "#0F172A", margin: "0 0 2px", letterSpacing: "-0.02em", textAlign: "center" }}>
                     {authMode === "signup" ? "Join PARKKAR Today!" : "Welcome Back!"}
                   </h2>
-                  <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 14px", fontWeight: 600 }}>
+                  <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 14px", fontWeight: 600, textAlign: "center" }}>
                     {authMode === "signup" ? "Create your account to start parking & hosting" : "Sign in to access your bookings & earnings"}
                   </p>
 
@@ -1791,10 +1791,17 @@ export default function FullShowcaseBoard() {
             {/* ─── SCREEN 08: HOME / SEARCH (CLEAN WHITE MAP + LIVE GPS FETCH) ─── */}
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
-                <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
+                <div style={{ padding: "10px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
                   <button onClick={() => setShowDrawer(true)} style={{ background: "none", border: "none", cursor: "pointer" }}>
                     <IconMenu size={22} color="#0F172A" />
                   </button>
+                  
+                  <img 
+                    src={process.env.PUBLIC_URL + "/assets/official_logo.png"} 
+                    alt="PARKKAR" 
+                    style={{ height: 32, width: "auto", objectFit: "contain" }} 
+                  />
+
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <button 
                       onClick={handleFirebaseSignOut}
