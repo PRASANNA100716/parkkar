@@ -1005,19 +1005,7 @@ export default function FullShowcaseBoard() {
                     <button onClick={() => setShowDrawer(false)} style={{ background: "none", border: "none", fontSize: 18, color: "#94A3B8", cursor: "pointer", fontWeight: "bold" }}>✕</button>
                   </div>
 
-                  <div 
-                    onClick={() => { setShowFirebaseModal(true); setShowDrawer(false); }}
-                    style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 14, padding: "10px 12px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 16 }}>🔥</span>
-                      <div>
-                        <span style={{ fontSize: 11, fontWeight: 900, color: "#16A34A", display: "block" }}>Firebase Live (paarkkar-dda3d)</span>
-                        <span style={{ fontSize: 10, color: "#64748B" }}>Firestore, Storage & Auth Online</span>
-                      </div>
-                    </div>
-                    <span style={{ fontSize: 11, color: "#16A34A", fontWeight: 800 }}>⚙️ Config</span>
-                  </div>
+
 
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 16 }}>
                     <button 
