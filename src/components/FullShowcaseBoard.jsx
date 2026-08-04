@@ -1302,18 +1302,18 @@ export default function FullShowcaseBoard() {
             {/* ─── SCREEN 01: OLA / UBER STYLE PREMIUM SPLASH SCREEN (EXACT MATCH TO USER REFERENCE DESIGN) ─── */}
             {activeScreen === "01" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 20px 24px", background: "#FFFFFF", overflowY: "auto" }}>
-                <div>
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                   {/* BRAND HEADER: OFFICIAL PARKKAR LOGO */}
-                  <div style={{ textAlign: "center", marginBottom: 12 }}>
+                  <div style={{ textAlign: "center", marginBottom: 8 }}>
                     <img 
                       src={process.env.PUBLIC_URL + "/assets/official_logo.png"} 
                       alt="PARKKAR Official Logo" 
-                      style={{ width: "100%", maxWidth: 220, height: "auto", display: "block", margin: "0 auto 6px" }} 
+                      style={{ width: "100%", maxWidth: 220, height: "auto", display: "block", margin: "0 auto 4px" }} 
                     />
                   </div>
 
                   {/* MAIN HEADLINE */}
-                  <div style={{ textAlign: "center", marginBottom: 10 }}>
+                  <div style={{ textAlign: "center", margin: "2px 0 8px" }}>
                     <h1 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 2px", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
                       Find. Book. Park.
                     </h1>
@@ -1321,13 +1321,13 @@ export default function FullShowcaseBoard() {
                       Anytime, Anywhere.
                       <div style={{ width: 40, height: 3, background: "#22C55E", borderRadius: 2, margin: "2px auto 0" }} />
                     </div>
-                    <p style={{ fontSize: 12, color: "#64748B", margin: "8px 0 0", fontWeight: 600, lineHeight: 1.4 }}>
+                    <p style={{ fontSize: 13, color: "#64748B", margin: "6px 0 0", fontWeight: 600, lineHeight: 1.4 }}>
                       Find nearby parking spots instantly <br/> and book with ease.
                     </p>
                   </div>
 
                   {/* HERO CAR PHOTOGRAPH BANNER */}
-                  <div style={{ width: "100%", height: 230, borderRadius: 24, overflow: "hidden", position: "relative", marginBottom: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.08)", border: "1px solid #F1F5F9" }}>
+                  <div style={{ width: "100%", height: 235, borderRadius: 24, overflow: "hidden", position: "relative", margin: "4px 0 10px", boxShadow: "0 10px 30px rgba(0,0,0,0.08)", border: "1px solid #F1F5F9" }}>
                     <SmartImage 
                       sources={[
                         process.env.PUBLIC_URL + "/assets/ola_splash.png", 
@@ -1340,7 +1340,7 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   {/* 4 FEATURE ICONS GRID */}
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 12, textAlign: "center" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, margin: "4px 0 10px", textAlign: "center" }}>
                     {[
                       { icon: <IconSearch size={16} color="#16A34A" />, title: "Find Nearby", desc: "Parking Spots", bg: "#DCFCE7" },
                       { icon: <IconShieldCheck size={16} color="#16A34A" />, title: "Safe & Secure", desc: "Verified Hosts", bg: "#DCFCE7" },
@@ -1351,31 +1351,31 @@ export default function FullShowcaseBoard() {
                         <div style={{ width: 30, height: 30, borderRadius: "50%", background: feat.bg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px", fontSize: 13, color: "#16A34A" }}>
                           {feat.icon}
                         </div>
-                        <span style={{ fontSize: 9, fontWeight: 900, color: "#0F172A", display: "block" }}>{feat.title}</span>
+                        <span style={{ fontSize: 10, fontWeight: 900, color: "#0F172A", display: "block" }}>{feat.title}</span>
                         <span style={{ fontSize: 8, color: "#64748B", fontWeight: 600, display: "block" }}>{feat.desc}</span>
                       </div>
                     ))}
                   </div>
 
                   {/* TRUSTED BY THOUSANDS GREEN BANNER WITH 5 STARS */}
-                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: "8px 12px", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 8, background: "#DCFCE7", color: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <IconShieldCheck size={16} color="#16A34A" />
+                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: "10px 14px", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "space-between", margin: "4px 0 12px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 30, height: 30, borderRadius: 8, background: "#DCFCE7", color: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <IconShieldCheck size={18} color="#16A34A" />
                       </div>
                       <div>
-                        <span style={{ fontSize: 11, fontWeight: 900, color: "#15803D", display: "block" }}>Trusted by thousands of users</span>
-                        <span style={{ fontSize: 9, color: "#64748B", fontWeight: 600 }}>Secure. Reliable. Hassle-free.</span>
+                        <span style={{ fontSize: 12, fontWeight: 900, color: "#15803D", display: "block" }}>Trusted by thousands of users</span>
+                        <span style={{ fontSize: 10, color: "#64748B", fontWeight: 600 }}>Secure. Reliable. Hassle-free.</span>
                       </div>
                     </div>
-                    <div style={{ color: "#16A34A", fontSize: 10, letterSpacing: 1 }}>
+                    <div style={{ color: "#16A34A", fontSize: 11, letterSpacing: 1 }}>
                       ★★★★★
                     </div>
                   </div>
                 </div>
 
                 {/* BOTTOM ACTION BUTTONS */}
-                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}>
                   <button 
                     onClick={() => setActiveScreen("02")} 
                     style={{ width: "100%", padding: "14px 20px", borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 900, cursor: "pointer", boxShadow: "0 6px 20px rgba(34,197,94,0.35)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
@@ -1445,10 +1445,10 @@ export default function FullShowcaseBoard() {
 
             {/* ─── SCREEN 03: ONBOARDING 2 (EXACT MATCH TO TARGET REFERENCE IMAGE 2) ─── */}
             {activeScreen === "03" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "16px 20px 24px", background: "#FFF", overflowY: "auto" }}>
-                <div>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 20px 24px", background: "#FFF", overflowY: "auto" }}>
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                   {/* TOP BANNER PHOTO WITH BADGES & FLOATING CARD */}
-                  <div style={{ width: "100%", height: 210, borderRadius: 22, overflow: "hidden", position: "relative", marginBottom: 14, boxShadow: "0 10px 25px rgba(0,0,0,0.12)", border: "1px solid #E2E8F0" }}>
+                  <div style={{ width: "100%", height: 235, borderRadius: 24, overflow: "hidden", position: "relative", marginBottom: 12, boxShadow: "0 10px 25px rgba(0,0,0,0.12)", border: "1px solid #E2E8F0" }}>
                     <SmartImage 
                       sources={[process.env.PUBLIC_URL + "/assets/residential_driveway.png"]} 
                       alt="Earn From Your Extra Space" 
@@ -1467,22 +1467,22 @@ export default function FullShowcaseBoard() {
                     </div>
 
                     {/* BOTTOM LEFT: FLOATING EARN UP TO CARD */}
-                    <div style={{ position: "absolute", bottom: 12, left: 12, background: "#0F172A", color: "#FFF", padding: "8px 14px", borderRadius: 14, display: "flex", alignItems: "center", gap: 10, border: "1px solid rgba(255,255,255,0.15)", boxShadow: "0 8px 20px rgba(0,0,0,0.4)" }}>
-                      <div style={{ width: 34, height: 34, borderRadius: 10, background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF" }}>
-                        <IconWalletCard size={18} color="#FFF" />
+                    <div style={{ position: "absolute", bottom: 12, left: 12, background: "#0F172A", color: "#FFF", padding: "9px 14px", borderRadius: 14, display: "flex", alignItems: "center", gap: 10, border: "1px solid rgba(255,255,255,0.15)", boxShadow: "0 8px 20px rgba(0,0,0,0.4)" }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 10, background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF" }}>
+                        <IconWalletCard size={20} color="#FFF" />
                       </div>
                       <div>
                         <span style={{ fontSize: 8, color: "#94A3B8", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", display: "block" }}>EARN UP TO</span>
-                        <span style={{ fontSize: 13, fontWeight: 900, color: "#22C55E", display: "block", lineHeight: 1.1 }}>₹15,000 / MONTH</span>
-                        <span style={{ fontSize: 8, color: "#CBD5E1", fontWeight: 600 }}>List your space. Earn daily.</span>
+                        <span style={{ fontSize: 14, fontWeight: 900, color: "#22C55E", display: "block", lineHeight: 1.1 }}>₹15,000 / MONTH</span>
+                        <span style={{ fontSize: 9, color: "#CBD5E1", fontWeight: 600 }}>List your space. Earn daily.</span>
                       </div>
                     </div>
                   </div>
 
                   {/* CENTER ICON WITH SOFT GREEN BADGE */}
-                  <div style={{ display: "flex", justifyContent: "center", marginBottom: 8, position: "relative" }}>
-                    <div style={{ width: 54, height: 54, borderRadius: "50%", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #DCFCE7", boxShadow: "0 4px 12px rgba(34,197,94,0.1)" }}>
-                      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <div style={{ display: "flex", justifyContent: "center", margin: "6px 0", position: "relative" }}>
+                    <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #DCFCE7", boxShadow: "0 4px 12px rgba(34,197,94,0.1)" }}>
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                         <polyline points="9 22 9 12 15 12 15 22"/>
                       </svg>
@@ -1490,51 +1490,51 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   {/* TITLE & SUBTITLE */}
-                  <div style={{ textAlign: "center", marginBottom: 12 }}>
-                    <h2 style={{ fontSize: 24, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", letterSpacing: "-0.02em" }}>
+                  <div style={{ textAlign: "center", margin: "4px 0 10px" }}>
+                    <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", letterSpacing: "-0.02em" }}>
                       Earn From Your <br/>
                       <span style={{ color: "#22C55E", position: "relative", display: "inline-block" }}>
                         Extra Space
                         <div style={{ width: "100%", height: 3, background: "#22C55E", borderRadius: 2, marginTop: 2 }} />
                       </span>
                     </h2>
-                    <p style={{ fontSize: 12, color: "#64748B", lineHeight: 1.4, margin: "8px 0 0", fontWeight: 600, padding: "0 10px" }}>
+                    <p style={{ fontSize: 13, color: "#64748B", lineHeight: 1.4, margin: "8px 0 0", fontWeight: 600, padding: "0 10px" }}>
                       Rent out your driveway, garage, or vacant spot whenever it's free and earn effortless passive income.
                     </p>
                   </div>
 
                   {/* 4 FEATURE GRID */}
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 12, textAlign: "center" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, margin: "6px 0 10px", textAlign: "center" }}>
                     {[
                       { icon: "₹", title: "Earn Extra", desc: "Passive Income", bg: "#DCFCE7", color: "#16A34A" },
                       { icon: <IconShieldCheck size={16} color="#16A34A" />, title: "Verified &", desc: "Trusted Users", bg: "#DCFCE7", color: "#16A34A" },
                       { icon: "📅", title: "You're in", desc: "Full Control", bg: "#DCFCE7", color: "#16A34A" },
                       { icon: "⚡", title: "EV", desc: "Friendly", bg: "#DCFCE7", color: "#16A34A" }
                     ].map((feat, idx) => (
-                      <div key={idx} style={{ padding: "8px 4px", borderRadius: 12, background: "#F8FAFC", border: "1px solid #F1F5F9" }}>
-                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: feat.bg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px", fontSize: 12, fontWeight: 900, color: feat.color }}>
+                      <div key={idx} style={{ padding: "10px 4px", borderRadius: 14, background: "#F8FAFC", border: "1px solid #F1F5F9" }}>
+                        <div style={{ width: 30, height: 30, borderRadius: "50%", background: feat.bg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px", fontSize: 13, fontWeight: 900, color: feat.color }}>
                           {feat.icon}
                         </div>
-                        <span style={{ fontSize: 9, fontWeight: 900, color: "#0F172A", display: "block" }}>{feat.title}</span>
+                        <span style={{ fontSize: 10, fontWeight: 900, color: "#0F172A", display: "block" }}>{feat.title}</span>
                         <span style={{ fontSize: 8, color: "#64748B", fontWeight: 600, display: "block" }}>{feat.desc}</span>
                       </div>
                     ))}
                   </div>
 
                   {/* INSURED BANNER */}
-                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: "8px 12px", borderRadius: 14, display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 26, height: 26, borderRadius: "50%", background: "#DCFCE7", color: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <IconShieldCheck size={14} color="#16A34A" />
+                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: "12px 14px", borderRadius: 16, display: "flex", alignItems: "center", gap: 12, margin: "4px 0 12px" }}>
+                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#DCFCE7", color: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <IconShieldCheck size={18} color="#16A34A" />
                     </div>
                     <div>
-                      <span style={{ fontSize: 11, fontWeight: 900, color: "#15803D", display: "block" }}>Safe • Secure • Insured</span>
-                      <span style={{ fontSize: 9, color: "#64748B", fontWeight: 600 }}>Your space, your rules, your earnings.</span>
+                      <span style={{ fontSize: 12, fontWeight: 900, color: "#15803D", display: "block" }}>Safe • Secure • Insured</span>
+                      <span style={{ fontSize: 10, color: "#64748B", fontWeight: 600 }}>Your space, your rules, your earnings.</span>
                     </div>
                   </div>
                 </div>
 
                 {/* BOTTOM CONTROLS: SKIP, INDICATOR DOTS, NEXT BUTTON */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
                   <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 800, cursor: "pointer", fontSize: 14 }}>
                     Skip
                   </button>
@@ -1557,10 +1557,10 @@ export default function FullShowcaseBoard() {
 
             {/* ─── SCREEN 04: ONBOARDING 3 (EXACT MATCH TO TARGET REFERENCE IMAGE 3) ─── */}
             {activeScreen === "04" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "16px 20px 24px", background: "#FFF", overflowY: "auto" }}>
-                <div>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 20px 24px", background: "#FFF", overflowY: "auto" }}>
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                   {/* TOP BANNER PHOTO WITH 100% PROTECTED BADGE */}
-                  <div style={{ width: "100%", height: 210, borderRadius: 22, overflow: "hidden", position: "relative", marginBottom: 14, boxShadow: "0 10px 25px rgba(0,0,0,0.12)", border: "1px solid #E2E8F0" }}>
+                  <div style={{ width: "100%", height: 235, borderRadius: 24, overflow: "hidden", position: "relative", marginBottom: 12, boxShadow: "0 10px 25px rgba(0,0,0,0.12)", border: "1px solid #E2E8F0" }}>
                     <SmartImage 
                       sources={[process.env.PUBLIC_URL + "/assets/security_parking.png"]} 
                       alt="Safe Secure Monitored Parking" 
@@ -1575,59 +1575,59 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   {/* CENTER SHIELD ICON WITH SOFT GREEN CIRCLE & DOTS */}
-                  <div style={{ display: "flex", justifyContent: "center", marginBottom: 8, position: "relative" }}>
-                    <div style={{ width: 54, height: 54, borderRadius: "50%", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #DCFCE7", boxShadow: "0 4px 12px rgba(34,197,94,0.1)" }}>
-                      <IconShieldCheck size={26} color="#22C55E" />
+                  <div style={{ display: "flex", justifyContent: "center", margin: "6px 0", position: "relative" }}>
+                    <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #DCFCE7", boxShadow: "0 4px 12px rgba(34,197,94,0.1)" }}>
+                      <IconShieldCheck size={28} color="#22C55E" />
                     </div>
                   </div>
 
                   {/* HEADLINE & SUBTITLE */}
-                  <div style={{ textAlign: "center", marginBottom: 12 }}>
-                    <h2 style={{ fontSize: 24, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", letterSpacing: "-0.02em" }}>
+                  <div style={{ textAlign: "center", margin: "4px 0 10px" }}>
+                    <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", letterSpacing: "-0.02em" }}>
                       Safe. <span style={{ color: "#22C55E", position: "relative", display: "inline-block" }}>
                         Secure.
                         <div style={{ width: "100%", height: 3, background: "#22C55E", borderRadius: 2, marginTop: 2 }} />
                       </span> Monitored.
                     </h2>
-                    <p style={{ fontSize: 12, color: "#64748B", lineHeight: 1.4, margin: "8px 0 0", fontWeight: 600, padding: "0 10px" }}>
+                    <p style={{ fontSize: 13, color: "#64748B", lineHeight: 1.4, margin: "8px 0 0", fontWeight: 600, padding: "0 10px" }}>
                       Every space and host is verified for total peace of mind with <span style={{ color: "#22C55E", fontWeight: 800 }}>24/7 CCTV & gate protection.</span>
                     </p>
                   </div>
 
                   {/* 4 FEATURE GRID */}
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 12, textAlign: "center" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, margin: "6px 0 10px", textAlign: "center" }}>
                     {[
                       { icon: "📹", title: "24/7 CCTV", desc: "Continuous surveillance", bg: "#DCFCE7" },
                       { icon: <IconShieldCheck size={16} color="#16A34A" />, title: "Verified Hosts", desc: "All hosts are verified", bg: "#DCFCE7" },
                       { icon: "⛩️", title: "Gate Protection", desc: "Secure entry & exit", bg: "#DCFCE7" },
                       { icon: "🎧", title: "24/7 Support", desc: "Dedicated assistance", bg: "#DCFCE7" }
                     ].map((feat, idx) => (
-                      <div key={idx} style={{ padding: "8px 4px", borderRadius: 12, background: "#F8FAFC", border: "1px solid #F1F5F9" }}>
-                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: feat.bg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px", fontSize: 12, color: "#16A34A" }}>
+                      <div key={idx} style={{ padding: "10px 4px", borderRadius: 14, background: "#F8FAFC", border: "1px solid #F1F5F9" }}>
+                        <div style={{ width: 30, height: 30, borderRadius: "50%", background: feat.bg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px", fontSize: 13, color: "#16A34A" }}>
                           {feat.icon}
                         </div>
-                        <span style={{ fontSize: 9, fontWeight: 900, color: "#0F172A", display: "block" }}>{feat.title}</span>
+                        <span style={{ fontSize: 10, fontWeight: 900, color: "#0F172A", display: "block" }}>{feat.title}</span>
                         <span style={{ fontSize: 8, color: "#64748B", fontWeight: 600, display: "block" }}>{feat.desc}</span>
                       </div>
                     ))}
                   </div>
 
                   {/* SAFETY PRIORITY GREEN BANNER */}
-                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: "10px 14px", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", overflow: "hidden" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, zIndex: 2 }}>
-                      <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#DCFCE7", color: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <IconShieldCheck size={16} color="#16A34A" />
+                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", padding: "12px 14px", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", overflow: "hidden", margin: "4px 0 12px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, zIndex: 2 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#DCFCE7", color: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <IconShieldCheck size={18} color="#16A34A" />
                       </div>
                       <div>
-                        <span style={{ fontSize: 11, fontWeight: 900, color: "#15803D", display: "block" }}>Your safety is our priority</span>
-                        <span style={{ fontSize: 9, color: "#64748B", fontWeight: 600 }}>We ensure a secure parking experience every time, everywhere.</span>
+                        <span style={{ fontSize: 12, fontWeight: 900, color: "#15803D", display: "block" }}>Your safety is our priority</span>
+                        <span style={{ fontSize: 10, color: "#64748B", fontWeight: 600 }}>We ensure a secure parking experience every time, everywhere.</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* BOTTOM CONTROLS: SKIP, INDICATOR DOTS, NEXT BUTTON */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
                   <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 800, cursor: "pointer", fontSize: 14 }}>
                     Skip
                   </button>
