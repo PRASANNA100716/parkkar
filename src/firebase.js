@@ -242,61 +242,71 @@ export async function saveHostVerification(hostVerificationData) {
 
 // ─── MANDATORY KYC VERIFICATION FIRESTORE SERVICES ─────────────────────────
 export async function saveDriverKyc(driverKycData) {
+  localStorage.setItem("parkkar_driver_kyc", JSON.stringify(driverKycData));
+
   try {
     let rcDocUrl = driverKycData.rcDocUrl;
     let aadhaarDocUrl = driverKycData.aadhaarDocUrl;
 
-    if (rcDocUrl && rcDocUrl.startsWith("data:image")) {
-      rcDocUrl = await uploadImageToFirebaseStorage(rcDocUrl, "driver_kyc_docs");
+    if (rcDocUrl && rcDocUrl.startsWith("data:image/png") || (rcDocUrl && rcDocUrl.startsWith("data:image/jpeg"))) {
+      rcDocUrl = await withTimeout(uploadImageToFirebaseStorage(rcDocUrl, "driver_kyc_docs"), 4000, "RC upload");
     }
-    if (aadhaarDocUrl && aadhaarDocUrl.startsWith("data:image")) {
-      aadhaarDocUrl = await uploadImageToFirebaseStorage(aadhaarDocUrl, "driver_kyc_docs");
+    if (aadhaarDocUrl && aadhaarDocUrl.startsWith("data:image/png") || (aadhaarDocUrl && aadhaarDocUrl.startsWith("data:image/jpeg"))) {
+      aadhaarDocUrl = await withTimeout(uploadImageToFirebaseStorage(aadhaarDocUrl, "driver_kyc_docs"), 4000, "Aadhaar upload");
     }
 
     if (db) {
-      const docRef = await addDoc(collection(db, "driver_kycs"), {
-        ...driverKycData,
-        rcDocUrl,
-        aadhaarDocUrl,
-        verified: true,
-        verifiedAt: new Date().toISOString()
-      });
+      const docRef = await withTimeout(
+        addDoc(collection(db, "driver_kycs"), {
+          ...driverKycData,
+          rcDocUrl,
+          aadhaarDocUrl,
+          verified: true,
+          verifiedAt: new Date().toISOString()
+        }),
+        3000,
+        "Driver KYC Firestore write"
+      );
       console.log("Driver KYC saved to Firestore collection 'driver_kycs':", docRef.id);
       return docRef.id;
     }
   } catch (err) {
-    console.warn("Driver KYC Firestore save failed:", err);
+    console.warn("Driver KYC Firestore save warning (using local persistent verification):", err);
   }
-  localStorage.setItem("parkkar_driver_kyc", JSON.stringify(driverKycData));
   return "driver_kyc_" + Date.now();
 }
 
 export async function saveHostKyc(hostKycData) {
+  localStorage.setItem("parkkar_host_kyc", JSON.stringify(hostKycData));
+
   try {
     let aadhaarDocUrl = hostKycData.aadhaarDocUrl;
     let ebDocUrl = hostKycData.ebDocUrl;
 
-    if (aadhaarDocUrl && aadhaarDocUrl.startsWith("data:image")) {
-      aadhaarDocUrl = await uploadImageToFirebaseStorage(aadhaarDocUrl, "host_kyc_docs");
+    if (aadhaarDocUrl && aadhaarDocUrl.startsWith("data:image/png") || (aadhaarDocUrl && aadhaarDocUrl.startsWith("data:image/jpeg"))) {
+      aadhaarDocUrl = await withTimeout(uploadImageToFirebaseStorage(aadhaarDocUrl, "host_kyc_docs"), 4000, "Aadhaar upload");
     }
-    if (ebDocUrl && ebDocUrl.startsWith("data:image")) {
-      ebDocUrl = await uploadImageToFirebaseStorage(ebDocUrl, "host_kyc_docs");
+    if (ebDocUrl && ebDocUrl.startsWith("data:image/png") || (ebDocUrl && ebDocUrl.startsWith("data:image/jpeg"))) {
+      ebDocUrl = await withTimeout(uploadImageToFirebaseStorage(ebDocUrl, "host_kyc_docs"), 4000, "EB upload");
     }
 
     if (db) {
-      const docRef = await addDoc(collection(db, "host_kycs"), {
-        ...hostKycData,
-        aadhaarDocUrl,
-        ebDocUrl,
-        verified: true,
-        verifiedAt: new Date().toISOString()
-      });
+      const docRef = await withTimeout(
+        addDoc(collection(db, "host_kycs"), {
+          ...hostKycData,
+          aadhaarDocUrl,
+          ebDocUrl,
+          verified: true,
+          verifiedAt: new Date().toISOString()
+        }),
+        3000,
+        "Host KYC Firestore write"
+      );
       console.log("Host KYC saved to Firestore collection 'host_kycs':", docRef.id);
       return docRef.id;
     }
   } catch (err) {
-    console.warn("Host KYC Firestore save failed:", err);
+    console.warn("Host KYC Firestore save warning (using local persistent verification):", err);
   }
-  localStorage.setItem("parkkar_host_kyc", JSON.stringify(hostKycData));
   return "host_kyc_" + Date.now();
 }
