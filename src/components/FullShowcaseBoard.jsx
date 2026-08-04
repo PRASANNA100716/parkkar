@@ -1500,10 +1500,37 @@ export default function FullShowcaseBoard() {
                   <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", cursor: "pointer", marginBottom: 20 }}>
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
-                  <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Welcome Back!</h2>
-                  <p style={{ fontSize: 14, color: "#64748B", margin: "0 0 20px" }}>Sign in with Firebase Auth (paarkkar-dda3d)</p>
+                  <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>Welcome Back!</h2>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 16px" }}>Sign in with Firebase Auth (paarkkar-dda3d)</p>
                   
-                  <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 20 }}>
+                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 14, padding: "10px 12px", marginBottom: 16 }}>
+                    <span style={{ fontSize: 11, fontWeight: 900, color: "#16A34A", display: "block", marginBottom: 4 }}>💡 Which Gmail / Credentials to use?</span>
+                    <span style={{ fontSize: 11, color: "#475569", lineHeight: 1.4, display: "block" }}>
+                      You can enter <strong>ANY Gmail ID</strong> (e.g. <code>yourname@gmail.com</code>) or mobile number!
+                    </span>
+                    <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+                      <button 
+                        onClick={() => { setLoginInput("driver@parkkar.com"); setRole("driver"); }}
+                        style={{ background: "#DCFCE7", border: "none", color: "#15803D", padding: "4px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800, cursor: "pointer" }}
+                      >
+                        🚗 driver@parkkar.com
+                      </button>
+                      <button 
+                        onClick={() => { setLoginInput("host@parkkar.com"); setRole("host"); }}
+                        style={{ background: "#FEF3C7", border: "none", color: "#B45309", padding: "4px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800, cursor: "pointer" }}
+                      >
+                        🏢 host@parkkar.com
+                      </button>
+                      <button 
+                        onClick={() => { setLoginInput("9876543210"); setRole("driver"); }}
+                        style={{ background: "#F1F5F9", border: "none", color: "#0F172A", padding: "4px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800, cursor: "pointer" }}
+                      >
+                        📱 9876543210
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 16 }}>
                     <button 
                       onClick={() => setRole("driver")}
                       style={{ flex: 1, padding: "10px 0", borderRadius: 10, border: "none", background: role !== "host" ? "#22C55E" : "transparent", color: role !== "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 13, cursor: "pointer" }}
@@ -1518,14 +1545,14 @@ export default function FullShowcaseBoard() {
                     </button>
                   </div>
 
-                  <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 6 }}>Email or Phone Number</label>
-                  <div style={{ display: "flex", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#0F172A" }}>🇮🇳</span>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 6 }}>Gmail / Email Address or Phone Number</label>
+                  <div style={{ display: "flex", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: "#0F172A" }}>📧</span>
                     <input 
                       type="text" 
                       value={loginInput}
                       onChange={(e) => setLoginInput(e.target.value)}
-                      placeholder="e.g. 9876543210 or host@parkkar.com" 
+                      placeholder="e.g. yourname@gmail.com or 9876543210" 
                       style={{ border: "none", outline: "none", flex: 1, fontSize: 14, fontWeight: 700, color: "#0F172A" }} 
                     />
                   </div>
@@ -1542,7 +1569,7 @@ export default function FullShowcaseBoard() {
                     />
                   </div>
 
-                  <div style={{ textAlign: "right", marginBottom: 20 }}>
+                  <div style={{ textAlign: "right", marginBottom: 16 }}>
                     <span style={{ color: "#22C55E", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Forgot Password?</span>
                   </div>
 
@@ -1611,13 +1638,19 @@ export default function FullShowcaseBoard() {
                   <button onClick={() => setShowDrawer(true)} style={{ background: "none", border: "none", cursor: "pointer" }}>
                     <IconMenu size={22} color="#0F172A" />
                   </button>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 16 }}>P</div>
-                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A", letterSpacing: "0.02em" }}>PARKKAR Map</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <button 
+                      onClick={handleFirebaseSignOut}
+                      title="Log Out Driver"
+                      style={{ background: "#FEF2F2", border: "1px solid #FCA5A5", color: "#EF4444", padding: "5px 10px", borderRadius: 10, fontSize: 11, fontWeight: 900, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}
+                    >
+                      <span>🚪</span>
+                      <span>Logout</span>
+                    </button>
+                    <button onClick={() => setActiveScreen("22")} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                      <IconBell size={20} color="#0F172A" />
+                    </button>
                   </div>
-                  <button onClick={() => setActiveScreen("22")} style={{ background: "none", border: "none", cursor: "pointer" }}>
-                    <IconBell size={20} color="#0F172A" />
-                  </button>
                 </div>
 
                 <div style={{ padding: "8px 16px 12px", background: "#FFF", display: "flex", flexDirection: "column", gap: 8, boxShadow: "0 2px 10px rgba(0,0,0,0.04)", zIndex: 10 }}>
