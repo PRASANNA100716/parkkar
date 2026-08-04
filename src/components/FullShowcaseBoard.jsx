@@ -121,6 +121,21 @@ const IconShare = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
+const IconCalendar = ({ size = 20, color = "currentColor" }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
+);
+
+const IconCheck = ({ size = 20, color = "currentColor" }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
 // ─── HIGH-RELIABILITY MULTI-SOURCE REAL PHOTO COMPONENT ──────────────────────
 const REAL_IMAGES = {
   whiteCar: [
@@ -331,6 +346,13 @@ export default function FullShowcaseBoard() {
   const [otpVal, setOtpVal] = useState(["2", "4", "6", "8", "2", "1"]);
   const [showQuickNav, setShowQuickNav] = useState(false);
 
+  // Booking Flow State
+  const [selectedDate, setSelectedDate] = useState("Today, 04 Aug");
+  const [startTime, setStartTime] = useState("10:00 AM");
+  const [endTime, setEndTime] = useState("02:00 PM");
+  const [durationHours, setDurationHours] = useState(4);
+  const [selectedPayment, setSelectedPayment] = useState("upi");
+
   const [selectedSpot, setSelectedSpot] = useState({
     title: "Home Garage",
     address: "Anna Nagar, Chennai",
@@ -394,6 +416,10 @@ export default function FullShowcaseBoard() {
     { id: "49", name: "Notification Log" },
     { id: "50", name: "App Settings" },
   ];
+
+  const calculatedBaseAmount = selectedSpot.price * durationHours;
+  const calculatedServiceFee = 10;
+  const calculatedTotalAmount = calculatedBaseAmount + calculatedServiceFee;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw", background: "#0F172A", color: "#F8FAFC", fontFamily: "system-ui, -apple-system, sans-serif", overflow: "hidden" }}>
@@ -788,7 +814,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── PARKING DETAILS (EXACTLY MATCHING ATTACHED TARGET DESIGN) ─── */}
+            {/* ─── PARKING DETAILS ─── */}
             {activeScreen === "10" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", justifyContent: "space-between" }}>
                 <div>
@@ -876,9 +902,344 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
+            {/* ─── SCREEN 11: SELECT DATE & TIME (CALENDAR & DURATION PICKER) ─── */}
+            {activeScreen === "11" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", justifyContent: "space-between" }}>
+                <div>
+                  {/* HEADER */}
+                  <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", borderBottom: "1px solid #F1F5F9" }}>
+                    <button onClick={() => setActiveScreen("10")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Select Date & Time</span>
+                  </div>
+
+                  <div style={{ padding: "20px 20px 0" }}>
+                    {/* CALENDAR DATE SELECTION */}
+                    <label style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 10 }}>Select Booking Date</label>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 24 }}>
+                      {[
+                        { day: "Today", date: "04 Aug" },
+                        { day: "Tomorrow", date: "05 Aug" },
+                        { day: "Thursday", date: "06 Aug" }
+                      ].map((item, i) => {
+                        const label = `${item.day}, ${item.date}`;
+                        const isSelected = selectedDate === label;
+                        return (
+                          <div 
+                            key={i} 
+                            onClick={() => setSelectedDate(label)}
+                            style={{ 
+                              padding: "12px 8px", 
+                              borderRadius: 14, 
+                              border: isSelected ? "2px solid #22C55E" : "1px solid #E2E8F0", 
+                              background: isSelected ? "#F0FDF4" : "#F8FAFC", 
+                              textAlign: "center", 
+                              cursor: "pointer" 
+                            }}
+                          >
+                            <div style={{ fontSize: 11, fontWeight: 700, color: isSelected ? "#16A34A" : "#64748B" }}>{item.day}</div>
+                            <div style={{ fontSize: 14, fontWeight: 900, color: isSelected ? "#16A34A" : "#0F172A", marginTop: 2 }}>{item.date}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* TIME SELECTION ROW */}
+                    <label style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 10 }}>Select Start & End Time</label>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+                      <div style={{ background: "#F8FAFC", padding: 12, borderRadius: 14, border: "1px solid #E2E8F0" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 4 }}>Start Time</span>
+                        <select 
+                          value={startTime} 
+                          onChange={(e) => setStartTime(e.target.value)}
+                          style={{ width: "100%", background: "transparent", border: "none", outline: "none", fontSize: 15, fontWeight: 800, color: "#0F172A", cursor: "pointer" }}
+                        >
+                          <option>08:00 AM</option>
+                          <option>09:00 AM</option>
+                          <option>10:00 AM</option>
+                          <option>11:00 AM</option>
+                          <option>12:00 PM</option>
+                        </select>
+                      </div>
+
+                      <div style={{ background: "#F8FAFC", padding: 12, borderRadius: 14, border: "1px solid #E2E8F0" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 4 }}>End Time</span>
+                        <select 
+                          value={endTime} 
+                          onChange={(e) => setEndTime(e.target.value)}
+                          style={{ width: "100%", background: "transparent", border: "none", outline: "none", fontSize: 15, fontWeight: 800, color: "#0F172A", cursor: "pointer" }}
+                        >
+                          <option>01:00 PM</option>
+                          <option>02:00 PM</option>
+                          <option>03:00 PM</option>
+                          <option>04:00 PM</option>
+                          <option>06:00 PM</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* DURATION SLIDER / CHIPS */}
+                    <label style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 10 }}>Quick Duration Selector</label>
+                    <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+                      {[2, 4, 6, 8, 12].map((hrs) => (
+                        <button 
+                          key={hrs} 
+                          onClick={() => setDurationHours(hrs)}
+                          style={{ 
+                            flex: 1, 
+                            padding: "10px 0", 
+                            borderRadius: 12, 
+                            border: durationHours === hrs ? "2px solid #22C55E" : "1px solid #E2E8F0", 
+                            background: durationHours === hrs ? "#DCFCE7" : "#F8FAFC", 
+                            color: durationHours === hrs ? "#16A34A" : "#475569", 
+                            fontWeight: 800, 
+                            fontSize: 13, 
+                            cursor: "pointer" 
+                          }}
+                        >
+                          {hrs} Hrs
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* REAL-TIME COST ESTIMATE DISPLAY CARD */}
+                    <div style={{ background: "#F0FDF4", borderRadius: 16, border: "1px solid #BBF7D0", padding: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: "#16A34A" }}>Estimated Subtotal</span>
+                        <div style={{ fontSize: 13, color: "#475569", marginTop: 2 }}>{durationHours} Hours × ₹{selectedSpot.price}/hr</div>
+                      </div>
+                      <div style={{ fontSize: 22, fontWeight: 900, color: "#16A34A" }}>
+                        ₹{calculatedBaseAmount}
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* BOTTOM ACTION BUTTON */}
+                <div style={{ padding: "16px 20px 24px", borderTop: "1px solid #F1F5F9", background: "#FFF" }}>
+                  <button 
+                    onClick={() => setActiveScreen("12")}
+                    style={{ 
+                      width: "100%", 
+                      padding: 16, 
+                      borderRadius: 16, 
+                      background: "#22C55E", 
+                      border: "none", 
+                      color: "#FFF", 
+                      fontWeight: 900, 
+                      fontSize: 16, 
+                      cursor: "pointer", 
+                      boxShadow: "0 6px 16px rgba(34,197,94,0.35)" 
+                    }}
+                  >
+                    Continue to Summary
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 12: BOOKING SUMMARY ─── */}
+            {activeScreen === "12" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", justifyContent: "space-between" }}>
+                <div>
+                  {/* HEADER */}
+                  <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
+                    <button onClick={() => setActiveScreen("11")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Booking Summary</span>
+                  </div>
+
+                  <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
+                    {/* SPOT CARD SUMMARY */}
+                    <div style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0", display: "flex", gap: 14, alignItems: "center" }}>
+                      <div style={{ width: 70, height: 70, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
+                        <SmartImage sources={REAL_IMAGES.garage} alt="spot" />
+                      </div>
+                      <div>
+                        <h4 style={{ margin: "0 0 2px", fontSize: 16, fontWeight: 900, color: "#0F172A" }}>{selectedSpot.title}</h4>
+                        <p style={{ margin: "0 0 4px", fontSize: 12, color: "#64748B" }}>{selectedSpot.address}</p>
+                        <span style={{ fontSize: 11, fontWeight: 800, background: "#DCFCE7", color: "#16A34A", padding: "2px 8px", borderRadius: 6 }}>SLOT A-12</span>
+                      </div>
+                    </div>
+
+                    {/* SCHEDULE CARD */}
+                    <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0" }}>
+                      <h4 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 800, color: "#0F172A" }}>Reservation Time</h4>
+                      <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 10, borderBottom: "1px dashed #E2E8F0" }}>
+                        <span style={{ fontSize: 13, color: "#64748B" }}>Date</span>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: "#0F172A" }}>{selectedDate}</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 10 }}>
+                        <span style={{ fontSize: 13, color: "#64748B" }}>Time Slot</span>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: "#0F172A" }}>{startTime} - {endTime} ({durationHours}h)</span>
+                      </div>
+                    </div>
+
+                    {/* PAYMENT BREAKDOWN CARD */}
+                    <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0" }}>
+                      <h4 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 800, color: "#0F172A" }}>Payment Details</h4>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                        <span style={{ fontSize: 13, color: "#64748B" }}>Parking Fee ({durationHours} hrs)</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>₹{calculatedBaseAmount}</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                        <span style={{ fontSize: 13, color: "#64748B" }}>Platform Service Fee</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>₹{calculatedServiceFee}</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 10, borderTop: "1.5px solid #E2E8F0" }}>
+                        <span style={{ fontSize: 15, fontWeight: 900, color: "#0F172A" }}>Total Payable</span>
+                        <span style={{ fontSize: 18, fontWeight: 900, color: "#22C55E" }}>₹{calculatedTotalAmount}</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* BOTTOM ACTION BUTTON */}
+                <div style={{ padding: "16px 20px 24px", borderTop: "1px solid #E2E8F0", background: "#FFF" }}>
+                  <button 
+                    onClick={() => setActiveScreen("13")}
+                    style={{ 
+                      width: "100%", 
+                      padding: 16, 
+                      borderRadius: 16, 
+                      background: "#22C55E", 
+                      border: "none", 
+                      color: "#FFF", 
+                      fontWeight: 900, 
+                      fontSize: 16, 
+                      cursor: "pointer", 
+                      boxShadow: "0 6px 16px rgba(34,197,94,0.35)" 
+                    }}
+                  >
+                    Proceed to Payment (₹{calculatedTotalAmount})
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 13: PAYMENT CHECKOUT ─── */}
+            {activeScreen === "13" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", justifyContent: "space-between" }}>
+                <div>
+                  {/* HEADER */}
+                  <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", borderBottom: "1px solid #F1F5F9" }}>
+                    <button onClick={() => setActiveScreen("12")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Payment Checkout</span>
+                  </div>
+
+                  <div style={{ padding: 20 }}>
+                    {/* TOTAL DUE BANNER */}
+                    <div style={{ background: "#0F172A", color: "#FFF", padding: 20, borderRadius: 20, textAlign: "center", marginBottom: 24 }}>
+                      <span style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Total Amount Due</span>
+                      <div style={{ fontSize: 32, fontWeight: 900, color: "#22C55E", marginTop: 4 }}>₹{calculatedTotalAmount}</div>
+                    </div>
+
+                    {/* PAYMENT METHOD OPTIONS */}
+                    <label style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 12 }}>Select Payment Method</label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {[
+                        { id: "upi", title: "UPI (GPay / PhonePe / Paytm)", sub: "Instant 1-Click Payment" },
+                        { id: "card", title: "Credit / Debit Card", sub: "Visa, Mastercard, RuPay" },
+                        { id: "wallet", title: "Paarkkar Wallet", sub: "Available Balance: ₹450" }
+                      ].map((m) => (
+                        <div 
+                          key={m.id}
+                          onClick={() => setSelectedPayment(m.id)}
+                          style={{ 
+                            padding: 16, 
+                            borderRadius: 16, 
+                            border: selectedPayment === m.id ? "2px solid #22C55E" : "1.5px solid #E2E8F0", 
+                            background: selectedPayment === m.id ? "#F0FDF4" : "#FFF", 
+                            display: "flex", 
+                            alignItems: "center", 
+                            justify: "space-between", 
+                            cursor: "pointer" 
+                          }}
+                        >
+                          <div>
+                            <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>{m.title}</h4>
+                            <p style={{ margin: 0, fontSize: 12, color: "#64748B" }}>{m.sub}</p>
+                          </div>
+                          <div style={{ width: 22, height: 22, borderRadius: "50%", border: selectedPayment === m.id ? "6px solid #22C55E" : "2px solid #CBD5E1", background: "#FFF" }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* BOTTOM ACTION BUTTON */}
+                <div style={{ padding: "16px 20px 24px", borderTop: "1px solid #F1F5F9" }}>
+                  <button 
+                    onClick={() => setActiveScreen("14")}
+                    style={{ 
+                      width: "100%", 
+                      padding: 16, 
+                      borderRadius: 16, 
+                      background: "#22C55E", 
+                      border: "none", 
+                      color: "#FFF", 
+                      fontWeight: 900, 
+                      fontSize: 16, 
+                      cursor: "pointer", 
+                      boxShadow: "0 6px 16px rgba(34,197,94,0.35)" 
+                    }}
+                  >
+                    Pay ₹{calculatedTotalAmount} & Reserve
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 14: PAYMENT SUCCESS / BOOKING CONFIRMED ─── */}
+            {activeScreen === "14" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 24, justifyContent: "space-between", alignItems: "center", textAlign: "center" }}>
+                <div style={{ width: "100%", marginTop: 20 }}>
+                  <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#DCFCE7", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.25)" }}>
+                    <IconCheck size={40} color="#22C55E" />
+                  </div>
+                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Booking Confirmed!</h2>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>Your parking slot has been reserved successfully.</p>
+
+                  {/* PASS CARD */}
+                  <div style={{ background: "#F8FAFC", borderRadius: 20, padding: 20, border: "1px solid #E2E8F0", textAlign: "left", marginBottom: 20 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: "#64748B" }}>PASS #PKR-89241</span>
+                      <span style={{ fontSize: 11, fontWeight: 800, background: "#22C55E", color: "#FFF", padding: "2px 8px", borderRadius: 6 }}>RESERVED</span>
+                    </div>
+                    <h3 style={{ fontSize: 18, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>{selectedSpot.title}</h3>
+                    <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 12px" }}>{selectedSpot.address}</p>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>
+                      📅 {selectedDate} • {startTime} - {endTime}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
+                  <button 
+                    onClick={() => setActiveScreen("15")}
+                    style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 15, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                  >
+                    View Active Parking Pass
+                  </button>
+                  <button 
+                    onClick={() => setActiveScreen("08")}
+                    style={{ width: "100%", padding: 14, borderRadius: 16, background: "transparent", border: "1.5px solid #E2E8F0", color: "#0F172A", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
+                  >
+                    Back to Home Map
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* DEFAULT FALLBACK FOR OTHER SCREENS */}
             {![
-              "01","02","03","04","05","06","07","08","09","10"
+              "01","02","03","04","05","06","07","08","09","10","11","12","13","14"
             ].includes(activeScreen) && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
