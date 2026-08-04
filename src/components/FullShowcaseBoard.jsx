@@ -19,12 +19,12 @@ const T = {
 };
 
 export default function FullShowcaseBoard() {
-  const [activeScreen, setActiveScreen] = useState("01"); // 01 to 30
+  const [activeScreen, setActiveScreen] = useState("01"); // 01 to 40
   const [role, setRole] = useState(null); // driver | host
   const [otpVal, setOtpVal] = useState(["2", "4", "6", "8", "2", "1"]);
   const [tabIndex, setTabIndex] = useState("Nearby"); // Nearby | Favorites | Recent
   
-  // Booking state
+  // Booking & Form state
   const [selectedDate, setSelectedDate] = useState("21 May");
   const [selectedTime, setSelectedTime] = useState("10:00 AM");
   const [durationHours, setDurationHours] = useState(2);
@@ -32,6 +32,12 @@ export default function FullShowcaseBoard() {
   const [extendOption, setExtendOption] = useState("1 Hour");
   const [bookingFilter, setBookingFilter] = useState("Completed");
   const [notifFilter, setNotifFilter] = useState("All");
+
+  // Host Space Form state
+  const [spacePrice, setSpacePrice] = useState("40");
+  const [vehicleType, setVehicleType] = useState("Car");
+  const [withdrawAmount, setWithdrawAmount] = useState("2000");
+  const [withdrawMethod, setWithdrawMethod] = useState("bank");
 
   const [selectedSpot, setSelectedSpot] = useState({
     title: "Home Garage",
@@ -74,7 +80,17 @@ export default function FullShowcaseBoard() {
     { id: "27", name: "27 Invite & Earn" },
     { id: "28", name: "28 History Details" },
     { id: "29", name: "29 Host Dashboard" },
-    { id: "30", name: "30 Add New Space" },
+    { id: "30", name: "30 Add Space 1" },
+    { id: "31", name: "31 Add Location" },
+    { id: "32", name: "32 Add Pricing" },
+    { id: "33", name: "33 Add Photos" },
+    { id: "34", name: "34 Review & Publish" },
+    { id: "35", name: "35 Space Submitted" },
+    { id: "36", name: "36 My Listings" },
+    { id: "37", name: "37 Booking Requests" },
+    { id: "38", name: "38 Earnings Overview" },
+    { id: "39", name: "39 Withdraw Earnings" },
+    { id: "40", name: "40 Reviews & Ratings" },
   ];
 
   return (
@@ -1314,7 +1330,6 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <div style={{ flex: 1, padding: 20, display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
-                  {/* User Profile Card */}
                   <div style={{ background: "#FFF", borderRadius: 20, padding: 20, border: "1px solid #E2E8F0", textAlign: "center", position: "relative" }}>
                     <div style={{ width: 72, height: 72, borderRadius: "50%", background: "#CBD5E1", margin: "0 auto 10px", overflow: "hidden" }}>
                       <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -1324,14 +1339,13 @@ export default function FullShowcaseBoard() {
                     <span style={{ background: "#DCFCE7", color: "#22C55E", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 12 }}>✓ Verified User</span>
                   </div>
 
-                  {/* Options Menu */}
                   <div style={{ background: "#FFF", borderRadius: 20, border: "1px solid #E2E8F0", overflow: "hidden" }}>
                     {[
                       { title: "Personal Information", icon: "👤", screen: "24" },
                       { title: "My Vehicles", icon: "🚘", screen: "24" },
                       { title: "Payment Methods", icon: "💳", screen: "21" },
                       { title: "Address Book", icon: "📍", screen: "24" },
-                      { title: "Driving License", icon: "𝪎", screen: "24" },
+                      { title: "Driving License", icon: "🪪", screen: "24" },
                       { title: "Preferences", icon: "⚙️", screen: "25" },
                       { title: "Help & Support", icon: "❓", screen: "26" },
                       { title: "Invite & Earn", icon: "🎁", screen: "27" },
@@ -1594,7 +1608,6 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <div style={{ flex: 1, padding: 20, display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
-                  {/* Earnings Banner Card */}
                   <div style={{ background: "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)", borderRadius: 20, padding: 20, color: "#FFF", boxShadow: "0 10px 25px rgba(34,197,94,0.3)" }}>
                     <span style={{ fontSize: 12, opacity: 0.8 }}>Total Earnings</span>
                     <h2 style={{ fontSize: 32, fontWeight: 900, margin: "4px 0 6px" }}>₹12,450</h2>
@@ -1602,11 +1615,11 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                    <div style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0" }}>
+                    <div onClick={() => setActiveScreen("36")} style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0", cursor: "pointer" }}>
                       <span style={{ fontSize: 11, color: "#64748B" }}>Active Listings</span>
                       <div style={{ fontSize: 22, fontWeight: 900, color: "#0F172A", marginTop: 4 }}>4</div>
                     </div>
-                    <div style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0" }}>
+                    <div onClick={() => setActiveScreen("37")} style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0", cursor: "pointer" }}>
                       <span style={{ fontSize: 11, color: "#64748B" }}>Today's Bookings</span>
                       <div style={{ fontSize: 22, fontWeight: 900, color: "#0F172A", marginTop: 4 }}>3</div>
                     </div>
@@ -1619,7 +1632,7 @@ export default function FullShowcaseBoard() {
                         { title: "Home Garage", time: "21 May, 10:00 AM" },
                         { title: "Office Basement", time: "21 May, 02:00 PM" },
                       ].map((b, i) => (
-                        <div key={i} style={{ background: "#FFF", borderRadius: 14, padding: 12, border: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div key={i} onClick={() => setActiveScreen("37")} style={{ background: "#FFF", borderRadius: 14, padding: 12, border: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
                           <div>
                             <div style={{ fontWeight: 800, fontSize: 13, color: "#0F172A" }}>{b.title}</div>
                             <div style={{ fontSize: 11, color: "#64748B" }}>{b.time}</div>
@@ -1637,14 +1650,13 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── 30: ADD NEW SPACE ─── */}
+            {/* ─── 30: ADD NEW SPACE (START) ─── */}
             {activeScreen === "30" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
                   <button onClick={() => setActiveScreen("29")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", marginBottom: 12 }}>←</button>
                   <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 900, color: "#0F172A", textAlign: "center" }}>Add New Space</h3>
 
-                  {/* Step Progress */}
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, position: "relative" }}>
                     {[
                       { step: 1, name: "Space Details", active: true },
@@ -1679,9 +1691,541 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                <button onClick={() => setActiveScreen("29")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer", boxShadow: "0 8px 20px rgba(34,197,94,0.3)" }}>
+                <button onClick={() => setActiveScreen("31")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer", boxShadow: "0 8px 20px rgba(34,197,94,0.3)" }}>
                   Continue
                 </button>
+              </div>
+            )}
+
+            {/* ─── 31: ADD NEW SPACE (LOCATION) ─── */}
+            {activeScreen === "31" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
+                <div>
+                  <button onClick={() => setActiveScreen("30")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", marginBottom: 12 }}>←</button>
+                  <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 900, color: "#0F172A", textAlign: "center" }}>Add New Space (Location)</h3>
+
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+                    {[
+                      { step: 1, name: "Details", done: true },
+                      { step: 2, name: "Location", active: true },
+                      { step: 3, name: "Pricing", active: false },
+                      { step: 4, name: "Photos", active: false },
+                    ].map((s) => (
+                      <div key={s.step} style={{ textAlign: "center", flex: 1 }}>
+                        <div style={{ width: 24, height: 24, borderRadius: "50%", background: s.active || s.done ? "#22C55E" : "#E2E8F0", color: "#FFF", fontWeight: 800, fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px" }}>{s.step}</div>
+                        <span style={{ fontSize: 9, color: s.active ? "#22C55E" : "#64748B", fontWeight: 700 }}>{s.name}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 14, padding: "10px 14px", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                    <span>🔍</span>
+                    <input type="text" defaultValue="12, 4th Street, Anna Nagar, Chennai" style={{ border: "none", background: "transparent", outline: "none", flex: 1, fontWeight: 600, fontSize: 13 }} />
+                  </div>
+
+                  <div style={{ height: 180, background: "#E2E8F0", borderRadius: 16, overflow: "hidden", position: "relative", marginBottom: 16 }}>
+                    <svg viewBox="0 0 300 180" width="100%" height="100%">
+                      <rect width="100%" height="100%" fill="#E2E8F0" />
+                      <path d="M0 60 L300 80 M0 140 L300 130 M90 0 L100 180 M210 0 L200 180" stroke="#FFF" strokeWidth="16" />
+                      <g transform="translate(140, 70)">
+                        <path d="M15 0 C 6 0, 0 6, 0 15 C 0 26, 15 38, 15 38 C 15 38, 30 26, 30 15 C 30 6, 24 0, 15 0 Z" fill="#22C55E" />
+                        <circle cx="15" cy="15" r="6" fill="#FFF" />
+                      </g>
+                    </svg>
+                  </div>
+
+                  <div style={{ background: "#F8FAFC", borderRadius: 14, padding: 12, border: "1px solid #E2E8F0" }}>
+                    <span style={{ fontSize: 11, color: "#64748B", fontWeight: 700 }}>Selected Location</span>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", marginTop: 2 }}>12, 4th Street, Anna Nagar, Chennai - 600040</div>
+                    <span style={{ color: "#22C55E", fontSize: 11, fontWeight: 800, cursor: "pointer" }}>Change Location</span>
+                  </div>
+                </div>
+
+                <button onClick={() => setActiveScreen("32")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>
+                  Continue
+                </button>
+              </div>
+            )}
+
+            {/* ─── 32: ADD NEW SPACE (PRICING) ─── */}
+            {activeScreen === "32" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
+                <div>
+                  <button onClick={() => setActiveScreen("31")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", marginBottom: 12 }}>←</button>
+                  <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 900, color: "#0F172A", textAlign: "center" }}>Add New Space (Pricing)</h3>
+
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+                    {[
+                      { step: 1, name: "Details", done: true },
+                      { step: 2, name: "Location", done: true },
+                      { step: 3, name: "Pricing", active: true },
+                      { step: 4, name: "Photos", active: false },
+                    ].map((s) => (
+                      <div key={s.step} style={{ textAlign: "center", flex: 1 }}>
+                        <div style={{ width: 24, height: 24, borderRadius: "50%", background: s.active || s.done ? "#22C55E" : "#E2E8F0", color: "#FFF", fontWeight: 800, fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px" }}>{s.step}</div>
+                        <span style={{ fontSize: 9, color: s.active ? "#22C55E" : "#64748B", fontWeight: 700 }}>{s.name}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <h4 style={{ fontSize: 16, fontWeight: 800, color: "#0F172A", margin: "0 0 4px" }}>Set your pricing</h4>
+                  <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 16px" }}>Set an hourly price for your parking space.</p>
+
+                  <label style={{ fontSize: 11, color: "#64748B", fontWeight: 700, display: "block", marginBottom: 6 }}>Price per hour</label>
+                  <div style={{ display: "flex", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                    <span style={{ fontWeight: 800, fontSize: 18, color: "#0F172A" }}>₹</span>
+                    <input type="text" value={spacePrice} onChange={(e) => setSpacePrice(e.target.value)} style={{ border: "none", outline: "none", fontSize: 18, fontWeight: 800, color: "#0F172A", flex: 1 }} />
+                  </div>
+
+                  <label style={{ fontSize: 11, color: "#64748B", fontWeight: 700, display: "block", marginBottom: 8 }}>Vehicle Type</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 16 }}>
+                    {[
+                      { type: "Car", icon: "🚗" },
+                      { type: "SUV", icon: "🚙" },
+                      { type: "Bike", icon: "🚲" },
+                      { type: "EV", icon: "⚡" },
+                    ].map((v) => {
+                      const isSelected = vehicleType === v.type;
+                      return (
+                        <div
+                          key={v.type}
+                          onClick={() => setVehicleType(v.type)}
+                          style={{
+                            padding: "12px 6px",
+                            borderRadius: 12,
+                            border: isSelected ? "2px solid #22C55E" : "1.5px solid #E2E8F0",
+                            background: isSelected ? "#F0FDF4" : "#FFF",
+                            textAlign: "center",
+                            cursor: "pointer"
+                          }}
+                        >
+                          <div style={{ fontSize: 20 }}>{v.icon}</div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: isSelected ? "#22C55E" : "#0F172A", marginTop: 2 }}>{v.type}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div style={{ background: "#F8FAFC", borderRadius: 14, padding: 14, border: "1px solid #E2E8F0" }}>
+                    <span style={{ fontSize: 11, color: "#64748B" }}>You will earn</span>
+                    <div style={{ fontSize: 18, fontWeight: 900, color: "#22C55E", margin: "2px 0" }}>₹{(Number(spacePrice || 0) * 0.9).toFixed(2)} <span style={{ fontSize: 11, color: "#64748B" }}>/ hr</span></div>
+                    <span style={{ fontSize: 10, color: "#94A3B8" }}>(After 10% Paarkkar fee)</span>
+                  </div>
+                </div>
+
+                <button onClick={() => setActiveScreen("33")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>
+                  Continue
+                </button>
+              </div>
+            )}
+
+            {/* ─── 33: ADD NEW SPACE (PHOTOS) ─── */}
+            {activeScreen === "33" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
+                <div>
+                  <button onClick={() => setActiveScreen("32")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", marginBottom: 12 }}>←</button>
+                  <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 900, color: "#0F172A", textAlign: "center" }}>Add New Space (Photos)</h3>
+
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+                    {[
+                      { step: 1, name: "Details", done: true },
+                      { step: 2, name: "Location", done: true },
+                      { step: 3, name: "Pricing", done: true },
+                      { step: 4, name: "Photos", active: true },
+                    ].map((s) => (
+                      <div key={s.step} style={{ textAlign: "center", flex: 1 }}>
+                        <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#22C55E", color: "#FFF", fontWeight: 800, fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px" }}>{s.step}</div>
+                        <span style={{ fontSize: 9, color: "#22C55E", fontWeight: 700 }}>{s.name}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <h4 style={{ fontSize: 16, fontWeight: 800, color: "#0F172A", margin: "0 0 4px" }}>Upload photos</h4>
+                  <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 16px" }}>Add clear photos of your parking space.</p>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                    {[
+                      "https://images.unsplash.com/photo-1506521782020-18925f4bfa55?auto=format&fit=crop&w=400&q=80",
+                      "https://images.unsplash.com/photo-1590674899484-13da0d1b58f5?auto=format&fit=crop&w=400&q=80",
+                      "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?auto=format&fit=crop&w=400&q=80",
+                    ].map((img, idx) => (
+                      <div key={idx} style={{ height: 110, borderRadius: 14, overflow: "hidden", position: "relative" }}>
+                        <img src={img} alt="upload" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <button style={{ position: "absolute", top: 6, right: 6, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#FFF", border: "none", cursor: "pointer", fontSize: 11 }}>✕</button>
+                      </div>
+                    ))}
+                    <div style={{ height: 110, borderRadius: 14, border: "2px dashed #CBD5E1", background: "#F8FAFC", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#64748B" }}>
+                      <span style={{ fontSize: 20 }}>+</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, marginTop: 2 }}>Add More</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button onClick={() => setActiveScreen("34")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>
+                  Continue
+                </button>
+              </div>
+            )}
+
+            {/* ─── 34: REVIEW & PUBLISH ─── */}
+            {activeScreen === "34" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#F8FAFC" }}>
+                <div>
+                  <button onClick={() => setActiveScreen("33")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", marginBottom: 12 }}>←</button>
+                  <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 900, color: "#0F172A", textAlign: "center" }}>Review & Publish</h3>
+
+                  <div style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center", marginBottom: 16 }}>
+                    <img src={selectedSpot.image} alt="Review" style={{ width: 64, height: 64, borderRadius: 12, objectFit: "cover" }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <h4 style={{ margin: "0 0 2px", fontSize: 14, fontWeight: 800, color: "#0F172A" }}>{selectedSpot.title}</h4>
+                        <span style={{ color: "#22C55E", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>Edit</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: 11, color: "#64748B" }}>12, 4th Street, Anna Nagar, Chennai - 600040</p>
+                    </div>
+                  </div>
+
+                  <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0", display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                      <span style={{ color: "#64748B" }}>Price per hour</span>
+                      <span style={{ fontWeight: 800, color: "#0F172A" }}>₹40</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                      <span style={{ color: "#64748B" }}>Vehicle Type</span>
+                      <span style={{ fontWeight: 700, color: "#0F172A" }}>Car, SUV</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                      <span style={{ color: "#64748B" }}>Availability</span>
+                      <span style={{ fontWeight: 700, color: "#0F172A" }}>Mon - Sun (6 AM - 11 PM)</span>
+                    </div>
+                    <div style={{ borderTop: "1px solid #F1F5F9", paddingTop: 8 }}>
+                      <span style={{ fontSize: 11, color: "#64748B", display: "block", marginBottom: 6 }}>Amenities</span>
+                      <div style={{ display: "flex", gap: 6 }}>
+                        {["Covered", "CCTV", "24/7 Access"].map((a, i) => (
+                          <span key={i} style={{ background: "#F1F5F9", color: "#475569", fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 6 }}>{a}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button onClick={() => setActiveScreen("35")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer", boxShadow: "0 8px 20px rgba(34,197,94,0.3)" }}>
+                  Publish Space
+                </button>
+              </div>
+            )}
+
+            {/* ─── 35: SPACE SUBMITTED ─── */}
+            {activeScreen === "35" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "30px 24px", justifyContent: "space-between", background: "#F8FAFC", textAlign: "center" }}>
+                <div>
+                  <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "20px auto 20px", color: "#FFF", fontSize: 40, boxShadow: "0 10px 30px rgba(34,197,94,0.4)" }}>
+                    ✓
+                  </div>
+                  <h2 style={{ fontSize: 24, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Space Submitted!</h2>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>Your space has been submitted for verification.</p>
+
+                  <div style={{ background: "#FFF", borderRadius: 18, padding: 14, border: "1px solid #E2E8F0", textAlign: "left", display: "flex", gap: 12, alignItems: "center", marginBottom: 16 }}>
+                    <img src={selectedSpot.image} alt="Submit" style={{ width: 56, height: 56, borderRadius: 12, objectFit: "cover" }} />
+                    <div style={{ flex: 1 }}>
+                      <h4 style={{ margin: "0 0 2px", fontSize: 14, fontWeight: 800, color: "#0F172A" }}>Home Garage</h4>
+                      <p style={{ margin: "0 0 4px", fontSize: 11, color: "#64748B" }}>12, 4th Street, Anna Nagar, Chennai - 600040</p>
+                      <span style={{ background: "#FEF3C7", color: "#D97706", fontSize: 10, fontWeight: 800, padding: "2px 8px", borderRadius: 6 }}>Under Review</span>
+                    </div>
+                  </div>
+
+                  <p style={{ fontSize: 11, color: "#94A3B8", lineHeight: 1.4 }}>
+                    We will notify you once your space is live and visible to drivers.
+                  </p>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <button onClick={() => setActiveScreen("29")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>
+                    Go to Dashboard
+                  </button>
+                  <button onClick={() => setActiveScreen("30")} style={{ width: "100%", padding: 14, borderRadius: 16, background: "#FFF", border: "1.5px solid #E2E8F0", color: "#0F172A", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+                    Add Another Space
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── 36: MY LISTINGS ─── */}
+            {activeScreen === "36" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px 12px", background: "#FFF", borderBottom: "1px solid #E2E8F0" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                    <button onClick={() => setActiveScreen("29")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                    <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>My Listings</h3>
+                    <span style={{ width: 20 }} />
+                  </div>
+
+                  <div style={{ display: "flex", gap: 10, overflowX: "auto" }}>
+                    {["All (2)", "Active (1)", "Under Review (1)", "Inactive (0)"].map((f, i) => (
+                      <span key={i} style={{ padding: "6px 14px", borderRadius: 20, fontSize: 11, fontWeight: 800, background: i === 1 ? "#DCFCE7" : "#F1F5F9", color: i === 1 ? "#22C55E" : "#64748B", cursor: "pointer", whiteSpace: "nowrap" }}>
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                  {[
+                    { title: "Home Garage", loc: "12, 4th Street, Anna Nagar, Chennai", price: "40", status: "Active", statusBg: "#DCFCE7", statusColor: "#22C55E", img: "https://images.unsplash.com/photo-1506521782020-18925f4bfa55?auto=format&fit=crop&w=400&q=80" },
+                    { title: "Office Basement", loc: "T. Nagar, Chennai - 600017", price: "60", status: "Under Review", statusBg: "#FEF3C7", statusColor: "#D97706", img: "https://images.unsplash.com/photo-1590674899484-13da0d1b58f5?auto=format&fit=crop&w=400&q=80" },
+                  ].map((item, idx) => (
+                    <div key={idx} style={{ background: "#FFF", borderRadius: 16, padding: 12, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
+                      <img src={item.img} alt="list" style={{ width: 70, height: 70, borderRadius: 12, objectFit: "cover" }} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                          <h4 style={{ margin: "0 0 2px", fontSize: 14, fontWeight: 800, color: "#0F172A" }}>{item.title}</h4>
+                          <span style={{ background: item.statusBg, color: item.statusColor, fontSize: 9, fontWeight: 800, padding: "2px 6px", borderRadius: 6 }}>{item.status}</span>
+                        </div>
+                        <p style={{ margin: "0 0 6px", fontSize: 11, color: "#64748B" }}>{item.loc}</p>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div style={{ fontWeight: 800, color: "#0F172A", fontSize: 13 }}>₹{item.price}<span style={{ fontSize: 10, color: "#64748B" }}>/hr</span></div>
+                          <div style={{ display: "flex", gap: 10, color: "#64748B", fontSize: 13 }}>
+                            <span style={{ cursor: "pointer" }}>👁</span>
+                            <span style={{ cursor: "pointer" }}>✏️</span>
+                            <span style={{ cursor: "pointer" }}>⋮</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ padding: 16, background: "#FFF", borderTop: "1px solid #E2E8F0" }}>
+                  <button onClick={() => setActiveScreen("30")} style={{ width: "100%", padding: 14, borderRadius: 14, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 800, fontSize: 14, cursor: "pointer" }}>
+                    + Add New Space
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── 37: BOOKING REQUESTS ─── */}
+            {activeScreen === "37" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px 12px", background: "#FFF", borderBottom: "1px solid #E2E8F0" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                    <button onClick={() => setActiveScreen("29")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                    <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Booking Requests</h3>
+                    <span style={{ width: 20 }} />
+                  </div>
+
+                  <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+                    {["Pending (2)", "Accepted", "Declined"].map((f, i) => (
+                      <span key={i} style={{ padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 800, background: i === 0 ? "#DCFCE7" : "transparent", color: i === 0 ? "#22C55E" : "#64748B", cursor: "pointer" }}>
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
+                  {[
+                    { name: "Arun Kumar", rate: "4.8 (32)", time: "21 May 2025, 10:00 AM - 12:00 PM", space: "Home Garage", dur: "2 Hours", price: "80" },
+                    { name: "Vikram S", rate: "4.6 (18)", time: "22 May 2025, 06:00 PM - 09:00 PM", space: "Office Basement", dur: "3 Hours", price: "180" },
+                  ].map((req, idx) => (
+                    <div key={idx} style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#CBD5E1", overflow: "hidden" }}>
+                            <img src={`https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80`} alt="req" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 800, fontSize: 14, color: "#0F172A" }}>{req.name}</div>
+                            <div style={{ fontSize: 10, color: "#64748B" }}>{req.time}</div>
+                          </div>
+                        </div>
+                        <span style={{ fontSize: 11, color: "#F59E0B", fontWeight: 700 }}>★ {req.rate}</span>
+                      </div>
+
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, padding: "8px 0", borderTop: "1px solid #F1F5F9", borderBottom: "1px solid #F1F5F9", marginBottom: 12 }}>
+                        <span style={{ color: "#64748B" }}>{req.space} • {req.dur}</span>
+                        <span style={{ fontWeight: 900, color: "#0F172A" }}>₹{req.price}</span>
+                      </div>
+
+                      <div style={{ display: "flex", gap: 10 }}>
+                        <button style={{ flex: 1, padding: 10, borderRadius: 10, border: "1.5px solid #FEE2E2", background: "#FFF", color: "#EF4444", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Decline</button>
+                        <button style={{ flex: 1, padding: 10, borderRadius: 10, border: "none", background: "#22C55E", color: "#FFF", fontWeight: 800, fontSize: 12, cursor: "pointer" }}>Accept</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ─── 38: EARNINGS OVERVIEW ─── */}
+            {activeScreen === "38" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <button onClick={() => setActiveScreen("29")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Earnings Overview</h3>
+                  <button style={{ background: "none", border: "none", fontSize: 18, cursor: "pointer" }}>📅</button>
+                </div>
+
+                <div style={{ flex: 1, padding: 20, display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
+                  <div style={{ background: "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)", borderRadius: 20, padding: 20, color: "#FFF" }}>
+                    <span style={{ fontSize: 12, opacity: 0.8 }}>Total Earnings</span>
+                    <h2 style={{ fontSize: 32, fontWeight: 900, margin: "4px 0 4px" }}>₹12,450</h2>
+                    <span style={{ fontSize: 11, background: "rgba(255,255,255,0.2)", padding: "3px 8px", borderRadius: 10 }}>+18.5% from last month</span>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <div style={{ background: "#FFF", borderRadius: 14, padding: 12, border: "1px solid #E2E8F0" }}>
+                      <span style={{ fontSize: 10, color: "#64748B" }}>Bookings</span>
+                      <div style={{ fontSize: 20, fontWeight: 900, color: "#0F172A" }}>32</div>
+                    </div>
+                    <div style={{ background: "#FFF", borderRadius: 14, padding: 12, border: "1px solid #E2E8F0" }}>
+                      <span style={{ fontSize: 10, color: "#64748B" }}>Hours Booked</span>
+                      <div style={{ fontSize: 20, fontWeight: 900, color: "#0F172A" }}>64.5</div>
+                    </div>
+                    <div style={{ background: "#FFF", borderRadius: 14, padding: 12, border: "1px solid #E2E8F0" }}>
+                      <span style={{ fontSize: 10, color: "#64748B" }}>Pending Payout</span>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>₹2,350</div>
+                    </div>
+                    <div style={{ background: "#FFF", borderRadius: 14, padding: 12, border: "1px solid #E2E8F0" }}>
+                      <span style={{ fontSize: 10, color: "#64748B" }}>Completed Payout</span>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: "#22C55E" }}>₹10,100</div>
+                    </div>
+                  </div>
+
+                  <div style={{ background: "#FFF", borderRadius: 18, padding: 16, border: "1px solid #E2E8F0" }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 12 }}>Earnings Trend</span>
+                    <div style={{ height: 100, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}>
+                      {[40, 65, 80, 50, 95].map((h, i) => (
+                        <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                          <div style={{ width: "100%", height: `${h}%`, background: "#22C55E", borderRadius: "6px 6px 0 0" }} />
+                          <span style={{ fontSize: 9, color: "#94A3B8" }}>{["1 May", "8 May", "15 May", "22 May", "29 May"][i]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ padding: 16, background: "#FFF", borderTop: "1px solid #E2E8F0" }}>
+                  <button onClick={() => setActiveScreen("39")} style={{ width: "100%", padding: 14, borderRadius: 14, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 800, fontSize: 14, cursor: "pointer" }}>
+                    Withdraw Earnings
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── 39: WITHDRAW EARNINGS ─── */}
+            {activeScreen === "39" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
+                <div>
+                  <button onClick={() => setActiveScreen("38")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", marginBottom: 12 }}>←</button>
+                  <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 900, color: "#0F172A", textAlign: "center" }}>Withdraw Earnings</h3>
+
+                  <div style={{ background: "#F8FAFC", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0", marginBottom: 20 }}>
+                    <span style={{ fontSize: 11, color: "#64748B" }}>Available Balance</span>
+                    <div style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", marginTop: 2 }}>₹2,350</div>
+                  </div>
+
+                  <label style={{ fontSize: 11, color: "#64748B", fontWeight: 700, display: "block", marginBottom: 6 }}>Enter Amount</label>
+                  <div style={{ display: "flex", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                    <span style={{ fontWeight: 800, fontSize: 18, color: "#0F172A" }}>₹</span>
+                    <input type="text" value={withdrawAmount} onChange={(e) => setWithdrawAmount(e.target.value)} style={{ border: "none", outline: "none", fontSize: 18, fontWeight: 800, color: "#0F172A", flex: 1 }} />
+                  </div>
+
+                  <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+                    {["500", "1000", "2000", "All"].map((amt) => (
+                      <button key={amt} onClick={() => setWithdrawAmount(amt === "All" ? "2350" : amt)} style={{ flex: 1, padding: "8px 0", borderRadius: 10, border: "1px solid #E2E8F0", background: "#F8FAFC", fontSize: 12, fontWeight: 700, color: "#0F172A", cursor: "pointer" }}>
+                        ₹{amt}
+                      </button>
+                    ))}
+                  </div>
+
+                  <label style={{ fontSize: 11, color: "#64748B", fontWeight: 700, display: "block", marginBottom: 8 }}>Withdraw to</label>
+                  {[
+                    { id: "bank", title: "Bank Account", desc: "HDFC Bank - 1234", icon: "🏦" },
+                    { id: "upi", title: "UPI", desc: "dharani@okaxis", icon: "🅿️" },
+                  ].map((m) => (
+                    <div
+                      key={m.id}
+                      onClick={() => setWithdrawMethod(m.id)}
+                      style={{
+                        borderRadius: 14,
+                        border: withdrawMethod === m.id ? "2px solid #22C55E" : "1.5px solid #E2E8F0",
+                        background: withdrawMethod === m.id ? "#F0FDF4" : "#FFF",
+                        padding: 12,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        marginBottom: 10,
+                        cursor: "pointer"
+                      }}
+                    >
+                      <span style={{ fontSize: 20 }}>{m.icon}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 800, fontSize: 13, color: "#0F172A" }}>{m.title}</div>
+                        <div style={{ fontSize: 11, color: "#64748B" }}>{m.desc}</div>
+                      </div>
+                      <div style={{ width: 16, height: 16, borderRadius: "50%", border: withdrawMethod === m.id ? "5px solid #22C55E" : "2px solid #CBD5E1" }} />
+                    </div>
+                  ))}
+                </div>
+
+                <button onClick={() => { alert("Withdrawal Request Submitted!"); setActiveScreen("38"); }} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>
+                  Withdraw Now
+                </button>
+              </div>
+            )}
+
+            {/* ─── 40: REVIEWS & RATINGS ─── */}
+            {activeScreen === "40" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <button onClick={() => setActiveScreen("10")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Reviews & Ratings</h3>
+                  <span style={{ width: 20 }} />
+                </div>
+
+                <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
+                  <div style={{ background: "#FFF", borderRadius: 18, padding: 16, border: "1px solid #E2E8F0", display: "flex", gap: 16, alignItems: "center" }}>
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ fontSize: 32, fontWeight: 900, color: "#0F172A" }}>★ 4.8</div>
+                      <div style={{ fontSize: 10, color: "#64748B" }}>Overall Rating<br/>(120 Reviews)</div>
+                    </div>
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
+                      {[
+                        { star: 5, val: 80 },
+                        { star: 4, val: 15 },
+                        { star: 3, val: 3 },
+                        { star: 2, val: 1 },
+                        { star: 1, val: 1 },
+                      ].map((r) => (
+                        <div key={r.star} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, color: "#64748B" }}>
+                          <span>{r.star}★</span>
+                          <div style={{ flex: 1, height: 6, background: "#F1F5F9", borderRadius: 3, overflow: "hidden" }}>
+                            <div style={{ width: `${r.val}%`, height: "100%", background: "#22C55E" }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <span style={{ padding: "6px 14px", borderRadius: 20, fontSize: 11, fontWeight: 800, background: "#22C55E", color: "#FFF" }}>All (120)</span>
+                    <span style={{ padding: "6px 14px", borderRadius: 20, fontSize: 11, fontWeight: 700, background: "#FFF", color: "#64748B", border: "1px solid #E2E8F0" }}>Host Replies</span>
+                  </div>
+
+                  {[
+                    { name: "Arun Kumar", date: "21 May 2025", rate: "5.0", text: "Great parking space! Very safe and easy to access." },
+                    { name: "Priya Nair", date: "18 May 2025", rate: "4.5", text: "Good location and host is very responsive." },
+                    { name: "Karthik R", date: "15 May 2025", rate: "5.0", text: "Highly recommended!" },
+                  ].map((rev, i) => (
+                    <div key={i} style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                        <div style={{ fontWeight: 800, fontSize: 13, color: "#0F172A" }}>{rev.name} <span style={{ fontSize: 10, color: "#94A3B8", fontWeight: 400 }}>• {rev.date}</span></div>
+                        <span style={{ color: "#F59E0B", fontSize: 11, fontWeight: 700 }}>★ {rev.rate}</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: 12, color: "#64748B", lineHeight: 1.4 }}>{rev.text}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
