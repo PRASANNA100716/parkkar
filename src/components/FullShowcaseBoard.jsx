@@ -49,37 +49,6 @@ const IconFilter = ({ size = 18, color = "currentColor" }) => (
   </svg>
 );
 
-const IconHome = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-    <polyline points="9 22 9 12 15 12 15 22" />
-  </svg>
-);
-
-const IconBookings = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-    <line x1="16" y1="13" x2="8" y2="13" />
-    <line x1="16" y1="17" x2="8" y2="17" />
-  </svg>
-);
-
-const IconWallet = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
-    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
-    <path d="M18 12a2 2 0 0 0 0 4h4v-4z" />
-  </svg>
-);
-
-const IconProfile = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
-  </svg>
-);
-
 const IconChevronRight = ({ size = 16, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="m9 18 6-6-6-6" />
@@ -124,68 +93,50 @@ const IconBuilding = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
-// ─── HIGH-RELIABILITY SMART IMAGE COMPONENT (PREVENTS BROKEN IMAGE ICONS) ───
-const SmartImage = ({ src, alt, style, type = "garage" }) => {
-  const [error, setError] = useState(false);
+// ─── HIGH-RELIABILITY MULTI-SOURCE REAL PHOTO COMPONENT ──────────────────────
+const REAL_IMAGES = {
+  garage: [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Parkhaus_Dresden_Altmarkt.jpg/800px-Parkhaus_Dresden_Altmarkt.jpg",
+    "https://images.pexels.com/photos/753876/pexels-photo-753876.jpeg?auto=compress&cs=tinysrgb&w=800",
+    "https://images.unsplash.com/photo-1506521782020-18925f4bfa55?auto=format&fit=crop&w=800&q=80"
+  ],
+  office: [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Underground_parking_in_Krak%C3%B3w.jpg/800px-Underground_parking_in_Krak%C3%B3w.jpg",
+    "https://images.pexels.com/photos/1756957/pexels-photo-1756957.jpeg?auto=compress&cs=tinysrgb&w=800",
+    "https://images.unsplash.com/photo-1590674899484-13da0d1b58f5?auto=format&fit=crop&w=800&q=80"
+  ],
+  driveway: [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Parking_lot_in_Fresno%2C_California.jpg/800px-Parking_lot_in_Fresno%2C_California.jpg",
+    "https://images.pexels.com/photos/1004409/pexels-photo-1004409.jpeg?auto=compress&cs=tinysrgb&w=800",
+    "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?auto=format&fit=crop&w=800&q=80"
+  ]
+};
 
-  if (error || !src) {
-    // Beautiful, realistic dark photographic gradient card with crisp UI accents
-    const isOffice = type === "office";
-    const isDriveway = type === "driveway";
-    const primaryColor = isOffice ? "#38BDF8" : "#22C55E";
-    const titleText = isOffice ? "OFFICE BASEMENT PARKING" : isDriveway ? "GATED DRIVEWAY SPOT" : "PRIVATE COVERED GARAGE";
+const SmartImage = ({ sources = [], alt, style }) => {
+  const [sourceIndex, setSourceIndex] = useState(0);
 
-    return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          background: isOffice
-            ? "linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0369A1 100%)"
-            : isDriveway
-            ? "linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #15803D 100%)"
-            : "linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #166534 100%)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#FFF",
-          padding: 16,
-          position: "relative",
-          boxSizing: "border-box",
-          ...style
-        }}
-      >
-        <div style={{ width: 50, height: 50, borderRadius: "50%", background: "rgba(255,255,255,0.12)", border: `1.5px solid ${primaryColor}`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, backdropFilter: "blur(4px)" }}>
-          <IconCar size={26} color={primaryColor} />
-        </div>
-        <div style={{ fontSize: 13, fontWeight: 900, color: "#FFF", letterSpacing: "0.03em" }}>{titleText}</div>
-        <div style={{ fontSize: 11, color: primaryColor, fontWeight: 800, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: primaryColor }} /> Paarkkar Verified
-        </div>
-      </div>
-    );
-  }
+  const srcList = Array.isArray(sources) ? sources : [sources];
+  const currentSrc = srcList[sourceIndex] || srcList[0];
+
+  const handleError = () => {
+    if (sourceIndex < srcList.length - 1) {
+      setSourceIndex(prev => prev + 1);
+    }
+  };
 
   return (
     <img
-      src={src}
+      src={currentSrc}
       alt={alt}
       style={{ width: "100%", height: "100%", objectFit: "cover", ...style }}
-      onError={() => setError(true)}
+      onError={handleError}
     />
   );
 };
 
-const REAL_IMAGES = {
-  garage: "https://images.unsplash.com/photo-1506521782020-18925f4bfa55?auto=format&fit=crop&w=800&q=80",
-  office: "https://images.unsplash.com/photo-1590674899484-13da0d1b58f5?auto=format&fit=crop&w=800&q=80",
-  driveway: "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?auto=format&fit=crop&w=800&q=80",
-};
-
 const RealGaragePhoto = ({ height = 200, badge = "SLOT A-12 • PRIVATE GARAGE" }) => (
   <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
-    <SmartImage src={REAL_IMAGES.garage} alt="Real Home Garage" type="garage" />
+    <SmartImage sources={REAL_IMAGES.garage} alt="Real Home Garage" />
     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
     <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       ● LIVE
@@ -198,7 +149,7 @@ const RealGaragePhoto = ({ height = 200, badge = "SLOT A-12 • PRIVATE GARAGE" 
 
 const RealOfficePhoto = ({ height = 200, badge = "OFFICE BASEMENT PARKING" }) => (
   <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
-    <SmartImage src={REAL_IMAGES.office} alt="Real Office Basement" type="office" />
+    <SmartImage sources={REAL_IMAGES.office} alt="Real Office Basement" />
     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
     <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(56,189,248,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       AVAILABLE
@@ -211,7 +162,7 @@ const RealOfficePhoto = ({ height = 200, badge = "OFFICE BASEMENT PARKING" }) =>
 
 const RealDrivewayPhoto = ({ height = 200, badge = "GATED RESIDENTIAL DRIVEWAY" }) => (
   <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
-    <SmartImage src={REAL_IMAGES.driveway} alt="Real Driveway Spot" type="driveway" />
+    <SmartImage sources={REAL_IMAGES.driveway} alt="Real Driveway Spot" />
     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
     <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       EV ⚡ READY
@@ -694,7 +645,7 @@ export default function FullShowcaseBoard() {
 
                   <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.25)", display: "flex", gap: 12, alignItems: "center", zIndex: 500 }}>
                     <div style={{ width: 70, height: 70, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
-                      <SmartImage src={REAL_IMAGES.garage} alt="spot" type="garage" />
+                      <SmartImage sources={REAL_IMAGES.garage} alt="spot" />
                     </div>
                     <div style={{ flex: 1 }}>
                       <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>{selectedSpot.title}</h4>
@@ -722,13 +673,13 @@ export default function FullShowcaseBoard() {
 
                 <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
                   {[
-                    { title: "Home Garage", loc: "Anna Nagar, Chennai", img: REAL_IMAGES.garage, type: "garage", price: 40, photo: <RealGaragePhoto height={210} badge="SLOT A-12 • PRIVATE GARAGE" /> },
-                    { title: "Office Basement", loc: "T. Nagar, Chennai", img: REAL_IMAGES.office, type: "office", price: 60, photo: <RealOfficePhoto height={210} badge="OFFICE BASEMENT PARKING" /> },
-                    { title: "Apartment Parking", loc: "West Mambalam, Chennai", img: REAL_IMAGES.driveway, type: "driveway", price: 35, photo: <RealDrivewayPhoto height={210} badge="GATED RESIDENTIAL DRIVEWAY" /> },
+                    { title: "Home Garage", loc: "Anna Nagar, Chennai", imgSources: REAL_IMAGES.garage, price: 40, photo: <RealGaragePhoto height={210} badge="SLOT A-12 • PRIVATE GARAGE" /> },
+                    { title: "Office Basement", loc: "T. Nagar, Chennai", imgSources: REAL_IMAGES.office, price: 60, photo: <RealOfficePhoto height={210} badge="OFFICE BASEMENT PARKING" /> },
+                    { title: "Apartment Parking", loc: "West Mambalam, Chennai", imgSources: REAL_IMAGES.driveway, price: 35, photo: <RealDrivewayPhoto height={210} badge="GATED RESIDENTIAL DRIVEWAY" /> },
                   ].map((item, idx) => (
                     <div key={idx} style={{ background: "#FFF", borderRadius: 16, padding: 12, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
                       <div style={{ width: 84, height: 84, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
-                        <SmartImage src={item.img} alt="spot" type={item.type} />
+                        <SmartImage sources={item.imgSources} alt="spot" />
                       </div>
                       <div style={{ flex: 1 }}>
                         <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>{item.title}</h4>
