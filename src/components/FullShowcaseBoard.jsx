@@ -512,69 +512,85 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── CHOOSE ROLE (MATCHING ATTACHED TARGET DESIGN) ─── */}
+            {/* ─── CHOOSE ROLE (BOLD, PREMIUM & ATTRACTIVE CARDS) ─── */}
             {activeScreen === "05" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 30px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
                   <button onClick={() => setActiveScreen("04")} style={{ background: "none", border: "none", cursor: "pointer", marginBottom: 16 }}>
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
-                  <h2 style={{ fontSize: 24, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", textAlign: "center" }}>Choose Your Role</h2>
-                  <p style={{ fontSize: 14, color: "#64748B", textAlign: "center", margin: "0 0 28px" }}>Get started as</p>
+                  <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", textAlign: "center", letterSpacing: "-0.02em" }}>Choose Your Role</h2>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#64748B", textAlign: "center", margin: "0 0 28px" }}>Get started as</p>
                   
-                  {/* DRIVER ROLE CARD WITH WHITE CAR PHOTO */}
+                  {/* BOLD DRIVER ROLE CARD */}
                   <div 
                     onClick={() => { setRole("driver"); setActiveScreen("06"); }} 
                     style={{ 
-                      background: "#F8FAFC", 
-                      borderRadius: 20, 
-                      padding: "16px 18px", 
-                      marginBottom: 16, 
-                      border: "1px solid #F1F5F9", 
+                      background: "#FFFFFF", 
+                      borderRadius: 22, 
+                      padding: "18px 20px", 
+                      marginBottom: 20, 
+                      border: "2px solid #22C55E", 
                       display: "flex", 
                       alignItems: "center", 
                       gap: 16, 
                       cursor: "pointer", 
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.03)",
-                      transition: "transform 0.2s" 
+                      boxShadow: "0 10px 25px rgba(34,197,94,0.15)",
+                      position: "relative"
                     }}
                   >
-                    <div style={{ width: 94, height: 72, borderRadius: 14, overflow: "hidden", flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}>
-                      <SmartImage sources={REAL_IMAGES.whiteCar} alt="I'm Looking for Parking - White Car" />
+                    <div style={{ width: 104, height: 80, borderRadius: 16, overflow: "hidden", flexShrink: 0, boxShadow: "0 6px 16px rgba(0,0,0,0.1)" }}>
+                      <SmartImage sources={REAL_IMAGES.whiteCar} alt="Driver Role - White SUV" />
                     </div>
+
                     <div style={{ flex: 1 }}>
-                      <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0F172A", margin: "0 0 4px", lineHeight: 1.2 }}>I'm Looking for Parking</h3>
-                      <p style={{ fontSize: 12, color: "#64748B", margin: 0, lineHeight: 1.4 }}>Find and book parking near you</p>
+                      <div style={{ display: "inline-block", background: "#DCFCE7", color: "#16A34A", padding: "3px 8px", borderRadius: 8, fontSize: 10, fontWeight: 900, marginBottom: 6 }}>
+                        DRIVER MODE
+                      </div>
+                      <h3 style={{ fontSize: 17, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", lineHeight: 1.2 }}>I'm Looking for Parking</h3>
+                      <p style={{ fontSize: 12, color: "#64748B", margin: 0, fontWeight: 600, lineHeight: 1.3 }}>Find & book instant verified parking near you</p>
+                    </div>
+
+                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", flexShrink: 0, boxShadow: "0 4px 10px rgba(34,197,94,0.4)" }}>
+                      <IconChevronRight size={18} color="#FFF" />
                     </div>
                   </div>
 
-                  {/* HOST ROLE CARD WITH GARAGE HOUSE PHOTO */}
+                  {/* BOLD HOST ROLE CARD */}
                   <div 
                     onClick={() => { setRole("host"); setActiveScreen("29"); }} 
                     style={{ 
-                      background: "#F8FAFC", 
-                      borderRadius: 20, 
-                      padding: "16px 18px", 
-                      border: "1px solid #F1F5F9", 
+                      background: "#FFFFFF", 
+                      borderRadius: 22, 
+                      padding: "18px 20px", 
+                      border: "2px solid #F59E0B", 
                       display: "flex", 
                       alignItems: "center", 
                       gap: 16, 
                       cursor: "pointer", 
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.03)",
-                      transition: "transform 0.2s" 
+                      boxShadow: "0 10px 25px rgba(245,158,11,0.15)",
+                      position: "relative"
                     }}
                   >
-                    <div style={{ width: 94, height: 72, borderRadius: 14, overflow: "hidden", flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}>
-                      <SmartImage sources={REAL_IMAGES.garageHouse} alt="I Have a Parking Space - Garage Spot" />
+                    <div style={{ width: 104, height: 80, borderRadius: 16, overflow: "hidden", flexShrink: 0, boxShadow: "0 6px 16px rgba(0,0,0,0.1)" }}>
+                      <SmartImage sources={REAL_IMAGES.garageHouse} alt="Host Role - Garage Spot" />
                     </div>
+
                     <div style={{ flex: 1 }}>
-                      <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0F172A", margin: "0 0 4px", lineHeight: 1.2 }}>I Have a Parking Space</h3>
-                      <p style={{ fontSize: 12, color: "#64748B", margin: 0, lineHeight: 1.4 }}>List my space and start earning</p>
+                      <div style={{ display: "inline-block", background: "#FEF3C7", color: "#D97706", padding: "3px 8px", borderRadius: 8, fontSize: 10, fontWeight: 900, marginBottom: 6 }}>
+                        HOST & EARN ₹
+                      </div>
+                      <h3 style={{ fontSize: 17, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", lineHeight: 1.2 }}>I Have a Parking Space</h3>
+                      <p style={{ fontSize: 12, color: "#64748B", margin: 0, fontWeight: 600, lineHeight: 1.3 }}>List my space & start earning passive income</p>
+                    </div>
+
+                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#F59E0B", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", flexShrink: 0, boxShadow: "0 4px 10px rgba(245,158,11,0.4)" }}>
+                      <IconChevronRight size={18} color="#FFF" />
                     </div>
                   </div>
                 </div>
 
-                <button onClick={() => setActiveScreen("08")} style={{ width: "100%", background: "none", border: "none", color: "#64748B", fontWeight: 600, fontSize: 14, cursor: "pointer", padding: 12, textAlign: "center" }}>
+                <button onClick={() => setActiveScreen("08")} style={{ width: "100%", background: "none", border: "none", color: "#64748B", fontWeight: 700, fontSize: 14, cursor: "pointer", padding: 12, textAlign: "center" }}>
                   Skip for now
                 </button>
               </div>
