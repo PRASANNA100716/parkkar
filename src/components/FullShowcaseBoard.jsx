@@ -98,6 +98,68 @@ const IconCheck = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
+// ─── PREMIUM VECTOR SVG ICONS FOR NAVIGATION DRAWER ───────────────────────
+const IconShieldCheck = ({ size = 18, color = "#2563EB" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    <path d="m9 12 2 2 4-4"/>
+  </svg>
+);
+
+const IconBuildingCheck = ({ size = 18, color = "#D97706" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
+    <path d="M9 22v-4h6v4"/>
+    <path d="M8 6h.01M16 6h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01"/>
+  </svg>
+);
+
+const IconMapPin = ({ size = 18, color = "#16A34A" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/>
+    <circle cx="12" cy="10" r="3"/>
+  </svg>
+);
+
+const IconGridDashboard = ({ size = 18, color = "#9333EA" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="7" height="9" x="3" y="3" rx="1"/>
+    <rect width="7" height="5" x="14" y="3" rx="1"/>
+    <rect width="7" height="9" x="14" y="12" rx="1"/>
+    <rect width="7" height="5" x="3" y="16" rx="1"/>
+  </svg>
+);
+
+const IconPlusCircle = ({ size = 18, color = "#059669" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 8v8M8 12h8"/>
+  </svg>
+);
+
+const IconTicketPass = ({ size = 18, color = "#4F46E5" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/>
+    <path d="M13 5v2M13 11v2M13 17v2"/>
+  </svg>
+);
+
+const IconWalletCard = ({ size = 18, color = "#0D9488" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="20" height="14" x="2" y="5" rx="2"/>
+    <line x1="2" x2="22" y1="10" y2="10"/>
+  </svg>
+);
+
+const IconCarSteering = ({ size = 16, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 12 10s-6.7.6-8.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"/>
+    <circle cx="7" cy="17" r="2"/>
+    <circle cx="17" cy="17" r="2"/>
+    <path d="M5 17h12"/>
+  </svg>
+);
+
 const IconCamera = ({ size = 22, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
@@ -1042,19 +1104,21 @@ export default function FullShowcaseBoard() {
                 style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(4px)" }}
               />
 
-              <div style={{ width: 300, background: "#FFF", height: "100%", position: "relative", zIndex: 10, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 24, boxShadow: "10px 0 30px rgba(0,0,0,0.2)" }}>
+              <div style={{ width: 300, background: "#FFF", height: "100%", position: "relative", zIndex: 10, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 22, boxShadow: "10px 0 30px rgba(0,0,0,0.2)" }}>
                 <div>
+                  {/* TOP BRAND HEADER LOGO */}
                   <div style={{ paddingBottom: 14, marginBottom: 14, borderBottom: "1px solid #F1F5F9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <img 
                       src={process.env.PUBLIC_URL + "/assets/official_logo.png"} 
                       alt="PARKKAR" 
-                      style={{ height: 38, width: "auto", objectFit: "contain" }} 
+                      style={{ width: 145, height: "auto", display: "block" }} 
                     />
                     <button onClick={() => setShowDrawer(false)} style={{ background: "none", border: "none", fontSize: 18, color: "#94A3B8", cursor: "pointer", fontWeight: "bold" }}>✕</button>
                   </div>
 
+                  {/* USER AVATAR CARD */}
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                    <div style={{ width: 44, height: 44, borderRadius: "50%", background: role === "host" ? "#F59E0B" : "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 18 }}>
+                    <div style={{ width: 44, height: 44, borderRadius: "50%", background: role === "host" ? "#F59E0B" : "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 18, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
                       HA
                     </div>
                     <div>
@@ -1065,41 +1129,45 @@ export default function FullShowcaseBoard() {
                     </div>
                   </div>
 
-
-
+                  {/* ROLE SWITCHER TABS */}
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 16 }}>
                     <button 
                       onClick={() => { handleAccessApp("driver"); setShowDrawer(false); }}
-                      style={{ flex: 1, padding: "8px 0", borderRadius: 10, border: "none", background: role !== "host" ? "#22C55E" : "transparent", color: role !== "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 12, cursor: "pointer" }}
+                      style={{ flex: 1, padding: "8px 0", borderRadius: 10, border: "none", background: role !== "host" ? "#22C55E" : "transparent", color: role !== "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
                     >
-                      🚗 Driver Mode
+                      <IconCarSteering size={15} color={role !== "host" ? "#FFF" : "#64748B"} />
+                      <span>Driver Mode</span>
                     </button>
                     <button 
                       onClick={() => { handleAccessApp("host"); setShowDrawer(false); }}
-                      style={{ flex: 1, padding: "8px 0", borderRadius: 10, border: "none", background: role === "host" ? "#F59E0B" : "transparent", color: role === "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 12, cursor: "pointer" }}
+                      style={{ flex: 1, padding: "8px 0", borderRadius: 10, border: "none", background: role === "host" ? "#F59E0B" : "transparent", color: role === "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
                     >
-                      🏢 Host Mode
+                      <IconBuildingCheck size={15} color={role === "host" ? "#FFF" : "#64748B"} />
+                      <span>Host Mode</span>
                     </button>
                   </div>
 
-                  <div style={{ borderBottom: "1px solid #F1F5F9", marginBottom: 16 }} />
+                  <div style={{ borderBottom: "1px solid #F1F5F9", marginBottom: 14 }} />
 
+                  {/* CRISP VECTOR SVG MENU ITEMS */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {[
-                      { icon: "🛡️", label: "Driver KYC Verification", action: () => { setActiveScreen("51"); setShowDrawer(false); } },
-                      { icon: "🏢", label: "Host Property KYC Verification", action: () => { setActiveScreen("52"); setShowDrawer(false); } },
-                      { icon: "🗺️", label: "Find Parking (Map)", action: () => { handleAccessApp("driver"); setShowDrawer(false); } },
-                      { icon: "🏢", label: "Host Dashboard", action: () => { handleAccessApp("host"); setShowDrawer(false); } },
-                      { icon: "➕", label: "Post New Parking Spot", action: () => { setActiveScreen("30"); setShowDrawer(false); } },
-                      { icon: "🚗", label: "My Bookings", action: () => { setActiveScreen("20"); setShowDrawer(false); } },
-                      { icon: "💳", label: "Wallet & Payments (₹450)", action: () => { setActiveScreen("21"); setShowDrawer(false); } },
+                      { icon: <IconShieldCheck size={18} color="#2563EB" />, bg: "#EFF6FF", label: "Driver KYC Verification", action: () => { setActiveScreen("51"); setShowDrawer(false); } },
+                      { icon: <IconBuildingCheck size={18} color="#D97706" />, bg: "#FEF3C7", label: "Host Property KYC Verification", action: () => { setActiveScreen("52"); setShowDrawer(false); } },
+                      { icon: <IconMapPin size={18} color="#16A34A" />, bg: "#DCFCE7", label: "Find Parking (Map)", action: () => { handleAccessApp("driver"); setShowDrawer(false); } },
+                      { icon: <IconGridDashboard size={18} color="#9333EA" />, bg: "#F3E8FF", label: "Host Dashboard", action: () => { handleAccessApp("host"); setShowDrawer(false); } },
+                      { icon: <IconPlusCircle size={18} color="#059669" />, bg: "#D1FAE5", label: "Post New Parking Spot", action: () => { setActiveScreen("30"); setShowDrawer(false); } },
+                      { icon: <IconTicketPass size={18} color="#4F46E5" />, bg: "#E0E7FF", label: "My Bookings", action: () => { setActiveScreen("20"); setShowDrawer(false); } },
+                      { icon: <IconWalletCard size={18} color="#0D9488" />, bg: "#CCFBF1", label: "Wallet & Payments (₹450)", action: () => { setActiveScreen("21"); setShowDrawer(false); } },
                     ].map((item, idx) => (
                       <div 
                         key={idx}
                         onClick={item.action}
-                        style={{ padding: "12px 14px", borderRadius: 14, background: "#F8FAFC", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#0F172A" }}
+                        style={{ padding: "10px 12px", borderRadius: 14, background: "#F8FAFC", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#0F172A", border: "1px solid #F1F5F9" }}
                       >
-                        <span style={{ fontSize: 16 }}>{item.icon}</span>
+                        <div style={{ width: 32, height: 32, borderRadius: 10, background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          {item.icon}
+                        </div>
                         <span>{item.label}</span>
                       </div>
                     ))}
@@ -1108,9 +1176,14 @@ export default function FullShowcaseBoard() {
 
                 <button 
                   onClick={handleFirebaseSignOut}
-                  style={{ width: "100%", padding: 14, borderRadius: 14, background: "#FEF2F2", border: "none", color: "#EF4444", fontWeight: 800, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                  style={{ width: "100%", padding: 14, borderRadius: 14, background: "#FEF2F2", border: "1px solid #FCA5A5", color: "#EF4444", fontWeight: 800, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 14 }}
                 >
-                  🚪 Sign Out (Firebase Auth)
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                  <span>Sign Out</span>
                 </button>
               </div>
             </div>
