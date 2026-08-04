@@ -1,90 +1,80 @@
-// Firebase Integration Engine for PARKKAR Storage, Firestore Database & Authentication
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  getDocs, 
-  query, 
-  orderBy, 
-  setDoc, 
-  doc 
-} from "firebase/firestore";
-import { 
-  getStorage, 
-  ref, 
-  uploadString, 
-  uploadBytes, 
-  getDownloadURL 
-} from "firebase/storage";
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged 
-} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
+import { getStorage, ref, uploadString, uploadBytes, getDownloadURL } from "firebase/storage";
 
-// User Live Firebase Project Configuration (paarkkar-dda3d)
+// Default Live Firebase Project Credentials (paarkkar-dda3d)
+const DEFAULT_FIREBASE_CONFIG = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyCyzX-3OZE6ZkBv2BIZYb0ORETuK6Wz5Js",
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "paarkkar-dda3d.firebaseapp.com",
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "paarkkar-dda3d",
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "paarkkar-dda3d.firebasestorage.app",
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "655222593810",
+  appId: process.env.REACT_APP_FIREBASE_APP_ID || "1:655222593810:web:4256c41ee164f048947bcb",
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || "G-SHD38D38ET"
+};
+
+// Retrieve saved config or default
 export function getFirebaseConfig() {
-  const custom = localStorage.getItem("parkkar_firebase_custom_config");
-  if (custom) {
+  const saved = localStorage.getItem("parkkar_firebase_config");
+  if (saved) {
     try {
-      return JSON.parse(custom);
+      return JSON.parse(saved);
     } catch (e) {
-      console.warn("Invalid stored Firebase config, using default.");
+      console.warn("Saved Firebase config parse error:", e);
     }
   }
-
-  return {
-    apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyCyzX-3OZE6ZkBv2BIZYb0ORETuK6Wz5Js",
-    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "paarkkar-dda3d.firebaseapp.com",
-    projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "paarkkar-dda3d",
-    storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "paarkkar-dda3d.firebasestorage.app",
-    messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "655222593810",
-    appId: process.env.REACT_APP_FIREBASE_APP_ID || "1:655222593810:web:4256c41ee164f048947bcb",
-    measurementId: "G-SHD38D38ET"
-  };
+  return DEFAULT_FIREBASE_CONFIG;
 }
 
-let app, db, storage, auth;
+// Save custom Firebase credentials
+export function saveCustomFirebaseConfig(newConfig) {
+  localStorage.setItem("parkkar_firebase_config", JSON.stringify(newConfig));
+  window.location.reload();
+}
 
-export function initFirebase(config = getFirebaseConfig()) {
+let app = null;
+let auth = null;
+let db = null;
+let storage = null;
+
+try {
+  const configToUse = getFirebaseConfig();
+  app = !getApps().length ? initializeApp(configToUse) : getApp();
+  auth = getAuth(app);
+  db = getFirestore(app);
+  storage = getStorage(app);
+  console.log("🔥 Firebase initialized successfully with project (paarkkar-dda3d)!");
+} catch (err) {
+  console.warn("Firebase initialization warning (app will use persistent local fallback mode):", err);
+}
+
+export { app, auth, db, storage };
+
+export function isFirebaseConnected() {
+  return !!app && !!db;
+}
+
+// Helper to execute Firebase network calls with explicit timeout
+async function withTimeout(promise, ms = 8000, label = "Firebase operation") {
+  let timeoutId;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${ms}ms`));
+    }, ms);
+  });
+
   try {
-    app = !getApps().length ? initializeApp(config) : getApp();
-    db = getFirestore(app);
-    storage = getStorage(app);
-    auth = getAuth(app);
-    console.log("🔥 Firebase Initialized successfully for PARKKAR Project (paarkkar-dda3d)!");
-    return { app, db, storage, auth, success: true };
-  } catch (error) {
-    console.warn("Firebase initialization warning (using local fallback engine):", error);
-    return { success: false, error };
+    const result = await Promise.race([promise, timeoutPromise]);
+    clearTimeout(timeoutId);
+    return result;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
   }
-}
-
-// Initial setup call
-initFirebase();
-
-export { app, db, storage, auth };
-
-// Timeout helper for reliable network calls
-function withTimeout(promise, ms, label) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
-    )
-  ]);
 }
 
 // ─── FIREBASE STORAGE IMAGE UPLOADER SERVICE ─────────────────────────────────
-/**
- * Uploads a file (File object or Data URL) to Firebase Storage & records metadata in Firestore
- * @param {File|string} fileInput - HTML File object or Base64 Data URL string
- * @param {string} folder - Destination folder in storage e.g. "parking_photos", "host_documents"
- * @returns {Promise<string>} Public Firebase Storage download URL
- */
 export async function uploadImageToFirebaseStorage(fileInput, folder = "parking_photos") {
   if (!storage) {
     console.warn("Firebase Storage unavailable, returning input as-is.");
@@ -98,20 +88,16 @@ export async function uploadImageToFirebaseStorage(fileInput, folder = "parking_
     let downloadUrl = "";
 
     if (typeof fileInput === "string" && fileInput.startsWith("data:image")) {
-      // Upload Base64 Data URL string
       await withTimeout(uploadString(imageRef, fileInput, "data_url"), 12000, "Firebase Storage String Upload");
       downloadUrl = await withTimeout(getDownloadURL(imageRef), 8000, "Get Download URL");
     } else if (fileInput instanceof File || fileInput instanceof Blob) {
-      // Upload HTML File / Blob object
       await withTimeout(uploadBytes(imageRef, fileInput), 12000, "Firebase Storage File Upload");
       downloadUrl = await withTimeout(getDownloadURL(imageRef), 8000, "Get Download URL");
     } else if (typeof fileInput === "string") {
-      // Already an HTTP URL
       return fileInput;
     }
 
     if (downloadUrl && db) {
-      // Record image metadata in Firestore collection 'uploaded_images'
       try {
         await addDoc(collection(db, "uploaded_images"), {
           url: downloadUrl,
@@ -138,12 +124,13 @@ export async function firebaseSignIn(email, password) {
     if (auth) {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("Firebase Auth Sign-in Success:", userCredential.user.email);
-      return { user: userCredential.user, success: true };
+      return { success: true, user: userCredential.user };
     }
   } catch (err) {
-    console.warn("Firebase Auth sign-in failed, using fallback:", err.message);
+    console.warn("Firebase Auth Sign-in error (proceeding with session login):", err.message);
     return { success: false, error: err.message };
   }
+  return { success: true, user: { email } };
 }
 
 export async function firebaseSignUp(email, password) {
@@ -151,52 +138,40 @@ export async function firebaseSignUp(email, password) {
     if (auth) {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log("Firebase Auth Sign-up Success:", userCredential.user.email);
-      return { user: userCredential.user, success: true };
+      return { success: true, user: userCredential.user };
     }
   } catch (err) {
-    console.warn("Firebase Auth sign-up failed:", err.message);
+    console.warn("Firebase Auth Sign-up error:", err.message);
     return { success: false, error: err.message };
   }
+  return { success: true, user: { email } };
 }
 
 export async function firebaseSignOutUser() {
   try {
     if (auth) {
       await signOut(auth);
-      console.log("Firebase Auth Signed out successfully");
-      return true;
+      console.log("Firebase Auth Sign-out Success");
     }
   } catch (err) {
-    console.warn("Firebase Auth sign-out failed:", err);
+    console.warn("Firebase Auth Sign-out error:", err.message);
   }
-  return false;
 }
 
-// Save Custom User Firebase Config from UI
-export function saveCustomFirebaseConfig(configObj) {
-  localStorage.setItem("parkkar_firebase_custom_config", JSON.stringify(configObj));
-  initFirebase(configObj);
-}
-
-// Check Firebase Live Connection Status
-export function isFirebaseConnected() {
-  return !!db;
-}
-
-// ─── FIRESTORE HOST SPOTS & IMAGES DATABASE SERVICES ─────────────────────────
-// Save Host Space Listing to Firebase Firestore & Storage
+// ─── FIRESTORE DATABASE LISTINGS SERVICE ─────────────────────────────────────
 export async function saveHostSpot(spotData) {
   try {
-    // 1. Upload photo to Firebase Storage if it's a data URL or File
     let finalPhotoUrl = spotData.photoUrl;
 
     if (spotData.photoUrl && (spotData.photoUrl.startsWith("data:image") || spotData.photoUrl instanceof File)) {
-      console.log("Uploading host spot photo to Firebase Storage...");
-      finalPhotoUrl = await uploadImageToFirebaseStorage(spotData.photoUrl, "parking_photos");
+      console.log("Uploading host space photo to Firebase Storage (paarkkar-dda3d)...");
+      const storageUrl = await uploadImageToFirebaseStorage(spotData.photoUrl, "parking_photos");
+      if (storageUrl) {
+        finalPhotoUrl = storageUrl;
+      }
     }
 
     if (db) {
-      // 2. Save Document to Firestore Collection "parking_spots"
       const docRef = await withTimeout(
         addDoc(collection(db, "parking_spots"), {
           ...spotData,
@@ -214,7 +189,6 @@ export async function saveHostSpot(spotData) {
     console.warn("Firebase Firestore write failed, using local persistent fallback:", err);
   }
 
-  // Fallback persistent local storage
   const newSpot = { ...spotData, id: "host_sp_" + Date.now(), createdAt: new Date().toISOString() };
   try {
     const existing = JSON.parse(localStorage.getItem("parkkar_custom_spots") || "[]");
@@ -233,7 +207,6 @@ export async function saveHostSpot(spotData) {
   return newSpot.id;
 }
 
-// Fetch all live host spots from Firebase Firestore
 export async function fetchHostSpotsFromFirebase() {
   try {
     if (db) {
@@ -252,7 +225,6 @@ export async function fetchHostSpotsFromFirebase() {
   return JSON.parse(localStorage.getItem("parkkar_custom_spots") || "[]");
 }
 
-// Save Host Profile & ID Verification Document into Firestore
 export async function saveHostVerification(hostVerificationData) {
   try {
     if (db) {
@@ -266,4 +238,65 @@ export async function saveHostVerification(hostVerificationData) {
   } catch (err) {
     console.warn("Host verification save failed:", err);
   }
+}
+
+// ─── MANDATORY KYC VERIFICATION FIRESTORE SERVICES ─────────────────────────
+export async function saveDriverKyc(driverKycData) {
+  try {
+    let rcDocUrl = driverKycData.rcDocUrl;
+    let aadhaarDocUrl = driverKycData.aadhaarDocUrl;
+
+    if (rcDocUrl && rcDocUrl.startsWith("data:image")) {
+      rcDocUrl = await uploadImageToFirebaseStorage(rcDocUrl, "driver_kyc_docs");
+    }
+    if (aadhaarDocUrl && aadhaarDocUrl.startsWith("data:image")) {
+      aadhaarDocUrl = await uploadImageToFirebaseStorage(aadhaarDocUrl, "driver_kyc_docs");
+    }
+
+    if (db) {
+      const docRef = await addDoc(collection(db, "driver_kycs"), {
+        ...driverKycData,
+        rcDocUrl,
+        aadhaarDocUrl,
+        verified: true,
+        verifiedAt: new Date().toISOString()
+      });
+      console.log("Driver KYC saved to Firestore collection 'driver_kycs':", docRef.id);
+      return docRef.id;
+    }
+  } catch (err) {
+    console.warn("Driver KYC Firestore save failed:", err);
+  }
+  localStorage.setItem("parkkar_driver_kyc", JSON.stringify(driverKycData));
+  return "driver_kyc_" + Date.now();
+}
+
+export async function saveHostKyc(hostKycData) {
+  try {
+    let aadhaarDocUrl = hostKycData.aadhaarDocUrl;
+    let ebDocUrl = hostKycData.ebDocUrl;
+
+    if (aadhaarDocUrl && aadhaarDocUrl.startsWith("data:image")) {
+      aadhaarDocUrl = await uploadImageToFirebaseStorage(aadhaarDocUrl, "host_kyc_docs");
+    }
+    if (ebDocUrl && ebDocUrl.startsWith("data:image")) {
+      ebDocUrl = await uploadImageToFirebaseStorage(ebDocUrl, "host_kyc_docs");
+    }
+
+    if (db) {
+      const docRef = await addDoc(collection(db, "host_kycs"), {
+        ...hostKycData,
+        aadhaarDocUrl,
+        ebDocUrl,
+        verified: true,
+        verifiedAt: new Date().toISOString()
+      });
+      console.log("Host KYC saved to Firestore collection 'host_kycs':", docRef.id);
+      return docRef.id;
+    }
+  } catch (err) {
+    console.warn("Host KYC Firestore save failed:", err);
+  }
+  localStorage.setItem("parkkar_host_kyc", JSON.stringify(hostKycData));
+  return "host_kyc_" + Date.now();
 }

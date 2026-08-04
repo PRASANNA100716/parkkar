@@ -10,6 +10,8 @@ import {
   firebaseSignOutUser,
   uploadImageToFirebaseStorage,
   saveHostVerification,
+  saveDriverKyc,
+  saveHostKyc,
   auth
 } from "../firebase";
 
@@ -191,7 +193,7 @@ const SmartImage = ({ sources = [], alt, style }) => {
     if (sourceIndex < srcList.length - 1) {
       setSourceIndex(prev => prev + 1);
     } else {
-      setSourceIndex(srcList.length); // Trigger embedded SVG fallback
+      setSourceIndex(srcList.length);
     }
   };
 
@@ -268,7 +270,6 @@ const RealSecurityPhoto = ({ height = 230 }) => (
   </div>
 );
 
-// Dedicated component for host-uploaded photos so image load errors fall back smoothly
 const HostUploadedPhoto = ({ sources = [], height = 200, badge = "HOST LISTING" }) => (
   <div style={{ width: "100%", height, borderRadius: 20, overflow: "hidden", position: "relative", border: "1.5px solid #22C55E" }}>
     <SmartImage sources={sources} alt="Host Uploaded Space" />
@@ -419,13 +420,12 @@ function TamilNaduMap({ spotsList, selectedSpot, onSelectSpot, userLocation }) {
 
       leafletInstanceRef.current = map;
 
-      // CLEAN CRISP WHITE MAP TILE THEME (CartoDB Voyager / Positron)
+      // CLEAN CRISP WHITE MAP TILE THEME (CartoDB Voyager)
       window.L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
         subdomains: 'abcd'
       }).addTo(map);
 
-      // Render User GPS Location Pin if available
       if (userLocation) {
         const userPinHtml = `
           <div style="
@@ -507,6 +507,34 @@ export default function FullShowcaseBoard() {
   const [showQuickNav, setShowQuickNav] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showFirebaseModal, setShowFirebaseModal] = useState(false);
+
+  // MANDATORY KYC VERIFICATION STATES
+  const [isDriverKycVerified, setIsDriverKycVerified] = useState(() => !!localStorage.getItem("parkkar_driver_kyc"));
+  const [isHostKycVerified, setIsHostKycVerified] = useState(() => !!localStorage.getItem("parkkar_host_kyc"));
+
+  const [driverKycForm, setDriverKycForm] = useState({
+    vehicleNo: "TN 01 AB 8924",
+    rcNumber: "RC-99182371",
+    rcDocUrl: SVG_GARAGE_DATA_URL,
+    aadhaarNo: "5482 9102 3847",
+    aadhaarDocUrl: SVG_GARAGE_DATA_URL
+  });
+
+  const [hostKycForm, setHostKycForm] = useState({
+    aadhaarNo: "5482 9102 3847",
+    aadhaarDocUrl: SVG_GARAGE_DATA_URL,
+    ebNumber: "EB-04-291-8849",
+    ebDocUrl: SVG_BASEMENT_DATA_URL,
+    ebAddress: "12th Main Road, Anna Nagar, Chennai"
+  });
+
+  const [isSubmittingKyc, setIsSubmittingKyc] = useState(false);
+
+  // Hidden File Refs for KYC Document Uploads
+  const driverRcFileRef = useRef(null);
+  const driverAadhaarFileRef = useRef(null);
+  const hostAadhaarFileRef = useRef(null);
+  const hostEbFileRef = useRef(null);
 
   // User GPS Coordinates State
   const [userLocation, setUserLocation] = useState(null);
@@ -598,6 +626,42 @@ export default function FullShowcaseBoard() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
 
+  // Mandatory KYC Gate Check
+  const handleAccessApp = (selectedRole) => {
+    setRole(selectedRole);
+    if (selectedRole === "driver") {
+      if (isDriverKycVerified) {
+        setActiveScreen("08");
+      } else {
+        setActiveScreen("51"); // Force Driver KYC Screen
+      }
+    } else if (selectedRole === "host") {
+      if (isHostKycVerified) {
+        setActiveScreen("29");
+      } else {
+        setActiveScreen("52"); // Force Host KYC Screen
+      }
+    }
+  };
+
+  // Submit Driver KYC Handler
+  const handleDriverKycSubmit = async () => {
+    setIsSubmittingKyc(true);
+    await saveDriverKyc(driverKycForm);
+    setIsDriverKycVerified(true);
+    setIsSubmittingKyc(false);
+    setActiveScreen("53");
+  };
+
+  // Submit Host KYC Handler
+  const handleHostKycSubmit = async () => {
+    setIsSubmittingKyc(true);
+    await saveHostKyc(hostKycForm);
+    setIsHostKycVerified(true);
+    setIsSubmittingKyc(false);
+    setActiveScreen("53");
+  };
+
   // GPS Location Fetch Functionality
   const handleFetchUserLocation = () => {
     setIsLocating(true);
@@ -688,8 +752,7 @@ export default function FullShowcaseBoard() {
     if (res?.success) {
       alert(`🔥 Firebase Authenticated: Welcome back ${res.user.email}!`);
     }
-    if (role === "host") setActiveScreen("29");
-    else setActiveScreen("07");
+    handleAccessApp(role || "driver");
   };
 
   // Firebase Auth Sign Out Handler
@@ -703,7 +766,6 @@ export default function FullShowcaseBoard() {
   // Dynamic AI Pricing Calculation
   const aiRate = calculateAISmartPrice(hostForm.address, hostForm.city, hostForm.type, hostForm.amenities);
 
-  // Automatically update host price with AI calculation when address/city/type change
   useEffect(() => {
     setHostForm(prev => ({ ...prev, price: aiRate.recommendedPrice }));
   }, [hostForm.address, hostForm.city, hostForm.type]);
@@ -716,6 +778,9 @@ export default function FullShowcaseBoard() {
     { id: "05", name: "Role Selector" },
     { id: "06", name: "Account Login" },
     { id: "07", name: "OTP Verification" },
+    { id: "51", name: "Driver KYC Verification" },
+    { id: "52", name: "Host KYC Verification" },
+    { id: "53", name: "KYC Approved Status" },
     { id: "08", name: "Map Search" },
     { id: "09", name: "List View" },
     { id: "10", name: "Space Details" },
@@ -724,54 +789,28 @@ export default function FullShowcaseBoard() {
     { id: "13", name: "Payment Checkout" },
     { id: "14", name: "Payment Success" },
     { id: "15", name: "Active Parking" },
-    { id: "16", name: "Host QR Check-in" },
-    { id: "17", name: "GPS Navigation" },
-    { id: "18", name: "Extend Parking" },
-    { id: "19", name: "Parking Complete" },
     { id: "20", name: "My Bookings" },
     { id: "21", name: "Wallet Balance" },
     { id: "22", name: "Notifications" },
-    { id: "23", name: "Saved Favorites" },
-    { id: "24", name: "User Profile" },
-    { id: "25", name: "Account Settings" },
-    { id: "26", name: "Help Center" },
-    { id: "27", name: "Invite & Earn" },
-    { id: "28", name: "Booking Receipt" },
     { id: "29", name: "Host Dashboard" },
     { id: "30", name: "Add Space (Intro)" },
     { id: "31", name: "Add Space (Location)" },
     { id: "32", name: "Add Space (Pricing & AI)" },
     { id: "33", name: "Add Space (Photos)" },
     { id: "34", name: "Review & Publish" },
-    { id: "35", name: "Space Submitted" },
-    { id: "36", name: "My Space Listings" },
-    { id: "37", name: "Booking Requests" },
-    { id: "38", name: "Earnings Overview" },
-    { id: "39", name: "Withdraw Payout" },
-    { id: "40", name: "Reviews & Ratings" },
-    { id: "41", name: "Host Analytics" },
-    { id: "42", name: "Payout History" },
-    { id: "43", name: "My Vehicles" },
-    { id: "44", name: "Address Book" },
-    { id: "45", name: "Support Center" },
-    { id: "46", name: "Payment Methods" },
-    { id: "47", name: "Offers & Promos" },
-    { id: "48", name: "Invite Friends" },
-    { id: "49", name: "Notification Log" },
-    { id: "50", name: "App Settings" },
+    { id: "35", name: "Space Submitted" }
   ];
 
   const calculatedBaseAmount = selectedSpot.price * durationHours;
   const calculatedServiceFee = 10;
   const calculatedTotalAmount = calculatedBaseAmount + calculatedServiceFee;
 
-  // Robust Razorpay Payment SDK Launcher with automatic fallback & sandbox support
   const handleRazorpayPayment = () => {
     const launchRazorpay = () => {
       try {
         const options = {
           key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_TLiQiPWrFJya33",
-          amount: calculatedTotalAmount * 100, // in paise
+          amount: calculatedTotalAmount * 100,
           currency: "INR",
           name: "PARKKAR Parking",
           description: `${selectedSpot.title} Reservation (${durationHours}h)`,
@@ -824,7 +863,6 @@ export default function FullShowcaseBoard() {
     }
   };
 
-  // Publish Host Spot to Firebase & Tamil Nadu Map
   const handlePublishHostSpot = async () => {
     setIsPublishing(true);
 
@@ -925,7 +963,7 @@ export default function FullShowcaseBoard() {
             </div>
           )}
 
-          {/* REAL INTERACTIVE SIDE NAVIGATION DRAWER OVERLAY WITH MODE SWITCH & FIREBASE BANNER */}
+          {/* REAL INTERACTIVE SIDE NAVIGATION DRAWER OVERLAY */}
           {showDrawer && (
             <div style={{ position: "absolute", inset: 0, zIndex: 1000, display: "flex" }}>
               <div 
@@ -943,14 +981,13 @@ export default function FullShowcaseBoard() {
                       <div>
                         <h3 style={{ margin: "0 0 2px", fontSize: 16, fontWeight: 900, color: "#0F172A" }}>Hanush Adith</h3>
                         <span style={{ fontSize: 11, color: role === "host" ? "#D97706" : "#22C55E", fontWeight: 800, background: role === "host" ? "#FEF3C7" : "#DCFCE7", padding: "2px 8px", borderRadius: 6 }}>
-                          {role === "host" ? "● HOST MODE" : "● DRIVER MODE"}
+                          {role === "host" ? (isHostKycVerified ? "● VERIFIED HOST" : "⚠️ HOST KYC REQUIRED") : (isDriverKycVerified ? "● VERIFIED DRIVER" : "⚠️ DRIVER KYC REQUIRED")}
                         </span>
                       </div>
                     </div>
                     <button onClick={() => setShowDrawer(false)} style={{ background: "none", border: "none", fontSize: 18, color: "#94A3B8", cursor: "pointer", fontWeight: "bold" }}>✕</button>
                   </div>
 
-                  {/* FIREBASE CONNECTED BANNER CARD IN DRAWER */}
                   <div 
                     onClick={() => { setShowFirebaseModal(true); setShowDrawer(false); }}
                     style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 14, padding: "10px 12px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}
@@ -967,13 +1004,13 @@ export default function FullShowcaseBoard() {
 
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 16 }}>
                     <button 
-                      onClick={() => { setRole("driver"); setActiveScreen("08"); setShowDrawer(false); }}
+                      onClick={() => { handleAccessApp("driver"); setShowDrawer(false); }}
                       style={{ flex: 1, padding: "8px 0", borderRadius: 10, border: "none", background: role !== "host" ? "#22C55E" : "transparent", color: role !== "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 12, cursor: "pointer" }}
                     >
-                      🚗 Driver
+                      🚗 Driver Mode
                     </button>
                     <button 
-                      onClick={() => { setRole("host"); setActiveScreen("29"); setShowDrawer(false); }}
+                      onClick={() => { handleAccessApp("host"); setShowDrawer(false); }}
                       style={{ flex: 1, padding: "8px 0", borderRadius: 10, border: "none", background: role === "host" ? "#F59E0B" : "transparent", color: role === "host" ? "#FFF" : "#64748B", fontWeight: 800, fontSize: 12, cursor: "pointer" }}
                     >
                       🏢 Host Mode
@@ -984,18 +1021,18 @@ export default function FullShowcaseBoard() {
 
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {[
-                      { icon: "🗺️", label: "Find Parking (Map)", action: () => { setActiveScreen("08"); setShowDrawer(false); } },
-                      { icon: "🏢", label: "Host Dashboard", action: () => { setActiveScreen("29"); setShowDrawer(false); } },
+                      { icon: "🛡️", label: "Driver KYC Verification", action: () => { setActiveScreen("51"); setShowDrawer(false); } },
+                      { icon: "🏢", label: "Host Property KYC Verification", action: () => { setActiveScreen("52"); setShowDrawer(false); } },
+                      { icon: "🗺️", label: "Find Parking (Map)", action: () => { handleAccessApp("driver"); setShowDrawer(false); } },
+                      { icon: "🏢", label: "Host Dashboard", action: () => { handleAccessApp("host"); setShowDrawer(false); } },
                       { icon: "➕", label: "Post New Parking Spot", action: () => { setActiveScreen("30"); setShowDrawer(false); } },
                       { icon: "🚗", label: "My Bookings", action: () => { setActiveScreen("20"); setShowDrawer(false); } },
                       { icon: "💳", label: "Wallet & Payments (₹450)", action: () => { setActiveScreen("21"); setShowDrawer(false); } },
-                      { icon: "🔥", label: "Firebase Project Settings", action: () => { setShowFirebaseModal(true); setShowDrawer(false); } },
-                      { icon: "⚙️", label: "Account Settings", action: () => { setActiveScreen("25"); setShowDrawer(false); } },
                     ].map((item, idx) => (
                       <div 
                         key={idx}
                         onClick={item.action}
-                        style={{ padding: "12px 14px", borderRadius: 14, background: "#F8FAFC", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", fontSize: 14, fontWeight: 700, color: "#0F172A" }}
+                        style={{ padding: "12px 14px", borderRadius: 14, background: "#F8FAFC", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#0F172A" }}
                       >
                         <span style={{ fontSize: 16 }}>{item.icon}</span>
                         <span>{item.label}</span>
@@ -1031,7 +1068,7 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <div style={{ width: "100%" }}>
-                  <RealGaragePhoto height={210} badge="RAZORPAY & FIREBASE INTEGRATED" />
+                  <RealGaragePhoto height={210} badge="MANDATORY KYC & FIREBASE INTEGRATED" />
                 </div>
 
                 <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
@@ -1123,7 +1160,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 05: CHOOSE YOUR ROLE ─── */}
+            {/* ─── SCREEN 05: CHOOSE YOUR ROLE (MANDATORY KYC GATE) ─── */}
             {activeScreen === "05" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 30px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
@@ -1131,10 +1168,12 @@ export default function FullShowcaseBoard() {
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
                   <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", textAlign: "center", letterSpacing: "-0.02em" }}>Choose Your Role</h2>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#64748B", textAlign: "center", margin: "0 0 28px" }}>Get started as</p>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#64748B", textAlign: "center", margin: "0 0 24px" }}>
+                    Mandatory KYC verification required to enter app
+                  </p>
                   
                   <div 
-                    onClick={() => { setRole("driver"); setActiveScreen("08"); }} 
+                    onClick={() => handleAccessApp("driver")} 
                     style={{ 
                       background: "#FFFFFF", 
                       borderRadius: 22, 
@@ -1148,15 +1187,16 @@ export default function FullShowcaseBoard() {
                       boxShadow: "0 10px 25px rgba(34,197,94,0.15)"
                     }}
                   >
-                    <div style={{ width: 90, height: 74, borderRadius: 16, overflow: "hidden", flexShrink: 0, boxShadow: "0 6px 16px rgba(0,0,0,0.1)" }}>
+                    <div style={{ width: 85, height: 74, borderRadius: 16, overflow: "hidden", flexShrink: 0 }}>
                       <SmartImage sources={REAL_IMAGES.whiteCar} alt="Driver Role" />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ display: "inline-block", background: "#DCFCE7", color: "#16A34A", padding: "3px 8px", borderRadius: 8, fontSize: 10, fontWeight: 900, marginBottom: 6 }}>
-                        DRIVER MODE
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                        <span style={{ background: "#DCFCE7", color: "#16A34A", padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 900 }}>DRIVER MODE</span>
+                        {isDriverKycVerified && <span style={{ fontSize: 10, background: "#22C55E", color: "#FFF", padding: "2px 6px", borderRadius: 6, fontWeight: 800 }}>✓ KYC OK</span>}
                       </div>
-                      <h3 style={{ fontSize: 16, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", lineHeight: 1.2 }}>I'm Looking for Parking</h3>
-                      <p style={{ fontSize: 12, color: "#64748B", margin: 0, fontWeight: 600, lineHeight: 1.3 }}>Find & book instant verified parking near you</p>
+                      <h3 style={{ fontSize: 15, fontWeight: 900, color: "#0F172A", margin: "0 0 2px" }}>I'm Looking for Parking</h3>
+                      <p style={{ fontSize: 11, color: "#64748B", margin: 0, fontWeight: 600 }}>Requires Vehicle No, RC & Aadhaar Card</p>
                     </div>
                     <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", flexShrink: 0 }}>
                       <IconChevronRight size={18} color="#FFF" />
@@ -1164,7 +1204,7 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   <div 
-                    onClick={() => { setRole("host"); setActiveScreen("29"); }} 
+                    onClick={() => handleAccessApp("host")} 
                     style={{ 
                       background: "#FFFFFF", 
                       borderRadius: 22, 
@@ -1177,15 +1217,16 @@ export default function FullShowcaseBoard() {
                       boxShadow: "0 10px 25px rgba(245,158,11,0.15)"
                     }}
                   >
-                    <div style={{ width: 90, height: 74, borderRadius: 16, overflow: "hidden", flexShrink: 0, boxShadow: "0 6px 16px rgba(0,0,0,0.1)" }}>
+                    <div style={{ width: 85, height: 74, borderRadius: 16, overflow: "hidden", flexShrink: 0 }}>
                       <SmartImage sources={REAL_IMAGES.garageHouse} alt="Host Role" />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ display: "inline-block", background: "#FEF3C7", color: "#D97706", padding: "3px 8px", borderRadius: 8, fontSize: 10, fontWeight: 900, marginBottom: 6 }}>
-                        HOST & EARN ₹
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                        <span style={{ background: "#FEF3C7", color: "#D97706", padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 900 }}>HOST & EARN ₹</span>
+                        {isHostKycVerified && <span style={{ fontSize: 10, background: "#F59E0B", color: "#FFF", padding: "2px 6px", borderRadius: 6, fontWeight: 800 }}>✓ KYC OK</span>}
                       </div>
-                      <h3 style={{ fontSize: 16, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", lineHeight: 1.2 }}>I Have a Parking Space</h3>
-                      <p style={{ fontSize: 12, color: "#64748B", margin: 0, fontWeight: 600, lineHeight: 1.3 }}>List my space & start earning passive income</p>
+                      <h3 style={{ fontSize: 15, fontWeight: 900, color: "#0F172A", margin: "0 0 2px" }}>I Have a Parking Space</h3>
+                      <p style={{ fontSize: 11, color: "#64748B", margin: 0, fontWeight: 600 }}>Requires Aadhaar Card & EB Bill Address</p>
                     </div>
                     <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#F59E0B", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", flexShrink: 0 }}>
                       <IconChevronRight size={18} color="#FFF" />
@@ -1193,8 +1234,249 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                <button onClick={() => setActiveScreen("08")} style={{ width: "100%", background: "none", border: "none", color: "#64748B", fontWeight: 700, fontSize: 14, cursor: "pointer", padding: 12, textAlign: "center" }}>
-                  Skip to Live Tamil Nadu Map ➔
+                <div style={{ background: "#FEF2F2", border: "1px solid #FCA5A5", padding: "10px 14px", borderRadius: 12, textAlign: "center", fontSize: 11, color: "#991B1B", fontWeight: 800 }}>
+                  🔒 Mandatory Gate: Government KYC Verification is required before access
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 51: DRIVER MANDATORY KYC VERIFICATION ─── */}
+            {activeScreen === "51" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between", overflowY: "auto" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+                    <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <div>
+                      <h2 style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", margin: 0 }}>Driver KYC Verification</h2>
+                      <span style={{ fontSize: 11, color: "#64748B", fontWeight: 600 }}>Mandatory to access PARKKAR Map & Bookings</span>
+                    </div>
+                  </div>
+
+                  <div style={{ background: "#DCFCE7", border: "1px solid #BBF7D0", color: "#15803D", padding: 12, borderRadius: 14, fontSize: 12, fontWeight: 800, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                    <span>🚗</span>
+                    <span>Required: Vehicle Registration Number, RC Details & Aadhaar Card</span>
+                  </div>
+
+                  {/* 1. VEHICLE NUMBER */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Vehicle Registration Number</label>
+                  <input 
+                    type="text" 
+                    value={driverKycForm.vehicleNo}
+                    onChange={(e) => setDriverKycForm({...driverKycForm, vehicleNo: e.target.value})}
+                    placeholder="e.g. TN 01 AB 8924"
+                    style={{ width: "100%", padding: 12, borderRadius: 12, border: "1.5px solid #CBD5E1", outline: "none", fontSize: 14, fontWeight: 800, color: "#0F172A", marginBottom: 14 }}
+                  />
+
+                  {/* 2. RC DETAILS & RC DOCUMENT PHOTO */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>RC (Registration Certificate) Number & Photo</label>
+                  <input 
+                    type="text" 
+                    value={driverKycForm.rcNumber}
+                    onChange={(e) => setDriverKycForm({...driverKycForm, rcNumber: e.target.value})}
+                    placeholder="e.g. RC-99182371"
+                    style={{ width: "100%", padding: 12, borderRadius: 12, border: "1.5px solid #CBD5E1", outline: "none", fontSize: 13, fontWeight: 700, color: "#0F172A", marginBottom: 8 }}
+                  />
+
+                  <input 
+                    type="file" 
+                    ref={driverRcFileRef} 
+                    accept="image/*" 
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const url = await uploadImageToFirebaseStorage(file, "driver_kyc_docs");
+                        setDriverKycForm(prev => ({ ...prev, rcDocUrl: url || SVG_GARAGE_DATA_URL }));
+                      }
+                    }} 
+                    style={{ display: "none" }} 
+                  />
+                  <button 
+                    onClick={() => driverRcFileRef.current?.click()}
+                    style={{ width: "100%", padding: 10, borderRadius: 12, background: "#F1F5F9", border: "1px dashed #94A3B8", color: "#0F172A", fontWeight: 800, fontSize: 12, cursor: "pointer", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                  >
+                    <span>📄</span>
+                    <span>{driverKycForm.rcDocUrl ? "✓ RC Book Document Uploaded" : "Upload RC Book Photo"}</span>
+                  </button>
+
+                  {/* 3. AADHAAR CARD NUMBER & PHOTO */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Aadhaar Card Number (12 Digits)</label>
+                  <input 
+                    type="text" 
+                    value={driverKycForm.aadhaarNo}
+                    onChange={(e) => setDriverKycForm({...driverKycForm, aadhaarNo: e.target.value})}
+                    placeholder="e.g. 5482 9102 3847"
+                    style={{ width: "100%", padding: 12, borderRadius: 12, border: "1.5px solid #CBD5E1", outline: "none", fontSize: 14, fontWeight: 800, color: "#0F172A", marginBottom: 8 }}
+                  />
+
+                  <input 
+                    type="file" 
+                    ref={driverAadhaarFileRef} 
+                    accept="image/*" 
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const url = await uploadImageToFirebaseStorage(file, "driver_kyc_docs");
+                        setDriverKycForm(prev => ({ ...prev, aadhaarDocUrl: url || SVG_GARAGE_DATA_URL }));
+                      }
+                    }} 
+                    style={{ display: "none" }} 
+                  />
+                  <button 
+                    onClick={() => driverAadhaarFileRef.current?.click()}
+                    style={{ width: "100%", padding: 10, borderRadius: 12, background: "#F1F5F9", border: "1px dashed #94A3B8", color: "#0F172A", fontWeight: 800, fontSize: 12, cursor: "pointer", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                  >
+                    <span>🪪</span>
+                    <span>{driverKycForm.aadhaarDocUrl ? "✓ Aadhaar Card Uploaded" : "Upload Aadhaar Card Photo"}</span>
+                  </button>
+                </div>
+
+                <button 
+                  onClick={handleDriverKycSubmit}
+                  disabled={isSubmittingKyc}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)", opacity: isSubmittingKyc ? 0.7 : 1, marginTop: 12 }}
+                >
+                  {isSubmittingKyc ? "Verifying Driver KYC..." : "✓ Submit & Verify Driver KYC 🚀"}
+                </button>
+              </div>
+            )}
+
+            {/* ─── SCREEN 52: HOST MANDATORY KYC VERIFICATION ─── */}
+            {activeScreen === "52" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between", overflowY: "auto" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+                    <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 10 }}>
+                      <IconChevronLeft size={22} color="#0F172A" />
+                    </button>
+                    <div>
+                      <h2 style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", margin: 0 }}>Host Property KYC</h2>
+                      <span style={{ fontSize: 11, color: "#64748B", fontWeight: 600 }}>Aadhaar & EB Bill verification mandatory for Hosts</span>
+                    </div>
+                  </div>
+
+                  <div style={{ background: "#FEF3C7", border: "1px solid #FCD34D", color: "#B45309", padding: 12, borderRadius: 14, fontSize: 12, fontWeight: 800, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                    <span>🏢</span>
+                    <span>Required: Host Aadhaar Card & Electricity (EB) Bill / Address Proof</span>
+                  </div>
+
+                  {/* 1. AADHAAR CARD NUMBER & PHOTO */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Host Aadhaar Card Number</label>
+                  <input 
+                    type="text" 
+                    value={hostKycForm.aadhaarNo}
+                    onChange={(e) => setHostKycForm({...hostKycForm, aadhaarNo: e.target.value})}
+                    placeholder="e.g. 5482 9102 3847"
+                    style={{ width: "100%", padding: 12, borderRadius: 12, border: "1.5px solid #CBD5E1", outline: "none", fontSize: 14, fontWeight: 800, color: "#0F172A", marginBottom: 8 }}
+                  />
+
+                  <input 
+                    type="file" 
+                    ref={hostAadhaarFileRef} 
+                    accept="image/*" 
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const url = await uploadImageToFirebaseStorage(file, "host_kyc_docs");
+                        setHostKycForm(prev => ({ ...prev, aadhaarDocUrl: url || SVG_GARAGE_DATA_URL }));
+                      }
+                    }} 
+                    style={{ display: "none" }} 
+                  />
+                  <button 
+                    onClick={() => hostAadhaarFileRef.current?.click()}
+                    style={{ width: "100%", padding: 10, borderRadius: 12, background: "#F1F5F9", border: "1px dashed #94A3B8", color: "#0F172A", fontWeight: 800, fontSize: 12, cursor: "pointer", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                  >
+                    <span>🪪</span>
+                    <span>{hostKycForm.aadhaarDocUrl ? "✓ Host Aadhaar Uploaded" : "Upload Aadhaar Card Photo"}</span>
+                  </button>
+
+                  {/* 2. EB CONSUMER NUMBER & EB BILL ADDRESS PROOF */}
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>Electricity (EB) Consumer Number</label>
+                  <input 
+                    type="text" 
+                    value={hostKycForm.ebNumber}
+                    onChange={(e) => setHostKycForm({...hostKycForm, ebNumber: e.target.value})}
+                    placeholder="e.g. EB-04-291-8849"
+                    style={{ width: "100%", padding: 12, borderRadius: 12, border: "1.5px solid #CBD5E1", outline: "none", fontSize: 14, fontWeight: 800, color: "#0F172A", marginBottom: 8 }}
+                  />
+
+                  <label style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 4 }}>EB Bill Service Address</label>
+                  <input 
+                    type="text" 
+                    value={hostKycForm.ebAddress}
+                    onChange={(e) => setHostKycForm({...hostKycForm, ebAddress: e.target.value})}
+                    placeholder="Property Address on EB Bill"
+                    style={{ width: "100%", padding: 12, borderRadius: 12, border: "1.5px solid #CBD5E1", outline: "none", fontSize: 13, fontWeight: 700, color: "#0F172A", marginBottom: 8 }}
+                  />
+
+                  <input 
+                    type="file" 
+                    ref={hostEbFileRef} 
+                    accept="image/*" 
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const url = await uploadImageToFirebaseStorage(file, "host_kyc_docs");
+                        setHostKycForm(prev => ({ ...prev, ebDocUrl: url || SVG_BASEMENT_DATA_URL }));
+                      }
+                    }} 
+                    style={{ display: "none" }} 
+                  />
+                  <button 
+                    onClick={() => hostEbFileRef.current?.click()}
+                    style={{ width: "100%", padding: 10, borderRadius: 12, background: "#F1F5F9", border: "1px dashed #94A3B8", color: "#0F172A", fontWeight: 800, fontSize: 12, cursor: "pointer", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                  >
+                    <span>⚡</span>
+                    <span>{hostKycForm.ebDocUrl ? "✓ EB Bill / Address Proof Uploaded" : "Upload EB Bill Photo"}</span>
+                  </button>
+                </div>
+
+                <button 
+                  onClick={handleHostKycSubmit}
+                  disabled={isSubmittingKyc}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#F59E0B", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(245,158,11,0.35)", opacity: isSubmittingKyc ? 0.7 : 1, marginTop: 12 }}
+                >
+                  {isSubmittingKyc ? "Verifying Host Property KYC..." : "✓ Submit & Verify Host KYC 🚀"}
+                </button>
+              </div>
+            )}
+
+            {/* ─── SCREEN 53: KYC APPROVED SUCCESS STATUS ─── */}
+            {activeScreen === "53" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 24, justifyContent: "space-between", alignItems: "center", textAlign: "center" }}>
+                <div style={{ width: "100%", marginTop: 30 }}>
+                  <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#DCFCE7", color: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.25)" }}>
+                    <IconCheck size={40} color="#22C55E" />
+                  </div>
+                  <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>KYC Verification Approved!</h2>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 24px" }}>
+                    Your government documents have been verified and saved to Firebase Firestore (`paarkkar-dda3d`).
+                  </p>
+
+                  <div style={{ background: "#F8FAFC", borderRadius: 20, padding: 20, border: "1px solid #E2E8F0", textAlign: "left", marginBottom: 20 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 900, background: "#22C55E", color: "#FFF", padding: "2px 8px", borderRadius: 6 }}>
+                        VERIFIED {role === "host" ? "HOST" : "DRIVER"}
+                      </span>
+                      <span style={{ fontSize: 10, color: "#64748B" }}>FIREBASE SYNCED</span>
+                    </div>
+                    <h3 style={{ fontSize: 16, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>Hanush Adith</h3>
+                    <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 4px" }}>
+                      {role === "host" ? `Aadhaar: ${hostKycForm.aadhaarNo} • EB No: ${hostKycForm.ebNumber}` : `Vehicle: ${driverKycForm.vehicleNo} • RC: ${driverKycForm.rcNumber}`}
+                    </p>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => {
+                    if (role === "host") setActiveScreen("29");
+                    else setActiveScreen("08");
+                  }}
+                  style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
+                >
+                  {role === "host" ? "Enter Host Dashboard ➔" : "Enter PARKKAR Map ➔"}
                 </button>
               </div>
             )}
@@ -1209,7 +1491,6 @@ export default function FullShowcaseBoard() {
                   <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Welcome Back!</h2>
                   <p style={{ fontSize: 14, color: "#64748B", margin: "0 0 20px" }}>Sign in with Firebase Auth (paarkkar-dda3d)</p>
                   
-                  {/* ROLE MODE SWITCHER IN LOGIN */}
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 20 }}>
                     <button 
                       onClick={() => setRole("driver")}
@@ -1292,7 +1573,7 @@ export default function FullShowcaseBoard() {
                   {["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "✓"].map((k) => (
                     <button
                       key={k}
-                      onClick={() => { if (k === "✓") setActiveScreen("08"); }}
+                      onClick={() => { if (k === "✓") handleAccessApp("driver"); }}
                       style={{
                         padding: "14px 0",
                         borderRadius: 14,
@@ -1338,7 +1619,6 @@ export default function FullShowcaseBoard() {
                       style={{ border: "none", background: "transparent", outline: "none", flex: 1, fontWeight: 700, fontSize: 13, color: "#0F172A" }} 
                     />
 
-                    {/* LIVE GPS LOCATION FETCH BUTTON */}
                     <button 
                       onClick={handleFetchUserLocation}
                       disabled={isLocating}
@@ -1386,7 +1666,6 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                {/* CLEAN CRISP WHITE MAP CONTAINER */}
                 <div style={{ flex: 1, background: "#F8FAFC", position: "relative", overflow: "hidden" }}>
                   <TamilNaduMap 
                     spotsList={allSpots}
@@ -1765,9 +2044,7 @@ export default function FullShowcaseBoard() {
             {activeScreen === "13" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", height: "100%", overflow: "hidden" }}>
                 
-                {/* SCROLLABLE MIDDLE PAYMENT OPTIONS */}
                 <div style={{ flex: 1, overflowY: "auto" }}>
-                  {/* HEADER BAR */}
                   <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <button onClick={() => setActiveScreen("12")} style={{ background: "none", border: "none", cursor: "pointer" }}>
@@ -1781,7 +2058,6 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   <div style={{ padding: 16 }}>
-                    {/* TOTAL DUE BANNER CARD */}
                     <div style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", color: "#FFF", padding: "20px 24px", borderRadius: 22, textAlign: "left", marginBottom: 20, boxShadow: "0 10px 25px rgba(15,23,42,0.25)", position: "relative", overflow: "hidden" }}>
                       <div style={{ position: "absolute", top: -20, right: -20, width: 100, height: 100, borderRadius: "50%", background: "rgba(34,197,94,0.15)" }} />
                       <span style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" }}>Total Payable Amount</span>
@@ -1793,12 +2069,10 @@ export default function FullShowcaseBoard() {
                       </div>
                     </div>
 
-                    {/* PAYMENT METHOD SELECTOR TITLE */}
                     <label style={{ fontSize: 14, fontWeight: 900, color: "#0F172A", display: "block", marginBottom: 12 }}>Select Payment Gateway</label>
 
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       
-                      {/* 0. RAZORPAY OFFICIAL GATEWAY OPTION */}
                       <div 
                         onClick={() => setSelectedPayment("razorpay")}
                         style={{ 
@@ -1833,7 +2107,6 @@ export default function FullShowcaseBoard() {
                               <code style={{ background: "#DCFCE7", padding: "2px 6px", borderRadius: 4, fontFamily: "monospace" }}>rzp_test_TLiQiPWrFJya33</code>
                             </div>
                             
-                            {/* 1-CLICK INSTANT TEST SIMULATION BUTTON */}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -1848,7 +2121,6 @@ export default function FullShowcaseBoard() {
                         )}
                       </div>
 
-                      {/* 1. UPI OPTION */}
                       <div 
                         onClick={() => setSelectedPayment("upi")}
                         style={{ 
@@ -1873,7 +2145,6 @@ export default function FullShowcaseBoard() {
                         </div>
                       </div>
 
-                      {/* 2. PARKKAR WALLET OPTION */}
                       <div 
                         onClick={() => setSelectedPayment("wallet")}
                         style={{ 
@@ -1902,7 +2173,6 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                {/* STICKY BOTTOM ACTION FOOTER BUTTON */}
                 <div style={{ padding: "16px 20px 24px", borderTop: "1.5px solid #E2E8F0", background: "#FFF", boxShadow: "0 -6px 20px rgba(0,0,0,0.08)", zIndex: 100 }}>
                   <button 
                     onClick={() => {
@@ -1962,7 +2232,7 @@ export default function FullShowcaseBoard() {
                     View My Bookings
                   </button>
                   <button 
-                    onClick={() => setActiveScreen("08")}
+                    onClick={() => handleAccessApp("driver")}
                     style={{ width: "100%", padding: 14, borderRadius: 16, background: "transparent", border: "1.5px solid #E2E8F0", color: "#0F172A", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
                   >
                     Back to Home Map
@@ -2151,7 +2421,6 @@ export default function FullShowcaseBoard() {
                     <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Step 2: AI Dynamic Pricing</span>
                   </div>
 
-                  {/* RAPIDO STYLE GLOWING AI SMART PRICING WIDGET */}
                   <div style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", borderRadius: 22, padding: 18, color: "#FFF", marginBottom: 20, boxShadow: "0 10px 25px rgba(15,23,42,0.25)", position: "relative", overflow: "hidden" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                       <span style={{ fontSize: 11, fontWeight: 900, background: "rgba(34,197,94,0.2)", color: "#22C55E", padding: "4px 10px", borderRadius: 10, border: "1px solid rgba(34,197,94,0.4)" }}>
@@ -2176,7 +2445,6 @@ export default function FullShowcaseBoard() {
                     </div>
                   </div>
 
-                  {/* HOURLY RATE ADJUSTMENT INPUT */}
                   <label style={{ fontSize: 13, fontWeight: 900, color: "#0F172A", display: "block", marginBottom: 6 }}>Final Hourly Rate (₹)</label>
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
                     <input 
@@ -2240,7 +2508,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 33: HOST FORM STEP 3 (REAL WORKING FIREBASE STORAGE UPLOADER & BULLETPROOF SVG SAMPLES) ─── */}
+            {/* ─── SCREEN 33: HOST FORM STEP 3 ─── */}
             {activeScreen === "33" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", padding: 20, justifyContent: "space-between" }}>
                 <div>
@@ -2251,7 +2519,6 @@ export default function FullShowcaseBoard() {
                     <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Step 3: Upload Space Photo</span>
                   </div>
 
-                  {/* REAL IMAGE PREVIEW BOX */}
                   <div style={{ width: "100%", height: 210, borderRadius: 20, overflow: "hidden", position: "relative", marginBottom: 12, border: "2.5px solid #22C55E", boxShadow: "0 6px 20px rgba(34,197,94,0.2)" }}>
                     <SmartImage sources={[hostForm.photoUrl]} alt="Upload Preview" />
                     <div style={{ position: "absolute", bottom: 12, left: 12, background: "rgba(15,23,42,0.9)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 900, backdropFilter: "blur(6px)" }}>
@@ -2259,7 +2526,6 @@ export default function FullShowcaseBoard() {
                     </div>
                   </div>
 
-                  {/* UPLOAD PROGRESS BADGE */}
                   {photoStatus && (
                     <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", color: "#16A34A", padding: "8px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
                       <span>🔥</span>
@@ -2267,7 +2533,6 @@ export default function FullShowcaseBoard() {
                     </div>
                   )}
 
-                  {/* HIDDEN FILE INPUT */}
                   <input 
                     type="file" 
                     ref={fileInputRef} 
@@ -2276,7 +2541,6 @@ export default function FullShowcaseBoard() {
                     style={{ display: "none" }} 
                   />
 
-                  {/* CLICKABLE UPLOAD TARGET BOX */}
                   <div 
                     onClick={() => fileInputRef.current?.click()}
                     style={{ border: "2px dashed #22C55E", borderRadius: 18, padding: 18, textAlign: "center", background: "#F0FDF4", marginBottom: 16, cursor: "pointer" }}
@@ -2290,7 +2554,6 @@ export default function FullShowcaseBoard() {
                     <span style={{ fontSize: 11, color: "#64748B", marginTop: 2, display: "block" }}>Direct Firebase Storage Upload Enabled</span>
                   </div>
 
-                  {/* HIGH QUALITY SAMPLE PHOTO PICKER WITH BULLETPROOF EMBEDDED URIS */}
                   <label style={{ fontSize: 11, fontWeight: 800, color: "#64748B", display: "block", marginBottom: 6 }}>Or Select Sample Spot Photo:</label>
                   <div style={{ display: "flex", gap: 10 }}>
                     {[
@@ -2389,13 +2652,13 @@ export default function FullShowcaseBoard() {
 
                 <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
                   <button 
-                    onClick={() => setActiveScreen("08")}
+                    onClick={() => handleAccessApp("driver")}
                     style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 15, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
                   >
                     🗺️ View My Spot on Live Tamil Nadu Map
                   </button>
                   <button 
-                    onClick={() => setActiveScreen("29")}
+                    onClick={() => handleAccessApp("host")}
                     style={{ width: "100%", padding: 14, borderRadius: 16, background: "transparent", border: "1.5px solid #E2E8F0", color: "#0F172A", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
                   >
                     Back to Host Dashboard
@@ -2408,7 +2671,7 @@ export default function FullShowcaseBoard() {
             {activeScreen === "20" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
-                  <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
+                  <button onClick={() => handleAccessApp("driver")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
                   <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>My Bookings</span>
@@ -2432,7 +2695,7 @@ export default function FullShowcaseBoard() {
             {activeScreen === "21" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
-                  <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
+                  <button onClick={() => handleAccessApp("driver")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
                   <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>PARKKAR Wallet</span>
@@ -2456,7 +2719,7 @@ export default function FullShowcaseBoard() {
             {activeScreen === "22" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
                 <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
-                  <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
+                  <button onClick={() => handleAccessApp("driver")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
                   <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Notifications</span>
@@ -2481,11 +2744,11 @@ export default function FullShowcaseBoard() {
 
             {/* DEFAULT FALLBACK FOR OTHER UNRENDERED SCREENS */}
             {![
-              "01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","20","21","22","24","29","30","31","32","33","34","35"
+              "01","02","03","04","05","06","07","51","52","53","08","09","10","11","12","13","14","15","20","21","22","24","29","30","31","32","33","34","35"
             ].includes(activeScreen) && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
-                  <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer", marginBottom: 12 }}>
+                  <button onClick={() => handleAccessApp("driver")} style={{ background: "none", border: "none", cursor: "pointer", marginBottom: 12 }}>
                     <IconChevronLeft size={22} color="#0F172A" />
                   </button>
                   <h3 style={{ margin: "0 0 6px", fontSize: 20, fontWeight: 900, color: "#0F172A" }}>
@@ -2498,7 +2761,7 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                <button onClick={() => setActiveScreen("08")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>
+                <button onClick={() => handleAccessApp("driver")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>
                   Back to Home Map
                 </button>
               </div>
