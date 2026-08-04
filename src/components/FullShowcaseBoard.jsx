@@ -670,6 +670,16 @@ export default function FullShowcaseBoard() {
   const [signUpName, setSignUpName] = useState("");
   const [signUpPhone, setSignUpPhone] = useState("");
 
+  // Dynamic Authenticated User Profile State
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem("parkkar_user");
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
   // Login Form Email / Phone Input State
   const [loginInput, setLoginInput] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -946,15 +956,29 @@ export default function FullShowcaseBoard() {
     
     if (authMode === "signup") {
       const res = await firebaseSignUp(formattedEmail, loginPassword);
+      const userProfile = {
+        email: formattedEmail,
+        displayName: signUpName || formattedEmail.split("@")[0],
+        photoURL: ""
+      };
+      setCurrentUser(userProfile);
+      localStorage.setItem("parkkar_user", JSON.stringify(userProfile));
       if (res?.success) {
-        alert(`🎉 Account Created via Firebase Auth!\nWelcome to PARKKAR, ${signUpName || formattedEmail}!`);
+        alert(`🎉 Account Created via Firebase Auth!\nWelcome to PARKKAR, ${userProfile.displayName}!`);
       } else {
         alert(`Account created for ${formattedEmail}`);
       }
     } else {
       const res = await firebaseSignIn(formattedEmail, loginPassword);
+      const userProfile = {
+        email: formattedEmail,
+        displayName: formattedEmail.split("@")[0],
+        photoURL: ""
+      };
+      setCurrentUser(userProfile);
+      localStorage.setItem("parkkar_user", JSON.stringify(userProfile));
       if (res?.success) {
-        alert(`🔥 Firebase Authenticated: Welcome back ${res.user.email}!`);
+        alert(`🔥 Firebase Authenticated: Welcome back ${userProfile.displayName}!`);
       }
     }
     handleAccessApp(role || "driver");
@@ -979,6 +1003,13 @@ export default function FullShowcaseBoard() {
     const otpCode = otpVal.join("");
     const rawPhone = mobilePhoneInput.replace(/\D/g, "");
     const res = await verifyTwilioOtp(rawPhone, otpCode);
+    const userProfile = {
+      email: `+91${rawPhone}@parkkar.com`,
+      displayName: `User (+91 ${rawPhone})`,
+      photoURL: ""
+    };
+    setCurrentUser(userProfile);
+    localStorage.setItem("parkkar_user", JSON.stringify(userProfile));
     if (res?.approved) {
       alert("✓ Twilio OTP Verified Successfully!");
     }
@@ -990,16 +1021,29 @@ export default function FullShowcaseBoard() {
     try {
       const res = await firebaseGoogleSignIn();
       if (res?.success && res?.user) {
+        const userProfile = {
+          email: res.user.email,
+          displayName: res.user.displayName || res.user.email.split("@")[0],
+          photoURL: res.user.photoURL || ""
+        };
+        setCurrentUser(userProfile);
+        localStorage.setItem("parkkar_user", JSON.stringify(userProfile));
         setLoginInput(res.user.email);
-        alert(`🎉 Google Sign-In Successful!\nWelcome ${res.user.displayName || res.user.email}`);
+        alert(`🎉 Google Sign-In Successful!\nWelcome ${userProfile.displayName}!`);
         handleAccessApp(role || "driver");
       } else if (res?.error) {
         console.warn("Google Sign-In notice:", res.error);
+        const fallbackUser = { email: "user.google@gmail.com", displayName: "Google User", photoURL: "" };
+        setCurrentUser(fallbackUser);
+        localStorage.setItem("parkkar_user", JSON.stringify(fallbackUser));
         setLoginInput("user.google@gmail.com");
         handleAccessApp(role || "driver");
       }
     } catch (err) {
       console.warn("Google Sign-In error:", err);
+      const fallbackUser = { email: "user.google@gmail.com", displayName: "Google User", photoURL: "" };
+      setCurrentUser(fallbackUser);
+      localStorage.setItem("parkkar_user", JSON.stringify(fallbackUser));
       setLoginInput("user.google@gmail.com");
       handleAccessApp(role || "driver");
     }
@@ -1007,6 +1051,9 @@ export default function FullShowcaseBoard() {
 
   // Apple ID Sign-In Handler
   const handleAppleSignIn = () => {
+    const userProfile = { email: "apple_user@apple.com", displayName: "Apple User", photoURL: "" };
+    setCurrentUser(userProfile);
+    localStorage.setItem("parkkar_user", JSON.stringify(userProfile));
     setLoginInput("apple_user@apple.com");
     alert("🍎 Apple ID Sign-In Successful!");
     handleAccessApp(role || "driver");
@@ -1015,6 +1062,8 @@ export default function FullShowcaseBoard() {
   // Firebase Auth Sign Out Handler
   const handleFirebaseSignOut = async () => {
     await firebaseSignOutUser();
+    setCurrentUser(null);
+    localStorage.removeItem("parkkar_user");
     setRole(null);
     setActiveScreen("06");
     setShowDrawer(false);
@@ -1084,9 +1133,9 @@ export default function FullShowcaseBoard() {
             }
           },
           prefill: {
-            name: "Hanush Adith",
-            email: "hanush@parkkar.com",
-            contact: "9876543210"
+            name: currentUser?.displayName || "PARKKAR User",
+            email: currentUser?.email || loginInput || "user@parkkar.com",
+            contact: mobilePhoneInput || "9876543210"
           },
           theme: {
             color: "#22C55E"
@@ -1225,18 +1274,38 @@ export default function FullShowcaseBoard() {
                     <button onClick={() => setShowDrawer(false)} style={{ background: "none", border: "none", fontSize: 18, color: "#94A3B8", cursor: "pointer", fontWeight: "bold" }}>✕</button>
                   </div>
 
-                  {/* USER AVATAR CARD */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                    <div style={{ width: 44, height: 44, borderRadius: "50%", background: role === "host" ? "#F59E0B" : "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 18, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
-                      HA
-                    </div>
-                    <div>
-                      <h3 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 900, color: "#0F172A" }}>Hanush Adith</h3>
-                      <span style={{ fontSize: 10, color: role === "host" ? "#D97706" : "#22C55E", fontWeight: 800, background: role === "host" ? "#FEF3C7" : "#DCFCE7", padding: "2px 8px", borderRadius: 6 }}>
-                        {role === "host" ? (isHostKycVerified ? "● VERIFIED HOST" : "⚠️ HOST KYC REQUIRED") : (isDriverKycVerified ? "● VERIFIED DRIVER" : "⚠️ DRIVER KYC REQUIRED")}
-                      </span>
-                    </div>
-                  </div>
+                  {/* DYNAMIC USER AVATAR CARD */}
+                  {(() => {
+                    const dispName = currentUser?.displayName || (loginInput ? loginInput.split("@")[0] : "PARKKAR User");
+                    const userEmail = currentUser?.email || loginInput || "user@parkkar.com";
+                    const initials = dispName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) || "P";
+                    return (
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                        {currentUser?.photoURL ? (
+                          <img 
+                            src={currentUser.photoURL} 
+                            alt={dispName} 
+                            style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", border: "2px solid #22C55E" }} 
+                          />
+                        ) : (
+                          <div style={{ width: 44, height: 44, borderRadius: "50%", background: role === "host" ? "#F59E0B" : "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 18, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
+                            {initials}
+                          </div>
+                        )}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <h3 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 900, color: "#0F172A", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                            {dispName}
+                          </h3>
+                          <div style={{ fontSize: 11, color: "#64748B", fontWeight: 600, textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", marginBottom: 3 }}>
+                            {userEmail}
+                          </div>
+                          <span style={{ fontSize: 10, color: role === "host" ? "#D97706" : "#22C55E", fontWeight: 800, background: role === "host" ? "#FEF3C7" : "#DCFCE7", padding: "2px 8px", borderRadius: 6, display: "inline-block" }}>
+                            {role === "host" ? (isHostKycVerified ? "● VERIFIED HOST" : "⚠️ HOST KYC REQUIRED") : (isDriverKycVerified ? "● VERIFIED DRIVER" : "⚠️ DRIVER KYC REQUIRED")}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* ROLE SWITCHER TABS */}
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 12, padding: 4, marginBottom: 16 }}>
