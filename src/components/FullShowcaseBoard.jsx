@@ -19,7 +19,7 @@ const T = {
 };
 
 export default function FullShowcaseBoard() {
-  const [activeScreen, setActiveScreen] = useState("01"); // 01 to 40
+  const [activeScreen, setActiveScreen] = useState("01"); // 01 to 50
   const [role, setRole] = useState(null); // driver | host
   const [otpVal, setOtpVal] = useState(["2", "4", "6", "8", "2", "1"]);
   const [tabIndex, setTabIndex] = useState("Nearby"); // Nearby | Favorites | Recent
@@ -91,6 +91,16 @@ export default function FullShowcaseBoard() {
     { id: "38", name: "38 Earnings Overview" },
     { id: "39", name: "39 Withdraw Earnings" },
     { id: "40", name: "40 Reviews & Ratings" },
+    { id: "41", name: "41 Analytics" },
+    { id: "42", name: "42 Payout History" },
+    { id: "43", name: "43 My Vehicles" },
+    { id: "44", name: "44 Address Book" },
+    { id: "45", name: "45 Support Center" },
+    { id: "46", name: "46 Payment Methods" },
+    { id: "47", name: "47 Offers & Promos" },
+    { id: "48", name: "48 Invite Friends" },
+    { id: "49", name: "49 Notifs (Detailed)" },
+    { id: "50", name: "50 Settings (More)" },
   ];
 
   return (
@@ -694,7 +704,7 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 6 }}>Apply Coupon</label>
-                  <div style={{ background: "#FFF", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div onClick={() => setActiveScreen("47")} style={{ background: "#FFF", borderRadius: 14, border: "1.5px solid #E2E8F0", padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
                     <span style={{ color: "#94A3B8", fontSize: 13 }}>Select a coupon</span>
                     <span style={{ color: "#64748B", fontWeight: "bold" }}>›</span>
                   </div>
@@ -1142,11 +1152,11 @@ export default function FullShowcaseBoard() {
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
                       {[
                         { name: "Add Money", icon: "➕" },
-                        { name: "Withdraw", icon: "🏦" },
-                        { name: "Transactions", icon: "📄" },
-                        { name: "Offers", icon: "🏷️" },
+                        { name: "Withdraw", icon: "🏦", screen: "39" },
+                        { name: "Transactions", icon: "📄", screen: "42" },
+                        { name: "Offers", icon: "🏷️", screen: "47" },
                       ].map((a, i) => (
-                        <div key={i} style={{ background: "#FFF", borderRadius: 16, padding: "12px 6px", border: "1px solid #E2E8F0", textAlign: "center", cursor: "pointer" }}>
+                        <div key={i} onClick={() => a.screen && setActiveScreen(a.screen)} style={{ background: "#FFF", borderRadius: 16, padding: "12px 6px", border: "1px solid #E2E8F0", textAlign: "center", cursor: "pointer" }}>
                           <div style={{ fontSize: 20, marginBottom: 4 }}>{a.icon}</div>
                           <div style={{ fontSize: 10, fontWeight: 700, color: "#0F172A" }}>{a.name}</div>
                         </div>
@@ -1342,13 +1352,13 @@ export default function FullShowcaseBoard() {
                   <div style={{ background: "#FFF", borderRadius: 20, border: "1px solid #E2E8F0", overflow: "hidden" }}>
                     {[
                       { title: "Personal Information", icon: "👤", screen: "24" },
-                      { title: "My Vehicles", icon: "🚘", screen: "24" },
-                      { title: "Payment Methods", icon: "💳", screen: "21" },
-                      { title: "Address Book", icon: "📍", screen: "24" },
-                      { title: "Driving License", icon: "🪪", screen: "24" },
-                      { title: "Preferences", icon: "⚙️", screen: "25" },
-                      { title: "Help & Support", icon: "❓", screen: "26" },
-                      { title: "Invite & Earn", icon: "🎁", screen: "27" },
+                      { title: "My Vehicles", icon: "🚘", screen: "43" },
+                      { title: "Address Book", icon: "📍", screen: "44" },
+                      { title: "Payment Methods", icon: "💳", screen: "46" },
+                      { title: "Offers & Promotions", icon: "🏷️", screen: "47" },
+                      { title: "Support Center", icon: "🎧", screen: "45" },
+                      { title: "Invite Friends", icon: "🎁", screen: "48" },
+                      { title: "Settings", icon: "⚙️", screen: "50" },
                     ].map((m, i) => (
                       <div
                         key={i}
@@ -1442,7 +1452,7 @@ export default function FullShowcaseBoard() {
                     <div style={{ background: "#FFF", borderRadius: 16, border: "1px solid #E2E8F0" }}>
                       {[
                         { title: "Help Center", screen: "26" },
-                        { title: "Contact Support", screen: "26" },
+                        { title: "Contact Support", screen: "45" },
                         { title: "Terms & Conditions", screen: "25" },
                         { title: "Privacy Policy", screen: "25" },
                       ].map((s, i) => (
@@ -1497,7 +1507,7 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <div style={{ padding: 16, background: "#FFF", borderTop: "1px solid #E2E8F0" }}>
-                  <button style={{ width: "100%", padding: 14, borderRadius: 14, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 800, fontSize: 14, cursor: "pointer" }}>
+                  <button onClick={() => setActiveScreen("45")} style={{ width: "100%", padding: 14, borderRadius: 14, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 800, fontSize: 14, cursor: "pointer" }}>
                     💬 Chat with Support
                   </button>
                   <p style={{ fontSize: 10, color: "#94A3B8", textAlign: "center", margin: "6px 0 0" }}>We typically reply in a few minutes</p>
@@ -2225,6 +2235,455 @@ export default function FullShowcaseBoard() {
                       <p style={{ margin: 0, fontSize: 12, color: "#64748B", lineHeight: 1.4 }}>{rev.text}</p>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* ─── 41: ANALYTICS ─── */}
+            {activeScreen === "41" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <button onClick={() => setActiveScreen("29")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Analytics</h3>
+                  <button style={{ background: "none", border: "none", fontSize: 18, cursor: "pointer" }}>📅</button>
+                </div>
+
+                <div style={{ flex: 1, padding: 20, display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ background: "#FFF", padding: "6px 12px", borderRadius: 10, border: "1px solid #E2E8F0", fontSize: 12, fontWeight: 700, color: "#0F172A" }}>
+                      This Month ∨
+                    </div>
+                  </div>
+
+                  <div style={{ background: "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)", borderRadius: 20, padding: 20, color: "#FFF" }}>
+                    <span style={{ fontSize: 12, opacity: 0.8 }}>Total Earnings</span>
+                    <h2 style={{ fontSize: 32, fontWeight: 900, margin: "4px 0 4px" }}>₹12,450</h2>
+                    <span style={{ fontSize: 11, background: "rgba(255,255,255,0.2)", padding: "3px 8px", borderRadius: 10 }}>+18.5% from last month</span>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+                    <div style={{ background: "#FFF", borderRadius: 14, padding: 12, border: "1px solid #E2E8F0" }}>
+                      <span style={{ fontSize: 10, color: "#64748B" }}>Bookings</span>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>32</div>
+                      <span style={{ fontSize: 9, color: "#22C55E", fontWeight: 700 }}>+12%</span>
+                    </div>
+                    <div style={{ background: "#FFF", borderRadius: 14, padding: 12, border: "1px solid #E2E8F0" }}>
+                      <span style={{ fontSize: 10, color: "#64748B" }}>Hours Booked</span>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>64.5</div>
+                      <span style={{ fontSize: 9, color: "#22C55E", fontWeight: 700 }}>+8%</span>
+                    </div>
+                    <div style={{ background: "#FFF", borderRadius: 14, padding: 12, border: "1px solid #E2E8F0" }}>
+                      <span style={{ fontSize: 10, color: "#64748B" }}>Occupancy</span>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>78%</div>
+                      <span style={{ fontSize: 9, color: "#22C55E", fontWeight: 700 }}>+15%</span>
+                    </div>
+                  </div>
+
+                  <div style={{ background: "#FFF", borderRadius: 18, padding: 16, border: "1px solid #E2E8F0" }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", display: "block", marginBottom: 12 }}>Earnings Trend</span>
+                    <div style={{ height: 110, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}>
+                      {[45, 60, 85, 55, 90].map((h, i) => (
+                        <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                          <div style={{ width: "100%", height: `${h}%`, background: "#22C55E", borderRadius: "6px 6px 0 0" }} />
+                          <span style={{ fontSize: 9, color: "#94A3B8" }}>{["1 May", "8 May", "15 May", "22 May", "29 May"][i]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ height: 60, background: "#FFF", borderTop: "1px solid #E2E8F0", display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                  <div onClick={() => setActiveScreen("29")} style={{ textAlign: "center", cursor: "pointer", color: "#64748B" }}>
+                    <div style={{ fontSize: 18 }}>🏠</div>
+                    <div style={{ fontSize: 10, fontWeight: 600 }}>Home</div>
+                  </div>
+                  <div onClick={() => setActiveScreen("37")} style={{ textAlign: "center", cursor: "pointer", color: "#64748B" }}>
+                    <div style={{ fontSize: 18 }}>📑</div>
+                    <div style={{ fontSize: 10, fontWeight: 600 }}>Bookings</div>
+                  </div>
+                  <div onClick={() => setActiveScreen("36")} style={{ textAlign: "center", cursor: "pointer", color: "#64748B" }}>
+                    <div style={{ fontSize: 18 }}>🏢</div>
+                    <div style={{ fontSize: 10, fontWeight: 600 }}>Listings</div>
+                  </div>
+                  <div onClick={() => setActiveScreen("41")} style={{ textAlign: "center", cursor: "pointer", color: "#22C55E" }}>
+                    <div style={{ fontSize: 18 }}>📈</div>
+                    <div style={{ fontSize: 10, fontWeight: 800 }}>Earnings</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── 42: PAYOUT HISTORY ─── */}
+            {activeScreen === "42" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <button onClick={() => setActiveScreen("38")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Payout History</h3>
+                  <span style={{ width: 20 }} />
+                </div>
+
+                <div style={{ flex: 1, padding: 20, display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
+                  <div style={{ background: "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)", borderRadius: 20, padding: 20, color: "#FFF", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <span style={{ fontSize: 12, opacity: 0.8 }}>Total Withdrawn</span>
+                      <h2 style={{ fontSize: 28, fontWeight: 900, margin: "2px 0 0" }}>₹35,750</h2>
+                    </div>
+                    <div style={{ fontSize: 32 }}>👛</div>
+                  </div>
+
+                  <div style={{ background: "#FFF", borderRadius: 18, border: "1px solid #E2E8F0", padding: "8px 16px" }}>
+                    {[
+                      { amt: "₹5,000", to: "Paid to HDFC Bank •••• 1234", date: "28 May 2025", status: "Success" },
+                      { amt: "₹4,500", to: "Paid to UPI • dharani@okaxis", date: "14 May 2025", status: "Success" },
+                      { amt: "₹3,750", to: "Paid to HDFC Bank •••• 1234", date: "30 Apr 2025", status: "Success" },
+                      { amt: "₹2,500", to: "Paid to UPI • dharani@okaxis", date: "16 Apr 2025", status: "Success" },
+                      { amt: "₹5,000", to: "Paid to HDFC Bank •••• 1234", date: "02 Apr 2025", status: "Success" },
+                    ].map((p, idx) => (
+                      <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: idx < 4 ? "1px solid #F1F5F9" : "none" }}>
+                        <div>
+                          <div style={{ fontWeight: 900, color: "#0F172A", fontSize: 15 }}>{p.amt}</div>
+                          <div style={{ fontSize: 11, color: "#64748B" }}>{p.to} • {p.date}</div>
+                        </div>
+                        <span style={{ color: "#22C55E", fontSize: 11, fontWeight: 800 }}>{p.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── 43: MY VEHICLES ─── */}
+            {activeScreen === "43" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <button onClick={() => setActiveScreen("24")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>My Vehicles</h3>
+                  <button style={{ background: "none", border: "none", fontSize: 22, fontWeight: 900, cursor: "pointer", color: "#22C55E" }}>+</button>
+                </div>
+
+                <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
+                  {[
+                    { number: "TN 09 AB 1234", name: "Honda City", type: "Sedan • White", status: "Active", activeBg: "#DCFCE7", activeColor: "#22C55E", img: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=400&q=80" },
+                    { number: "TN 22 CD 5678", name: "Hyundai Creta", type: "SUV • Black", status: "Active", activeBg: "#DCFCE7", activeColor: "#22C55E", img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=400&q=80" },
+                    { number: "TN 07 EF 9101", name: "Tata Nexon", type: "SUV • Blue", status: "Inactive", activeBg: "#F1F5F9", activeColor: "#64748B", img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=400&q=80" },
+                  ].map((v, i) => (
+                    <div key={i} style={{ background: "#FFF", borderRadius: 16, padding: 12, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
+                      <img src={v.img} alt="car" style={{ width: 70, height: 50, borderRadius: 10, objectFit: "cover" }} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                          <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 900, color: "#0F172A" }}>{v.number}</h4>
+                          <span style={{ fontSize: 16, cursor: "pointer", color: "#94A3B8" }}>⋮</span>
+                        </div>
+                        <p style={{ margin: "0 0 4px", fontSize: 11, color: "#64748B" }}>{v.name} • {v.type}</p>
+                        <span style={{ background: v.activeBg, color: v.activeColor, fontSize: 10, fontWeight: 800, padding: "2px 8px", borderRadius: 6 }}>{v.status}</span>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0", textAlign: "center" }}>
+                    <div style={{ fontSize: 28, marginBottom: 4 }}>🚗</div>
+                    <h4 style={{ margin: "0 0 2px", fontSize: 14, fontWeight: 800, color: "#0F172A" }}>Add your vehicle</h4>
+                    <p style={{ fontSize: 11, color: "#64748B", margin: "0 0 12px" }}>Get better parking recommendations</p>
+                    <button style={{ width: "100%", padding: 12, borderRadius: 12, background: "#FFF", border: "1.5px solid #22C55E", color: "#22C55E", fontWeight: 800, fontSize: 13, cursor: "pointer" }}>
+                      + Add Vehicle
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── 44: ADDRESS BOOK ─── */}
+            {activeScreen === "44" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <button onClick={() => setActiveScreen("24")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Address Book</h3>
+                  <button style={{ background: "none", border: "none", fontSize: 22, fontWeight: 900, cursor: "pointer", color: "#22C55E" }}>+</button>
+                </div>
+
+                <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                  {[
+                    { title: "Home", addr: "12, 4th Street, Anna Nagar, Chennai - 600040", icon: "🏠", default: true, checked: true },
+                    { title: "Office", addr: "DLF IT Park, Manapakkam, Chennai - 600089", icon: "💼", default: false, checked: false },
+                    { title: "Gym", addr: "Slim Fit Gym, Valasaravakkam, Chennai - 600087", icon: "🏋️", default: false, checked: false },
+                    { title: "Parents Home", addr: "24, West Street, Madurai, Tamil Nadu - 625001", icon: "👤", default: false, checked: false },
+                  ].map((a, idx) => (
+                    <div key={idx} style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
+                      <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{a.icon}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                          <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: "#0F172A" }}>{a.title}</h4>
+                          {a.default && <span style={{ background: "#DCFCE7", color: "#22C55E", fontSize: 9, fontWeight: 800, padding: "2px 6px", borderRadius: 6 }}>Default</span>}
+                        </div>
+                        <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748B" }}>{a.addr}</p>
+                      </div>
+                      <div style={{ width: 18, height: 18, borderRadius: "50%", border: a.checked ? "5px solid #22C55E" : "2px solid #CBD5E1" }} />
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ padding: 16, background: "#FFF", borderTop: "1px solid #E2E8F0" }}>
+                  <button style={{ width: "100%", padding: 14, borderRadius: 14, background: "#FFF", border: "1.5px solid #22C55E", color: "#22C55E", fontWeight: 800, fontSize: 14, cursor: "pointer" }}>
+                    + Add New Address
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── 45: SUPPORT CENTER ─── */}
+            {activeScreen === "45" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <button onClick={() => setActiveScreen("24")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Support Center</h3>
+                  <span style={{ width: 20 }} />
+                </div>
+
+                <div style={{ flex: 1, padding: 20, display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", fontSize: 40 }}>
+                      🎧
+                    </div>
+                    <h3 style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", margin: "0 0 4px" }}>How can we help you?</h3>
+                    <p style={{ fontSize: 12, color: "#64748B", margin: 0 }}>We're here to assist you 24/7</p>
+                  </div>
+
+                  <div style={{ background: "#FFF", borderRadius: 20, border: "1px solid #E2E8F0" }}>
+                    {[
+                      { title: "FAQs", sub: "Find answers to common questions", icon: "ℹ️", screen: "26" },
+                      { title: "Chat with Us", sub: "Talk to our support team", icon: "💬", screen: "26" },
+                      { title: "Call Us", sub: "+91 98765 43210", icon: "📞", screen: "45" },
+                      { title: "Raise a Ticket", sub: "Report an issue or feedback", icon: "📋", screen: "45" },
+                    ].map((s, i) => (
+                      <div key={i} onClick={() => setActiveScreen(s.screen)} style={{ padding: "14px 16px", display: "flex", gap: 12, alignItems: "center", borderBottom: i < 3 ? "1px solid #F1F5F9" : "none", cursor: "pointer" }}>
+                        <span style={{ fontSize: 20 }}>{s.icon}</span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 800, fontSize: 14, color: "#0F172A" }}>{s.title}</div>
+                          <div style={{ fontSize: 11, color: "#64748B" }}>{s.sub}</div>
+                        </div>
+                        <span style={{ color: "#94A3B8" }}>›</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── 46: PAYMENT METHODS ─── */}
+            {activeScreen === "46" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <button onClick={() => setActiveScreen("24")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Payment Methods</h3>
+                  <button style={{ background: "none", border: "none", fontSize: 22, fontWeight: 900, cursor: "pointer", color: "#22C55E" }}>+</button>
+                </div>
+
+                <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                  {[
+                    { title: "UPI", desc: "dharani@okaxis", primary: true, icon: "🅿️" },
+                    { title: "HDFC Bank •••• 1234", desc: "Debit Card", logo: "VISA", icon: "💳" },
+                    { title: "ICICI Bank •••• 5678", desc: "Credit Card", logo: "MC", icon: "💳" },
+                    { title: "Paytm Wallet", desc: "₹1,250 Balance", primary: false, icon: "👛" },
+                  ].map((pm, i) => (
+                    <div key={i} style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
+                      <span style={{ fontSize: 22 }}>{pm.icon}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                          <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: "#0F172A" }}>{pm.title}</h4>
+                          {pm.primary && <span style={{ background: "#DCFCE7", color: "#22C55E", fontSize: 9, fontWeight: 800, padding: "2px 6px", borderRadius: 6 }}>Primary</span>}
+                        </div>
+                        <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748B" }}>{pm.desc}</p>
+                      </div>
+                      {pm.logo && <span style={{ fontWeight: 900, fontSize: 12, color: "#3B82F6" }}>{pm.logo}</span>}
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ padding: 16, background: "#FFF", borderTop: "1px solid #E2E8F0" }}>
+                  <button style={{ width: "100%", padding: 14, borderRadius: 14, background: "#FFF", border: "1.5px solid #22C55E", color: "#22C55E", fontWeight: 800, fontSize: 14, cursor: "pointer" }}>
+                    + Add New Payment Method
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── 47: OFFERS & PROMOTIONS ─── */}
+            {activeScreen === "47" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px 12px", background: "#FFF", borderBottom: "1px solid #E2E8F0" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                    <button onClick={() => setActiveScreen("24")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                    <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Offers & Promotions</h3>
+                    <span style={{ width: 20 }} />
+                  </div>
+
+                  <div style={{ display: "flex", gap: 24, justifyContent: "center" }}>
+                    <span style={{ paddingBottom: 6, fontSize: 13, fontWeight: 800, color: "#22C55E", borderBottom: "2px solid #22C55E" }}>Available</span>
+                    <span style={{ paddingBottom: 6, fontSize: 13, fontWeight: 600, color: "#64748B" }}>Applied</span>
+                  </div>
+                </div>
+
+                <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                  {[
+                    { tag: "10% OFF", title: "Flat 10% off on your next booking", code: "Use code: PARK10", valid: "Valid till 31 May 2025" },
+                    { tag: "20% OFF", title: "Get 20% cashback up to ₹100", code: "Min. booking ₹200", valid: "Valid till 10 June 2025" },
+                    { tag: "₹50 OFF", title: "Flat ₹50 off on hourly bookings", code: "Min. booking 2 hours", valid: "Valid till 15 June 2025" },
+                  ].map((o, idx) => (
+                    <div key={idx} style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
+                      <div style={{ background: "#DCFCE7", color: "#22C55E", padding: "12px 10px", borderRadius: 12, fontWeight: 900, fontSize: 12, textAlign: "center" }}>
+                        {o.tag}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <h4 style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 800, color: "#0F172A" }}>{o.title}</h4>
+                        <div style={{ fontSize: 11, color: "#22C55E", fontWeight: 700 }}>{o.code}</div>
+                        <div style={{ fontSize: 10, color: "#94A3B8", marginTop: 2 }}>{o.valid}</div>
+                      </div>
+                      <button onClick={() => setActiveScreen("12")} style={{ background: "#22C55E", border: "none", color: "#FFF", padding: "6px 12px", borderRadius: 8, fontWeight: 700, fontSize: 11, cursor: "pointer" }}>
+                        Apply
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ─── 48: INVITE FRIENDS ─── */}
+            {activeScreen === "48" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF", textAlign: "center" }}>
+                <div>
+                  <button onClick={() => setActiveScreen("24")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", marginBottom: 12, alignSelf: "flex-start" }}>←</button>
+                  <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Invite Friends</h3>
+
+                  <div style={{ width: 150, height: 110, margin: "0 auto 16px" }}>
+                    <svg viewBox="0 0 150 110" width="100%" height="100%">
+                      <circle cx="45" cy="55" r="26" fill="#22C55E" opacity="0.2" />
+                      <circle cx="105" cy="55" r="26" fill="#F59E0B" opacity="0.2" />
+                      <rect x="60" y="40" width="30" height="30" rx="8" fill="#22C55E" />
+                      <path d="M75 45 L75 65 M65 55 L85 55" stroke="#FFF" strokeWidth="4" strokeLinecap="round" />
+                    </svg>
+                  </div>
+
+                  <h3 style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Invite friends & earn rewards!</h3>
+                  <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 20px", lineHeight: 1.4 }}>
+                    You both get <strong>₹100</strong> when your friend completes their first booking.
+                  </p>
+
+                  <div style={{ background: "#F8FAFC", borderRadius: 16, border: "1.5px dashed #CBD5E1", padding: 14, display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                    <span style={{ fontWeight: 900, fontSize: 16, color: "#0F172A", letterSpacing: "0.08em" }}>PAARKKAR100</span>
+                    <span style={{ color: "#22C55E", fontWeight: 800, fontSize: 13, cursor: "pointer" }}>📋</span>
+                  </div>
+
+                  <button style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 8px 20px rgba(34,197,94,0.3)" }}>
+                    Share Invite Link
+                  </button>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-around", background: "#F8FAFC", padding: 14, borderRadius: 16, border: "1px solid #E2E8F0" }}>
+                  <div>
+                    <span style={{ fontSize: 11, color: "#64748B" }}>Friends Invited</span>
+                    <div style={{ fontWeight: 900, fontSize: 18, color: "#0F172A" }}>12</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: 11, color: "#64748B" }}>Rewards Earned</span>
+                    <div style={{ fontWeight: 900, fontSize: 18, color: "#22C55E" }}>₹1,200</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── 49: NOTIFICATIONS (DETAILED) ─── */}
+            {activeScreen === "49" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px 12px", background: "#FFF", borderBottom: "1px solid #E2E8F0" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                    <button onClick={() => setActiveScreen("24")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                    <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Notifications</h3>
+                    <button style={{ background: "none", border: "none", fontSize: 18, cursor: "pointer" }}>⚙️</button>
+                  </div>
+
+                  <div style={{ display: "flex", gap: 10, overflowX: "auto" }}>
+                    {["All", "Bookings", "Offers", "Updates"].map((f, i) => (
+                      <span key={i} style={{ padding: "6px 14px", borderRadius: 20, fontSize: 11, fontWeight: 800, background: i === 0 ? "#22C55E" : "#F1F5F9", color: i === 0 ? "#FFF" : "#64748B", cursor: "pointer" }}>
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                  {[
+                    { title: "Booking Confirmed", desc: "Home Garage • Your booking is confirmed.", time: "2m ago", icon: "🟢" },
+                    { title: "Payment Successful", desc: "₹80 has been paid successfully.", time: "1h ago", icon: "💳" },
+                    { title: "Payout Initiated", desc: "₹2,350 will be credited to your bank account.", time: "3h ago", icon: "🏦" },
+                    { title: "New Booking Request", desc: "Office Basement requested a booking.", time: "5h ago", icon: "👤" },
+                    { title: "Offer Unlocked!", desc: "You have unlocked a new offer.", time: "1d ago", icon: "🏷️" },
+                  ].map((n, i) => (
+                    <div key={i} style={{ background: "#FFF", borderRadius: 16, padding: 14, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "flex-start" }}>
+                      <span style={{ fontSize: 20 }}>{n.icon}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
+                          <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: "#0F172A" }}>{n.title}</h4>
+                          <span style={{ fontSize: 10, color: "#94A3B8" }}>{n.time}</span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: 11, color: "#64748B", lineHeight: 1.4 }}>{n.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ─── 50: SETTINGS (MORE) ─── */}
+            {activeScreen === "50" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "16px 20px", background: "#FFF", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <button onClick={() => setActiveScreen("24")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Settings</h3>
+                  <span style={{ width: 20 }} />
+                </div>
+
+                <div style={{ flex: 1, padding: 20, display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 800, color: "#64748B", display: "block", marginBottom: 8 }}>Preferences</label>
+                    <div style={{ background: "#FFF", borderRadius: 16, border: "1px solid #E2E8F0" }}>
+                      <div style={{ padding: "14px 16px", display: "flex", justifyContent: "space-between", borderBottom: "1px solid #F1F5F9", cursor: "pointer" }}>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: "#0F172A" }}>🎨 Theme</span>
+                        <span style={{ color: "#64748B", fontSize: 12 }}>Light ›</span>
+                      </div>
+                      <div style={{ padding: "14px 16px", display: "flex", justifyContent: "space-between", borderBottom: "1px solid #F1F5F9", cursor: "pointer" }}>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: "#0F172A" }}>📏 Units</span>
+                        <span style={{ color: "#64748B", fontSize: 12 }}>Metric ›</span>
+                      </div>
+                      <div style={{ padding: "14px 16px", display: "flex", justifyContent: "space-between", cursor: "pointer" }}>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: "#0F172A" }}>🔒 Privacy</span>
+                        <span style={{ color: "#94A3B8" }}>›</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 800, color: "#64748B", display: "block", marginBottom: 8 }}>App</label>
+                    <div style={{ background: "#FFF", borderRadius: 16, border: "1px solid #E2E8F0" }}>
+                      <div onClick={() => setActiveScreen("48")} style={{ padding: "14px 16px", display: "flex", justifyContent: "space-between", borderBottom: "1px solid #F1F5F9", cursor: "pointer" }}>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: "#0F172A" }}>📢 Share App</span>
+                        <span style={{ color: "#94A3B8" }}>›</span>
+                      </div>
+                      <div style={{ padding: "14px 16px", display: "flex", justifyContent: "space-between", borderBottom: "1px solid #F1F5F9", cursor: "pointer" }}>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: "#0F172A" }}>⭐ Rate Us</span>
+                        <span style={{ color: "#94A3B8" }}>›</span>
+                      </div>
+                      <div style={{ padding: "14px 16px", display: "flex", justifyContent: "space-between", cursor: "pointer" }}>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: "#0F172A" }}>ℹ️ App Version</span>
+                        <span style={{ color: "#94A3B8", fontSize: 11 }}>v1.0.0 ›</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ textAlign: "center", marginTop: 10 }}>
+                    <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", color: "#EF4444", fontWeight: 800, fontSize: 14, cursor: "pointer" }}>
+                      Logout
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
