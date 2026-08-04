@@ -1049,31 +1049,71 @@ export default function FullShowcaseBoard() {
           {/* SCREEN CONTENT AREA */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
             
-            {/* ─── SCREEN 01: SPLASH SCREEN ─── */}
+            {/* ─── SCREEN 01: EXACT MATCH TO TARGET REFERENCE IMAGE 2 ─── */}
             {activeScreen === "01" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "30px 24px 30px", background: "#FFF" }}>
-                <div style={{ textAlign: "center", marginTop: 10 }}>
-                  <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.35)" }}>
-                    <span style={{ color: "#FFF", fontSize: 48, fontWeight: 900 }}>P</span>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "24px 20px 20px", background: "#FFFFFF", position: "relative", overflow: "hidden" }}>
+                
+                {/* BRAND HEADER: GREEN MAP PIN + PAARKKAR LOGO & TAGLINE */}
+                <div style={{ textAlign: "center", marginTop: 10, zIndex: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 12 }}>
+                    {/* GREEN MAP PIN LOGO WITH WHITE P */}
+                    <div style={{ position: "relative", width: 56, height: 66, display: "flex", alignItems: "center", justifyContent: "center", filter: "drop-shadow(0 8px 18px rgba(34,197,94,0.4))" }}>
+                      <svg viewBox="0 0 100 120" width="56" height="66" fill="none">
+                        <path d="M50 0 C22.4 0 0 22.4 0 50 C0 80 50 120 50 120 C50 120 100 80 100 50 C100 22.4 77.6 0 50 0 Z" fill="#22C55E" />
+                        <circle cx="50" cy="46" r="28" fill="#16A34A" />
+                        <text x="50" y="58" font-family="system-ui, sans-serif" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">P</text>
+                      </svg>
+                    </div>
+
+                    <h1 style={{ fontSize: 34, fontWeight: 900, color: "#0F172A", margin: 0, letterSpacing: "-0.03em", fontFamily: "system-ui, sans-serif" }}>
+                      Paarkkar
+                    </h1>
                   </div>
-                  <h1 style={{ fontSize: 38, fontWeight: 900, color: "#0F172A", margin: "0 0 6px", letterSpacing: "-0.03em" }}>PARKKAR</h1>
-                  <p style={{ fontSize: 15, fontWeight: 600, color: "#64748B", margin: 0 }}>
-                    Park Anywhere. Earn <span style={{ color: "#22C55E", fontWeight: 800 }}>Everywhere.</span>
+
+                  <p style={{ fontSize: 15, fontWeight: 700, color: "#475569", margin: 0, lineHeight: 1.45, letterSpacing: "-0.01em" }}>
+                    Park Anywhere.<br />
+                    Earn Everywhere.
                   </p>
                 </div>
 
-                <div style={{ width: "100%" }}>
-                  <RealGaragePhoto height={210} badge="MANDATORY KYC & FIREBASE INTEGRATED" />
+                {/* CENTER CITY SKYLINE & WHITE LUXURY SEDAN CAR WITH FLOATING GREEN P MAP PIN */}
+                <div style={{ width: "100%", flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", position: "relative", margin: "16px 0", minHeight: 280 }}>
+                  
+                  {/* FLOATING GREEN P MAP PIN PINNED ON TOP OF CAR */}
+                  <div style={{ position: "absolute", top: "18%", left: "46%", transform: "translateX(-50%)", zIndex: 12, animation: "bounce 2s infinite ease-in-out", filter: "drop-shadow(0 10px 20px rgba(34,197,94,0.5))" }}>
+                    <svg viewBox="0 0 100 120" width="52" height="62" fill="none">
+                      <path d="M50 0 C22.4 0 0 22.4 0 50 C0 80 50 120 50 120 C50 120 100 80 100 50 C100 22.4 77.6 0 50 0 Z" fill="#22C55E" />
+                      <circle cx="50" cy="46" r="28" fill="#16A34A" />
+                      <text x="50" y="58" font-family="system-ui, sans-serif" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">P</text>
+                    </svg>
+                  </div>
+
+                  {/* CITY CAR ILLUSTRATION BACKGROUND */}
+                  <div style={{ width: "100%", height: 260, borderRadius: 24, overflow: "hidden", position: "relative", boxShadow: "0 12px 30px rgba(0,0,0,0.08)" }}>
+                    <SmartImage 
+                      sources={[process.env.PUBLIC_URL + "/assets/splash_city_car.png", process.env.PUBLIC_URL + "/assets/driver_car.png"]} 
+                      alt="Paarkkar City Car" 
+                    />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(255,255,255,0.9) 0%, transparent 40%)" }} />
+                  </div>
                 </div>
 
-                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
-                  <button onClick={() => setActiveScreen("02")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer", boxShadow: "0 8px 20px rgba(34,197,94,0.35)" }}>
+                {/* BOTTOM ACTION BUTTONS */}
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10, zIndex: 20 }}>
+                  <button 
+                    onClick={() => setActiveScreen("02")} 
+                    style={{ width: "100%", padding: "16px", borderRadius: 18, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 900, cursor: "pointer", boxShadow: "0 8px 24px rgba(34,197,94,0.38)" }}
+                  >
                     Get Started
                   </button>
-                  <button onClick={() => setActiveScreen("06")} style={{ width: "100%", padding: 12, borderRadius: 16, background: "transparent", border: "1.5px solid #E2E8F0", color: "#0F172A", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+                  <button 
+                    onClick={() => setActiveScreen("06")} 
+                    style={{ width: "100%", padding: "14px", borderRadius: 18, background: "#FFFFFF", border: "1.5px solid #E2E8F0", color: "#0F172A", fontSize: 14, fontWeight: 800, cursor: "pointer", boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}
+                  >
                     Already have an account? Sign In
                   </button>
                 </div>
+
               </div>
             )}
 
