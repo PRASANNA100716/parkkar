@@ -109,6 +109,11 @@ const REAL_IMAGES = {
     "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Parking_lot_in_Fresno%2C_California.jpg/800px-Parking_lot_in_Fresno%2C_California.jpg",
     "https://images.pexels.com/photos/1004409/pexels-photo-1004409.jpeg?auto=compress&cs=tinysrgb&w=800",
     "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?auto=format&fit=crop&w=800&q=80"
+  ],
+  security: [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Automatic_number_plate_recognition_barrier_parking.jpg/800px-Automatic_number_plate_recognition_barrier_parking.jpg",
+    "https://images.pexels.com/photos/4481326/pexels-photo-4481326.jpeg?auto=compress&cs=tinysrgb&w=800",
+    "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80"
   ]
 };
 
@@ -169,6 +174,20 @@ const RealDrivewayPhoto = ({ height = 200, badge = "GATED RESIDENTIAL DRIVEWAY" 
     </div>
     <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
       {badge}
+    </div>
+  </div>
+);
+
+const RealSecurityPhoto = ({ height = 230 }) => (
+  <div style={{ width: "100%", height, borderRadius: 24, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
+    <SmartImage sources={REAL_IMAGES.security} alt="Real Security & CCTV Monitored Parking" />
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.9) 0%, transparent 60%)" }} />
+    <div style={{ position: "absolute", top: 14, right: 14, background: "#22C55E", color: "#FFF", padding: "4px 10px", borderRadius: 10, fontSize: 11, fontWeight: 800, zIndex: 2 }}>
+      100% Protected
+    </div>
+    <div style={{ position: "absolute", bottom: 14, left: 16, right: 16, color: "#FFF", zIndex: 2 }}>
+      <div style={{ fontSize: 18, fontWeight: 900, marginBottom: 2 }}>Gated & CCTV Monitored</div>
+      <div style={{ fontSize: 12, color: "#CBD5E1" }}>Verified hosts • 24/7 Dedicated Assistance</div>
     </div>
   </div>
 );
@@ -461,17 +480,8 @@ export default function FullShowcaseBoard() {
             {/* ─── ONBOARDING 3 ─── */}
             {activeScreen === "04" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
-                <div style={{ width: "100%", borderRadius: 24, overflow: "hidden", border: "1px solid #E2E8F0", boxShadow: "0 10px 25px rgba(0,0,0,0.06)", background: "#0F172A", padding: 24, color: "#FFF", display: "flex", flexDirection: "column", justifyContent: "space-between", height: 230, boxSizing: "border-box" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 14, background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <IconShield size={24} color="#FFF" />
-                    </div>
-                    <span style={{ background: "#DCFCE7", color: "#16A34A", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 8 }}>100% Protected</span>
-                  </div>
-                  <div>
-                    <h3 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 900 }}>Gated & CCTV Monitored</h3>
-                    <p style={{ margin: 0, fontSize: 12, color: "#94A3B8" }}>Verified hosts, instant digital check-ins, and 24/7 dedicated customer assistance.</p>
-                  </div>
+                <div style={{ width: "100%" }}>
+                  <RealSecurityPhoto height={230} />
                 </div>
 
                 <div style={{ textAlign: "center" }}>
