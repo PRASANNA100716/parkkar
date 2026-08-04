@@ -341,7 +341,6 @@ function TamilNaduMap({ selectedSpot, onSelectSpot }) {
   const markersRef = useRef([]);
 
   useEffect(() => {
-    // Ensure Leaflet is loaded
     if (!window.L) {
       const script = document.createElement("script");
       script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
@@ -354,13 +353,11 @@ function TamilNaduMap({ selectedSpot, onSelectSpot }) {
     function initLeafletMap() {
       if (!mapContainerRef.current || !window.L) return;
 
-      // Prevent duplicate init
       if (leafletInstanceRef.current) {
         leafletInstanceRef.current.remove();
         leafletInstanceRef.current = null;
       }
 
-      // Initialize Leaflet Map centered on Chennai, Tamil Nadu
       const map = window.L.map(mapContainerRef.current, {
         zoomControl: false,
         attributionControl: false
@@ -368,13 +365,11 @@ function TamilNaduMap({ selectedSpot, onSelectSpot }) {
 
       leafletInstanceRef.current = map;
 
-      // Add CartoDB Dark Matter tile layer for slick Rapido UI
       window.L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
         subdomains: 'abcd'
       }).addTo(map);
 
-      // Render Price Pins on Tamil Nadu map
       TAMIL_NADU_SPOTS.forEach((spot) => {
         const isSelected = selectedSpot && selectedSpot.id === spot.id;
         
@@ -422,7 +417,6 @@ function TamilNaduMap({ selectedSpot, onSelectSpot }) {
     };
   }, []);
 
-  // Update map pan when selectedSpot changes
   useEffect(() => {
     if (leafletInstanceRef.current && selectedSpot) {
       leafletInstanceRef.current.panTo([selectedSpot.lat, selectedSpot.lng], { animate: true });
@@ -446,8 +440,8 @@ export default function FullShowcaseBoard() {
   const [durationHours, setDurationHours] = useState(4);
   const [selectedPayment, setSelectedPayment] = useState("upi");
 
-  // Selected Spot State (Default to Spot 1: Home Garage Chennai)
-  const [selectedSpot, setSelectedSpot] = useState(TAMIL_NADU_SPOTS[0]);
+  // Selected Spot State (Default to Spot 2: Subterranean Office Basement T. Nagar)
+  const [selectedSpot, setSelectedSpot] = useState(TAMIL_NADU_SPOTS[1]);
 
   const screensList = [
     { id: "01", name: "Splash Screen" },
@@ -868,7 +862,6 @@ export default function FullShowcaseBoard() {
             {/* ─── HOME / SEARCH (INTERACTIVE TAMIL NADU RAPIDO/OLA VECTOR MAP) ─── */}
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
-                {/* HEADER */}
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
                   <button onClick={() => setShowDrawer(true)} style={{ background: "none", border: "none", cursor: "pointer" }}>
                     <IconMenu size={22} color="#0F172A" />
@@ -882,7 +875,6 @@ export default function FullShowcaseBoard() {
                   </button>
                 </div>
 
-                {/* SEARCH & CITY SELECTOR */}
                 <div style={{ padding: "8px 16px 12px", background: "#FFF", display: "flex", flexDirection: "column", gap: 8 }}>
                   <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 14, padding: "10px 14px", alignItems: "center", gap: 10 }}>
                     <IconSearch size={18} color="#64748B" />
@@ -892,7 +884,6 @@ export default function FullShowcaseBoard() {
                     </button>
                   </div>
 
-                  {/* TAMIL NADU CITY FILTER PILLS */}
                   <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 2 }}>
                     {["Chennai", "Coimbatore", "Madurai"].map((cityName) => {
                       const spotInCity = TAMIL_NADU_SPOTS.find(s => s.city === cityName);
@@ -922,14 +913,12 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                {/* HIGH-PERFORMANCE TAMIL NADU MAP CANVAS */}
                 <div style={{ flex: 1, background: "#0F172A", position: "relative", overflow: "hidden" }}>
                   <TamilNaduMap 
                     selectedSpot={selectedSpot} 
                     onSelectSpot={(spot) => setSelectedSpot(spot)} 
                   />
 
-                  {/* FLOATING SELECTED SPOT PREVIEW CARD */}
                   <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.25)", display: "flex", gap: 12, alignItems: "center", zIndex: 500 }}>
                     <div style={{ width: 74, height: 74, borderRadius: 12, overflow: "hidden", flexShrink: 0 }}>
                       <SmartImage sources={selectedSpot.imgSources} alt="spot" />
@@ -980,11 +969,12 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── PARKING DETAILS ─── */}
+            {/* ─── PARKING DETAILS (ULTRA-RICH RAPIDO/UBER STYLE DETAIL VIEW) ─── */}
             {activeScreen === "10" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF", justifyContent: "space-between" }}>
-                <div>
-                  <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC", justifyContent: "space-between" }}>
+                <div style={{ overflowY: "auto" }}>
+                  {/* HEADER BAR */}
+                  <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
                     <button onClick={() => setActiveScreen("09")} style={{ background: "none", border: "none", cursor: "pointer" }}>
                       <IconChevronLeft size={22} color="#0F172A" />
                     </button>
@@ -994,68 +984,118 @@ export default function FullShowcaseBoard() {
                     </button>
                   </div>
 
-                  <div style={{ padding: "0 16px 16px" }}>
-                    {selectedSpot.photoComponent || <RealGaragePhoto height={200} />}
+                  {/* HERO PHOTO CARD */}
+                  <div style={{ padding: "14px 16px 10px" }}>
+                    {selectedSpot.photoComponent || <RealGaragePhoto height={210} />}
                   </div>
 
-                  <div style={{ padding: "0 20px 16px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <div>
-                      <h2 style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", margin: "0 0 2px" }}>{selectedSpot.title}</h2>
-                      <p style={{ color: "#64748B", fontSize: 13, margin: 0, fontWeight: 500 }}>{selectedSpot.address}</p>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#F59E0B", fontWeight: 800, fontSize: 14 }}>
-                      <span>★</span>
-                      <span style={{ color: "#0F172A" }}>{selectedSpot.rating}</span>
-                    </div>
-                  </div>
-
-                  <div style={{ padding: "0 20px 20px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-                    {[
-                      { icon: <IconCCTV size={22} color="#475569" />, label: "CCTV" },
-                      { icon: <IconBuilding size={22} color="#475569" />, label: "Covered" },
-                      { icon: <IconClock size={22} color="#475569" />, label: "24/7 Access" },
-                      { icon: <IconEV size={22} color="#475569" />, label: "EV Ready" },
-                    ].map((f, i) => (
-                      <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                        <div style={{ width: 50, height: 50, borderRadius: "50%", background: "#F8FAFC", border: "1px solid #F1F5F9", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          {f.icon}
-                        </div>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: "#475569" }}>{f.label}</span>
+                  {/* TITLE, LOCATION & RATING ROW */}
+                  <div style={{ padding: "0 20px 14px", background: "#FFF", marginBottom: 12, borderBottom: "1px solid #F1F5F9" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                      <h2 style={{ fontSize: 22, fontWeight: 900, color: "#0F172A", margin: 0, lineHeight: 1.2 }}>{selectedSpot.title}</h2>
+                      <div style={{ background: "#FEF3C7", color: "#D97706", padding: "4px 10px", borderRadius: 10, fontWeight: 900, fontSize: 13, display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+                        <span>★</span>
+                        <span>{selectedSpot.rating}</span>
                       </div>
-                    ))}
+                    </div>
+                    <div style={{ fontSize: 13, color: "#64748B", fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+                      <span>📍 {selectedSpot.address}</span>
+                      <span>•</span>
+                      <span style={{ color: "#22C55E" }}>⚡ 0.4 km away (3 min drive)</span>
+                    </div>
                   </div>
 
-                  <div style={{ padding: "0 20px" }}>
-                    <h4 style={{ fontSize: 15, fontWeight: 800, color: "#0F172A", margin: "0 0 6px" }}>About Space</h4>
-                    <p style={{ fontSize: 13, color: "#64748B", lineHeight: 1.5, margin: 0 }}>
+                  {/* LIVE AVAILABILITY BANNER */}
+                  <div style={{ margin: "0 16px 14px" }}>
+                    <div style={{ background: "#DCFCE7", border: "1.5px solid #BBF7D0", padding: "12px 16px", borderRadius: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#22C55E" }} />
+                        <span style={{ fontSize: 13, fontWeight: 900, color: "#15803D" }}>3 Parking Slots Instantly Free</span>
+                      </div>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: "#16A34A", background: "#FFF", padding: "3px 8px", borderRadius: 6 }}>AUTO PASS</span>
+                    </div>
+                  </div>
+
+                  {/* HOST INFORMATION PROFILE CARD */}
+                  <div style={{ margin: "0 16px 14px", background: "#FFF", padding: 14, borderRadius: 16, border: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#0F172A", color: "#22C55E", fontWeight: 900, fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        ET
+                      </div>
+                      <div>
+                        <h4 style={{ margin: "0 0 2px", fontSize: 14, fontWeight: 900, color: "#0F172A" }}>Express Towers Commercial Host</h4>
+                        <span style={{ fontSize: 11, color: "#64748B", fontWeight: 600 }}>Verified Host • Responds in &lt; 2 mins</span>
+                      </div>
+                    </div>
+                    <button style={{ background: "#F1F5F9", border: "none", color: "#0F172A", padding: "8px 12px", borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
+                      📞 Call Host
+                    </button>
+                  </div>
+
+                  {/* 4 RICH SPECS CARDS GRID */}
+                  <div style={{ padding: "0 16px 14px" }}>
+                    <h4 style={{ fontSize: 14, fontWeight: 900, color: "#0F172A", margin: "0 0 10px" }}>Space Amenities & Specifications</h4>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+                      {[
+                        { icon: "🛡️", title: "CCTV Security", desc: "24/7 Monitored Barrier" },
+                        { icon: "☂️", title: "100% Covered", desc: "Underground Basement" },
+                        { icon: "⚡", title: "EV Fast Charge", desc: "60kW DC Plug Ready" },
+                        { icon: "⏱️", title: "24/7 Access", desc: "Unlimited Gate Entry" }
+                      ].map((item, idx) => (
+                        <div key={idx} style={{ background: "#FFF", padding: 12, borderRadius: 14, border: "1px solid #E2E8F0" }}>
+                          <span style={{ fontSize: 20, display: "block", marginBottom: 4 }}>{item.icon}</span>
+                          <h5 style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 900, color: "#0F172A" }}>{item.title}</h5>
+                          <p style={{ margin: 0, fontSize: 11, color: "#64748B", fontWeight: 600 }}>{item.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ABOUT SPACE SECTION */}
+                  <div style={{ margin: "0 16px 14px", background: "#FFF", padding: 16, borderRadius: 16, border: "1px solid #E2E8F0" }}>
+                    <h4 style={{ fontSize: 14, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>About this Space</h4>
+                    <p style={{ fontSize: 13, color: "#475569", lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
                       {selectedSpot.about}
                     </p>
                   </div>
+
+                  {/* DRIVER REVIEW PREVIEW */}
+                  <div style={{ margin: "0 16px 20px", background: "#F0FDF4", padding: 14, borderRadius: 16, border: "1px solid #BBF7D0" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                      <span style={{ fontSize: 12, fontWeight: 900, color: "#16A34A" }}>Verified Driver Review</span>
+                      <span style={{ fontSize: 11, color: "#F59E0B", fontWeight: 800 }}>★★★★★ 5.0</span>
+                    </div>
+                    <p style={{ fontSize: 12, color: "#15803D", margin: 0, fontStyle: "italic", fontWeight: 600 }}>
+                      "Extremely convenient parking right near Pondy Bazaar. Guard was super helpful and checking in was instant via QR code." — <strong>Karthik M.</strong>
+                    </p>
+                  </div>
+
                 </div>
 
-                <div style={{ padding: "16px 20px 24px", borderTop: "1px solid #F1F5F9", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
+                {/* STICKY BOTTOM ACTION FOOTER WITH PRICE AND BOOK NOW BUTTON */}
+                <div style={{ padding: "16px 20px 24px", borderTop: "1.5px solid #F1F5F9", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", boxShadow: "0 -6px 20px rgba(0,0,0,0.05)" }}>
                   <div>
-                    <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600, display: "block" }}>Price</span>
-                    <div style={{ fontSize: 20, fontWeight: 900, color: "#0F172A" }}>
-                      ₹{selectedSpot.price} <span style={{ fontSize: 13, color: "#64748B", fontWeight: 500 }}>/hr</span>
+                    <span style={{ fontSize: 11, color: "#16A34A", fontWeight: 800, display: "block" }}>● Instant Approval • Free Cancel</span>
+                    <div style={{ fontSize: 24, fontWeight: 900, color: "#0F172A" }}>
+                      ₹{selectedSpot.price} <span style={{ fontSize: 13, color: "#64748B", fontWeight: 600 }}>/hr</span>
                     </div>
                   </div>
 
                   <button 
                     onClick={() => setActiveScreen("11")} 
                     style={{ 
-                      padding: "14px 32px", 
+                      padding: "16px 36px", 
                       borderRadius: 16, 
                       background: "#22C55E", 
                       border: "none", 
                       color: "#FFF", 
                       fontWeight: 900, 
-                      fontSize: 15, 
+                      fontSize: 16, 
                       cursor: "pointer", 
-                      boxShadow: "0 6px 16px rgba(34,197,94,0.35)" 
+                      boxShadow: "0 8px 24px rgba(34,197,94,0.4)" 
                     }}
                   >
-                    Book Now
+                    Book Spot Now
                   </button>
                 </div>
               </div>
