@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import FullShowcaseBoard from "./components/FullShowcaseBoard";
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
 const T = {
@@ -6898,40 +6899,7 @@ export default function App() {
     );
   };
 
-  return (
-    <AppShell>
-      <style>{CSS}</style>
-      {screen === "splash" && (
-        <SplashScreen onDone={() => setScreen("login")} />
-      )}
-      {screen === "login" && (
-        <LoginScreen
-          onLogin={(u) => {
-            setUser(u);
-            setScreen("main");
-          }}
-        />
-      )}
-      {["main", "parkingDetail", "booking"].includes(screen) && (
-        <>
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-              minHeight: 0,
-            }}
-          >
-            {renderContent()}
-          </div>
-          {screen === "main" && (
-            <BottomNav active={activeTab} onNav={handleNav} mode={appMode} />
-          )}
-        </>
-      )}
-    </AppShell>
-  );
+  return <FullShowcaseBoard />;
 }
 
 // ─── APP SHELL ────────────────────────────────────────────────────────────────
