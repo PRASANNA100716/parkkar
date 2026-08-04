@@ -141,10 +141,16 @@ const IconBank = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
-const IconSettings = ({ size = 20, color = "currentColor" }) => (
+const IconLock = ({ size = 16, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-    <circle cx="12" cy="12" r="3" />
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+  </svg>
+);
+
+const IconNavigation = ({ size = 18, color = "currentColor" }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="3 11 22 2 13 21 11 13 3 11" />
   </svg>
 );
 
@@ -159,90 +165,58 @@ const IconBuilding = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
-const IconCheck = ({ size = 18, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
+// ─── ULTRA-REALISTIC REAL-WORLD PHOTOGRAPHY MEDIA COMPONENTS ─────────────────
+const REAL_IMAGES = {
+  garage: "https://images.unsplash.com/photo-1506521782020-18925f4bfa55?auto=format&fit=crop&w=800&q=80",
+  office: "https://images.unsplash.com/photo-1590674899484-13da0d1b58f5?auto=format&fit=crop&w=800&q=80",
+  driveway: "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?auto=format&fit=crop&w=800&q=80",
+  sedan: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80",
+  suv: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80",
+  avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+};
 
-const IconLock = ({ size = 16, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-  </svg>
-);
-
-const IconTag = ({ size = 18, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-    <line x1="7" y1="7" x2="7.01" y2="7" />
-  </svg>
-);
-
-const IconNavigation = ({ size = 18, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="3 11 22 2 13 21 11 13 3 11" />
-  </svg>
-);
-
-// ─── NATIVE ORIGINAL CODE-GENERATED UI GRAPHIC COMPONENTS ────────────────────
-const GraphicHomeGarage = ({ height = 180 }) => (
-  <div style={{ width: "100%", height, background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #334155", display: "flex", alignItems: "center", justifyContent: "center" }}>
-    <svg viewBox="0 0 400 200" width="100%" height="100%">
-      <rect width="100%" height="100%" fill="#0F172A" />
-      <path d="M30 170 L370 170 M50 170 L50 60 L350 60 L350 170" stroke="#334155" strokeWidth="4" fill="none" />
-      <rect x="70" y="80" width="260" height="90" rx="8" fill="#1E293B" stroke="#22C55E" strokeWidth="2" />
-      <line x1="70" y1="105" x2="330" y2="105" stroke="#334155" strokeWidth="2" />
-      <line x1="70" y1="130" x2="330" y2="130" stroke="#334155" strokeWidth="2" />
-      <g transform="translate(140, 95)">
-        <rect x="0" y="20" width="120" height="40" rx="8" fill="#22C55E" opacity="0.9" />
-        <circle cx="25" cy="60" r="8" fill="#FFF" />
-        <circle cx="95" cy="60" r="8" fill="#FFF" />
-        <path d="M25 20 L40 5 L80 5 L95 20 Z" fill="#16A34A" />
-      </g>
-      <circle cx="320" cy="40" r="10" fill="#22C55E" />
-      <text x="320" y="44" textAnchor="middle" fill="#FFF" fontSize="10" fontWeight="bold">LIVE</text>
-    </svg>
-    <div style={{ position: "absolute", bottom: 10, left: 14, background: "rgba(34,197,94,0.15)", border: "1px solid #22C55E", color: "#22C55E", padding: "4px 10px", borderRadius: 8, fontSize: 11, fontWeight: 800 }}>
-      SLOT A-12 • PRIVATE GARAGE
+const RealGaragePhoto = ({ height = 200, badge = "SLOT A-12 • PRIVATE GARAGE" }) => (
+  <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
+    <img src={REAL_IMAGES.garage} alt="Real Home Garage" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
+    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800 }}>
+      ● LIVE
+    </div>
+    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800 }}>
+      {badge}
     </div>
   </div>
 );
 
-const GraphicOfficeBasement = ({ height = 180 }) => (
-  <div style={{ width: "100%", height, background: "linear-gradient(135deg, #1E293B 0%, #0F172A 100%)", borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #334155", display: "flex", alignItems: "center", justifyContent: "center" }}>
-    <svg viewBox="0 0 400 200" width="100%" height="100%">
-      <rect width="100%" height="100%" fill="#1E293B" />
-      <path d="M0 160 L400 160" stroke="#94A3B8" strokeWidth="6" strokeDasharray="16 16" />
-      <rect x="60" y="40" width="120" height="100" rx="10" fill="#0F172A" stroke="#38BDF8" strokeWidth="2" />
-      <rect x="220" y="40" width="120" height="100" rx="10" fill="#0F172A" stroke="#22C55E" strokeWidth="2" />
-      <text x="120" y="95" textAnchor="middle" fill="#38BDF8" fontSize="14" fontWeight="900">B1 - 04</text>
-      <text x="280" y="95" textAnchor="middle" fill="#22C55E" fontSize="14" fontWeight="900">B1 - 05</text>
-      <text x="280" y="118" textAnchor="middle" fill="#22C55E" fontSize="10" fontWeight="bold">AVAILABLE</text>
-    </svg>
-    <div style={{ position: "absolute", bottom: 10, left: 14, background: "rgba(56,189,248,0.15)", border: "1px solid #38BDF8", color: "#38BDF8", padding: "4px 10px", borderRadius: 8, fontSize: 11, fontWeight: 800 }}>
-      OFFICE BASEMENT PARKING
+const RealOfficePhoto = ({ height = 200, badge = "OFFICE BASEMENT PARKING" }) => (
+  <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
+    <img src={REAL_IMAGES.office} alt="Real Office Basement" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
+    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(56,189,248,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800 }}>
+      AVAILABLE
+    </div>
+    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#38BDF8", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800 }}>
+      {badge}
     </div>
   </div>
 );
 
-const GraphicApartmentSpot = ({ height = 180 }) => (
-  <div style={{ width: "100%", height, background: "linear-gradient(135deg, #0F172A 0%, #16A34A 100%)", borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #334155", display: "flex", alignItems: "center", justifyContent: "center" }}>
-    <svg viewBox="0 0 400 200" width="100%" height="100%">
-      <rect width="100%" height="100%" fill="#0F172A" />
-      <circle cx="200" cy="100" r="60" fill="#22C55E" opacity="0.2" />
-      <path d="M180 100 L210 70 L200 100 L220 100 L190 130 L200 100 Z" fill="#22C55E" />
-      <text x="200" y="160" textAnchor="middle" fill="#FFF" fontSize="13" fontWeight="900">EV CHARGING READY</text>
-    </svg>
-    <div style={{ position: "absolute", bottom: 10, left: 14, background: "rgba(34,197,94,0.2)", border: "1px solid #22C55E", color: "#22C55E", padding: "4px 10px", borderRadius: 8, fontSize: 11, fontWeight: 800 }}>
-      GATED RESIDENTIAL DRIVEWAY
+const RealDrivewayPhoto = ({ height = 200, badge = "GATED RESIDENTIAL DRIVEWAY" }) => (
+  <div style={{ width: "100%", height, borderRadius: 16, overflow: "hidden", position: "relative", border: "1px solid #E2E8F0" }}>
+    <img src={REAL_IMAGES.driveway} alt="Real Driveway Spot" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 60%)" }} />
+    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(34,197,94,0.9)", color: "#FFF", padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 800 }}>
+      EV ⚡ READY
+    </div>
+    <div style={{ position: "absolute", bottom: 12, left: 14, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.2)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 800 }}>
+      {badge}
     </div>
   </div>
 );
 
 export default function FullShowcaseBoard() {
   const [activeScreen, setActiveScreen] = useState("01");
-  const [role, setRole] = useState(null); // driver | host
+  const [role, setRole] = useState(null);
   const [otpVal, setOtpVal] = useState(["2", "4", "6", "8", "2", "1"]);
   const [tabIndex, setTabIndex] = useState("Nearby");
   const [showQuickNav, setShowQuickNav] = useState(false);
@@ -254,13 +228,6 @@ export default function FullShowcaseBoard() {
   const [paymentMethod, setPaymentMethod] = useState("upi");
   const [extendOption, setExtendOption] = useState("1 Hour");
   const [bookingFilter, setBookingFilter] = useState("Completed");
-  const [notifFilter, setNotifFilter] = useState("All");
-
-  // Host Space Form state
-  const [spacePrice, setSpacePrice] = useState("40");
-  const [vehicleType, setVehicleType] = useState("Car");
-  const [withdrawAmount, setWithdrawAmount] = useState("2000");
-  const [withdrawMethod, setWithdrawMethod] = useState("bank");
 
   const [selectedSpot, setSelectedSpot] = useState({
     title: "Home Garage",
@@ -268,7 +235,7 @@ export default function FullShowcaseBoard() {
     rating: "4.8 (120)",
     price: 40,
     distance: "0.2 km",
-    graphic: <GraphicHomeGarage height={200} />,
+    photoComponent: <RealGaragePhoto height={210} badge="SLOT A-12 • PRIVATE GARAGE" />,
     features: ["Covered", "CCTV", "24/7 Access", "EV Ready"],
     about: "Private covered garage with 24/7 access. Gated security, CCTV monitoring, and dedicated EV charging port."
   });
@@ -374,9 +341,8 @@ export default function FullShowcaseBoard() {
                   </p>
                 </div>
 
-                {/* ORIGINAL CODE-GENERATED UI SPOT GRAPHIC */}
                 <div style={{ width: "100%" }}>
-                  <GraphicHomeGarage height={200} />
+                  <RealGaragePhoto height={210} badge="500+ VERIFIED SPACES LIVE" />
                 </div>
 
                 {/* PRIMARY ACTION BUTTONS ON SPLASH SCREEN */}
@@ -395,7 +361,7 @@ export default function FullShowcaseBoard() {
             {activeScreen === "02" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
                 <div style={{ width: "100%" }}>
-                  <GraphicOfficeBasement height={220} />
+                  <RealOfficePhoto height={230} badge="NEARBY INSTANT RESERVATION" />
                 </div>
 
                 <div style={{ textAlign: "center" }}>
@@ -422,7 +388,7 @@ export default function FullShowcaseBoard() {
             {activeScreen === "03" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
                 <div style={{ width: "100%" }}>
-                  <GraphicApartmentSpot height={220} />
+                  <RealDrivewayPhoto height={230} badge="EARN ₹12,450 / MONTH" />
                 </div>
 
                 <div style={{ textAlign: "center" }}>
@@ -448,7 +414,7 @@ export default function FullShowcaseBoard() {
             {/* ─── ONBOARDING 3 ─── */}
             {activeScreen === "04" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
-                <div style={{ width: "100%", borderRadius: 24, overflow: "hidden", border: "1px solid #E2E8F0", boxShadow: "0 10px 25px rgba(0,0,0,0.06)", background: "#0F172A", padding: 24, color: "#FFF", display: "flex", flexDirection: "column", justifyContent: "space-between", height: 220 }}>
+                <div style={{ width: "100%", borderRadius: 24, overflow: "hidden", border: "1px solid #E2E8F0", boxShadow: "0 10px 25px rgba(0,0,0,0.06)", background: "#0F172A", padding: 24, color: "#FFF", display: "flex", flexDirection: "column", justifyContent: "space-between", height: 230 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ width: 44, height: 44, borderRadius: 14, background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <IconShield size={24} color="#FFF" />
@@ -638,9 +604,7 @@ export default function FullShowcaseBoard() {
                   <div style={{ position: "absolute", top: 70, left: 60, background: "#22C55E", color: "#FFF", padding: "6px 12px", borderRadius: 16, fontWeight: 900, fontSize: 13, boxShadow: "0 4px 14px rgba(34,197,94,0.4)" }}>₹40/hr</div>
 
                   <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.25)", display: "flex", gap: 12, alignItems: "center" }}>
-                    <div style={{ width: 70, height: 70, borderRadius: 12, overflow: "hidden" }}>
-                      <GraphicHomeGarage height={70} />
-                    </div>
+                    <img src={REAL_IMAGES.garage} alt="spot" style={{ width: 70, height: 70, borderRadius: 12, objectFit: "cover" }} />
                     <div style={{ flex: 1 }}>
                       <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>{selectedSpot.title}</h4>
                       <p style={{ margin: "0 0 4px", fontSize: 12, color: "#64748B" }}>{selectedSpot.address}</p>
@@ -667,20 +631,18 @@ export default function FullShowcaseBoard() {
 
                 <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", gap: 14, overflowY: "auto" }}>
                   {[
-                    { title: "Home Garage", loc: "Anna Nagar, Chennai", graphic: <GraphicHomeGarage height={80} />, price: 40 },
-                    { title: "Office Basement", loc: "T. Nagar, Chennai", graphic: <GraphicOfficeBasement height={80} />, price: 60 },
-                    { title: "Apartment Parking", loc: "West Mambalam, Chennai", graphic: <GraphicApartmentSpot height={80} />, price: 35 },
+                    { title: "Home Garage", loc: "Anna Nagar, Chennai", img: REAL_IMAGES.garage, price: 40, photo: <RealGaragePhoto height={210} badge="SLOT A-12 • PRIVATE GARAGE" /> },
+                    { title: "Office Basement", loc: "T. Nagar, Chennai", img: REAL_IMAGES.office, price: 60, photo: <RealOfficePhoto height={210} badge="OFFICE BASEMENT PARKING" /> },
+                    { title: "Apartment Parking", loc: "West Mambalam, Chennai", img: REAL_IMAGES.driveway, price: 35, photo: <RealDrivewayPhoto height={210} badge="GATED RESIDENTIAL DRIVEWAY" /> },
                   ].map((item, idx) => (
                     <div key={idx} style={{ background: "#FFF", borderRadius: 16, padding: 12, border: "1px solid #E2E8F0", display: "flex", gap: 12, alignItems: "center" }}>
-                      <div style={{ width: 84, height: 84, borderRadius: 12, overflow: "hidden" }}>
-                        {item.graphic}
-                      </div>
+                      <img src={item.img} alt="spot" style={{ width: 84, height: 84, borderRadius: 12, objectFit: "cover" }} />
                       <div style={{ flex: 1 }}>
                         <h4 style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>{item.title}</h4>
                         <p style={{ margin: "0 0 6px", fontSize: 12, color: "#64748B" }}>{item.loc}</p>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div style={{ fontWeight: 800, color: "#0F172A", fontSize: 14 }}>₹{item.price}<span style={{ fontSize: 10, color: "#64748B" }}>/hr</span></div>
-                          <button onClick={() => { setSelectedSpot({...selectedSpot, title: item.title, address: item.loc, price: item.price, graphic: item.graphic}); setActiveScreen("10"); }} style={{ background: "#22C55E", border: "none", color: "#FFF", padding: "8px 14px", borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
+                          <button onClick={() => { setSelectedSpot({...selectedSpot, title: item.title, address: item.loc, price: item.price, photoComponent: item.photo}); setActiveScreen("10"); }} style={{ background: "#22C55E", border: "none", color: "#FFF", padding: "8px 14px", borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
                             Book Now
                           </button>
                         </div>
@@ -694,9 +656,9 @@ export default function FullShowcaseBoard() {
             {/* ─── PARKING DETAILS ─── */}
             {activeScreen === "10" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#FFF" }}>
-                <div style={{ height: 200, position: "relative" }}>
-                  {selectedSpot.graphic || <GraphicHomeGarage height={200} />}
-                  <button onClick={() => setActiveScreen("09")} style={{ position: "absolute", top: 12, left: 16, width: 36, height: 36, borderRadius: "50%", background: "#FFF", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
+                <div style={{ height: 210, position: "relative" }}>
+                  {selectedSpot.photoComponent || <RealGaragePhoto height={210} />}
+                  <button onClick={() => setActiveScreen("09")} style={{ position: "absolute", top: 12, left: 16, width: 36, height: 36, borderRadius: "50%", background: "#FFF", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 10 }}>
                     <IconChevronLeft size={20} color="#0F172A" />
                   </button>
                 </div>
@@ -738,7 +700,7 @@ export default function FullShowcaseBoard() {
                   <p style={{ fontSize: 13, color: "#64748B", margin: "0 0 20px" }}>Real-time Paarkkar native UI screen</p>
 
                   <div style={{ width: "100%", marginTop: 10 }}>
-                    <GraphicHomeGarage height={180} />
+                    <RealGaragePhoto height={190} />
                   </div>
                 </div>
 
