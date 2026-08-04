@@ -20,10 +20,10 @@ const T = {
 
 export default function FullShowcaseBoard() {
   const [activeScreen, setActiveScreen] = useState("01");
-  const [activeCategory, setActiveCategory] = useState("All");
   const [role, setRole] = useState(null); // driver | host
   const [otpVal, setOtpVal] = useState(["2", "4", "6", "8", "2", "1"]);
   const [tabIndex, setTabIndex] = useState("Nearby");
+  const [showQuickNav, setShowQuickNav] = useState(false);
   
   // Booking & Form state
   const [selectedDate, setSelectedDate] = useState("21 May");
@@ -52,133 +52,69 @@ export default function FullShowcaseBoard() {
   });
 
   const screensList = [
-    { id: "01", name: "Splash Screen", cat: "Onboarding" },
-    { id: "02", name: "Discover Spaces", cat: "Onboarding" },
-    { id: "03", name: "Host & Earn", cat: "Onboarding" },
-    { id: "04", name: "Safe & Secure", cat: "Onboarding" },
-    { id: "05", name: "Role Selector", cat: "Onboarding" },
-    { id: "06", name: "Account Login", cat: "Onboarding" },
-    { id: "07", name: "OTP Verification", cat: "Onboarding" },
-    { id: "08", name: "Map Search", cat: "Driver Flow" },
-    { id: "09", name: "List View", cat: "Driver Flow" },
-    { id: "10", name: "Space Details", cat: "Driver Flow" },
-    { id: "11", name: "Select Date & Time", cat: "Driver Flow" },
-    { id: "12", name: "Booking Summary", cat: "Driver Flow" },
-    { id: "13", name: "Payment Checkout", cat: "Driver Flow" },
-    { id: "14", name: "Payment Success", cat: "Driver Flow" },
-    { id: "15", name: "Active Parking", cat: "Driver Flow" },
-    { id: "16", name: "Host QR Check-in", cat: "Driver Flow" },
-    { id: "17", name: "GPS Navigation", cat: "Driver Flow" },
-    { id: "18", name: "Extend Parking", cat: "Driver Flow" },
-    { id: "19", name: "Parking Complete", cat: "Driver Flow" },
-    { id: "20", name: "My Bookings", cat: "Driver Flow" },
-    { id: "21", name: "Wallet Balance", cat: "Profile & Settings" },
-    { id: "22", name: "Notifications", cat: "Profile & Settings" },
-    { id: "23", name: "Saved Favorites", cat: "Driver Flow" },
-    { id: "24", name: "User Profile", cat: "Profile & Settings" },
-    { id: "25", name: "Account Settings", cat: "Profile & Settings" },
-    { id: "26", name: "Help Center", cat: "Profile & Settings" },
-    { id: "27", name: "Invite & Earn", cat: "Profile & Settings" },
-    { id: "28", name: "Booking Receipt", cat: "Driver Flow" },
-    { id: "29", name: "Host Dashboard", cat: "Host Flow" },
-    { id: "30", name: "Add Space (Intro)", cat: "Host Flow" },
-    { id: "31", name: "Add Space (Location)", cat: "Host Flow" },
-    { id: "32", name: "Add Space (Pricing)", cat: "Host Flow" },
-    { id: "33", name: "Add Space (Photos)", cat: "Host Flow" },
-    { id: "34", name: "Review & Publish", cat: "Host Flow" },
-    { id: "35", name: "Space Submitted", cat: "Host Flow" },
-    { id: "36", name: "My Space Listings", cat: "Host Flow" },
-    { id: "37", name: "Booking Requests", cat: "Host Flow" },
-    { id: "38", name: "Earnings Overview", cat: "Host Flow" },
-    { id: "39", name: "Withdraw Payout", cat: "Host Flow" },
-    { id: "40", name: "Reviews & Ratings", cat: "Host Flow" },
-    { id: "41", name: "Host Analytics", cat: "Host Flow" },
-    { id: "42", name: "Payout History", cat: "Host Flow" },
-    { id: "43", name: "My Vehicles", cat: "Profile & Settings" },
-    { id: "44", name: "Address Book", cat: "Profile & Settings" },
-    { id: "45", name: "Support Center", cat: "Profile & Settings" },
-    { id: "46", name: "Payment Methods", cat: "Profile & Settings" },
-    { id: "47", name: "Offers & Promos", cat: "Driver Flow" },
-    { id: "48", name: "Invite Friends", cat: "Profile & Settings" },
-    { id: "49", name: "Notification Log", cat: "Profile & Settings" },
-    { id: "50", name: "App Settings", cat: "Profile & Settings" },
+    { id: "01", name: "Splash Screen" },
+    { id: "02", name: "Discover Spaces" },
+    { id: "03", name: "Host & Earn" },
+    { id: "04", name: "Safe & Secure" },
+    { id: "05", name: "Role Selector" },
+    { id: "06", name: "Account Login" },
+    { id: "07", name: "OTP Verification" },
+    { id: "08", name: "Map Search" },
+    { id: "09", name: "List View" },
+    { id: "10", name: "Space Details" },
+    { id: "11", name: "Select Date & Time" },
+    { id: "12", name: "Booking Summary" },
+    { id: "13", name: "Payment Checkout" },
+    { id: "14", name: "Payment Success" },
+    { id: "15", name: "Active Parking" },
+    { id: "16", name: "Host QR Check-in" },
+    { id: "17", name: "GPS Navigation" },
+    { id: "18", name: "Extend Parking" },
+    { id: "19", name: "Parking Complete" },
+    { id: "20", name: "My Bookings" },
+    { id: "21", name: "Wallet Balance" },
+    { id: "22", name: "Notifications" },
+    { id: "23", name: "Saved Favorites" },
+    { id: "24", name: "User Profile" },
+    { id: "25", name: "Account Settings" },
+    { id: "26", name: "Help Center" },
+    { id: "27", name: "Invite & Earn" },
+    { id: "28", name: "Booking Receipt" },
+    { id: "29", name: "Host Dashboard" },
+    { id: "30", name: "Add Space (Intro)" },
+    { id: "31", name: "Add Space (Location)" },
+    { id: "32", name: "Add Space (Pricing)" },
+    { id: "33", name: "Add Space (Photos)" },
+    { id: "34", name: "Review & Publish" },
+    { id: "35", name: "Space Submitted" },
+    { id: "36", name: "My Space Listings" },
+    { id: "37", name: "Booking Requests" },
+    { id: "38", name: "Earnings Overview" },
+    { id: "39", name: "Withdraw Payout" },
+    { id: "40", name: "Reviews & Ratings" },
+    { id: "41", name: "Host Analytics" },
+    { id: "42", name: "Payout History" },
+    { id: "43", name: "My Vehicles" },
+    { id: "44", name: "Address Book" },
+    { id: "45", name: "Support Center" },
+    { id: "46", name: "Payment Methods" },
+    { id: "47", name: "Offers & Promos" },
+    { id: "48", name: "Invite Friends" },
+    { id: "49", name: "Notification Log" },
+    { id: "50", name: "App Settings" },
   ];
 
-  const categories = ["All", "Onboarding", "Driver Flow", "Host Flow", "Profile & Settings"];
-
-  const filteredScreens = activeCategory === "All" 
-    ? screensList 
-    : screensList.filter(s => s.cat === activeCategory);
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#0F172A", color: "#F8FAFC", fontFamily: "system-ui, -apple-system, sans-serif" }}>
-      
-      {/* TOP CLEAN NAVIGATION HEADER */}
-      <div style={{ background: "#1E293B", padding: "12px 18px", borderBottom: "1px solid #334155", display: "flex", flexDirection: "column", gap: 10, zIndex: 100, boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw", background: "#0F172A", color: "#F8FAFC", fontFamily: "system-ui, -apple-system, sans-serif", overflow: "hidden" }}>
+
+      {/* MAIN APPLICATION CONTAINER */}
+      <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: "0", background: "#0F172A" }}>
         
-        {/* BRAND LOGO & CATEGORY PILLS */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 18, boxShadow: "0 4px 12px rgba(34,197,94,0.4)" }}>P</div>
-            <span style={{ fontSize: 20, fontWeight: 900, color: "#FFF", letterSpacing: "-0.02em" }}>Paarkkar <span style={{ fontSize: 12, color: "#22C55E", fontWeight: 700 }}>50 Screens</span></span>
-          </div>
-
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                style={{
-                  padding: "5px 12px",
-                  borderRadius: 16,
-                  border: "none",
-                  background: activeCategory === cat ? "#22C55E" : "#334155",
-                  color: activeCategory === cat ? "#FFF" : "#94A3B8",
-                  fontWeight: 700,
-                  fontSize: 12,
-                  cursor: "pointer",
-                  transition: "all 0.2s"
-                }}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* SCREEN SELECTOR SCROLLBAR */}
-        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
-          {filteredScreens.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setActiveScreen(s.id)}
-              style={{
-                padding: "6px 14px",
-                borderRadius: 20,
-                border: activeScreen === s.id ? "1.5px solid #22C55E" : "1px solid #334155",
-                background: activeScreen === s.id ? "rgba(34,197,94,0.15)" : "#0F172A",
-                color: activeScreen === s.id ? "#22C55E" : "#CBD5E1",
-                fontWeight: 700,
-                fontSize: 12,
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                transition: "all 0.15s"
-              }}
-            >
-              {s.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* MAIN RESPONSIVE CONTAINER */}
-      <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: "16px", overflow: "hidden", background: "radial-gradient(circle at center, #1E293B 0%, #0F172A 100%)" }}>
-        
-        {/* RESPONSIVE MOBILE FRAME */}
-        <div style={{ width: "100%", maxWidth: 410, height: "100%", maxHeight: 840, background: activeScreen === "15" || activeScreen === "17" ? "#0F172A" : "#FFFFFF", borderRadius: 36, boxShadow: "0 25px 60px rgba(0,0,0,0.5), 0 0 0 10px #1E293B", overflow: "hidden", display: "flex", flexDirection: "column", position: "relative", transition: "all 0.3s ease" }}>
+        {/* RESPONSIVE MOBILE APP FRAME */}
+        <div style={{ width: "100%", maxWidth: 440, height: "100vh", maxHeight: "100vh", background: activeScreen === "15" || activeScreen === "17" ? "#0F172A" : "#FFFFFF", overflow: "hidden", display: "flex", flexDirection: "column", position: "relative", boxShadow: "0 0 40px rgba(0,0,0,0.5)" }}>
           
           {/* STATUS BAR */}
-          <div style={{ height: 40, padding: "0 22px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, fontWeight: 700, color: activeScreen === "15" || activeScreen === "17" ? "#FFF" : "#0F172A", zIndex: 50 }}>
+          <div style={{ height: 40, padding: "0 22px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, fontWeight: 700, color: activeScreen === "15" || activeScreen === "17" ? "#FFF" : "#0F172A", zIndex: 50, background: activeScreen === "15" || activeScreen === "17" ? "#0F172A" : "#FFFFFF" }}>
             <span>9:41</span>
             <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
               <span>📶</span>
@@ -192,12 +128,12 @@ export default function FullShowcaseBoard() {
             
             {/* ─── SPLASH SCREEN ─── */}
             {activeScreen === "01" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "40px 24px 30px" }}>
-                <div style={{ textAlign: "center", marginTop: 20 }}>
-                  <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.35)" }}>
-                    <span style={{ color: "#FFF", fontSize: 44, fontWeight: 900 }}>P</span>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "30px 24px 30px", background: "#FFF" }}>
+                <div style={{ textAlign: "center", marginTop: 10 }}>
+                  <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 10px 25px rgba(34,197,94,0.35)" }}>
+                    <span style={{ color: "#FFF", fontSize: 48, fontWeight: 900 }}>P</span>
                   </div>
-                  <h1 style={{ fontSize: 36, fontWeight: 900, color: "#0F172A", margin: "0 0 6px", letterSpacing: "-0.03em" }}>Paarkkar</h1>
+                  <h1 style={{ fontSize: 38, fontWeight: 900, color: "#0F172A", margin: "0 0 6px", letterSpacing: "-0.03em" }}>Paarkkar</h1>
                   <p style={{ fontSize: 15, fontWeight: 600, color: "#64748B", margin: 0 }}>
                     Park Anywhere. Earn <span style={{ color: "#22C55E", fontWeight: 800 }}>Everywhere.</span>
                   </p>
@@ -223,18 +159,21 @@ export default function FullShowcaseBoard() {
                   </svg>
                 </div>
 
-                <div style={{ display: "flex", gap: 8, cursor: "pointer" }} onClick={() => setActiveScreen("02")}>
-                  <div style={{ width: 28, height: 8, borderRadius: 4, background: "#22C55E" }} />
-                  <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
-                  <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
-                  <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
+                {/* PRIMARY ACTION BUTTONS ON SPLASH SCREEN */}
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
+                  <button onClick={() => setActiveScreen("02")} style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 800, cursor: "pointer", boxShadow: "0 8px 20px rgba(34,197,94,0.35)", transition: "all 0.2s" }}>
+                    Get Started
+                  </button>
+                  <button onClick={() => setActiveScreen("06")} style={{ width: "100%", padding: 12, borderRadius: 16, background: "transparent", border: "1.5px solid #E2E8F0", color: "#0F172A", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+                    Already have an account? Sign In
+                  </button>
                 </div>
               </div>
             )}
 
             {/* ─── ONBOARDING 1 ─── */}
             {activeScreen === "02" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
                 <div style={{ width: "100%", height: 260, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <svg viewBox="0 0 300 240" width="100%" height="100%">
                     <path d="M30 120 C 100 80, 200 160, 270 110" stroke="#DCFCE7" strokeWidth="40" strokeLinecap="round" fill="none" />
@@ -266,7 +205,7 @@ export default function FullShowcaseBoard() {
 
             {/* ─── ONBOARDING 2 ─── */}
             {activeScreen === "03" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
                 <div style={{ width: "100%", height: 260, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <svg viewBox="0 0 300 240" width="100%" height="100%">
                     <path d="M50 180 L50 100 L150 40 L250 100 L250 180 Z" fill="#F8FAFC" stroke="#0F172A" strokeWidth="3" />
@@ -295,7 +234,7 @@ export default function FullShowcaseBoard() {
 
             {/* ─── ONBOARDING 3 ─── */}
             {activeScreen === "04" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
                 <div style={{ width: "100%", height: 260, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <svg viewBox="0 0 300 240" width="100%" height="100%">
                     <path d="M40 190 L260 190" stroke="#CBD5E1" strokeWidth="4" />
@@ -327,7 +266,7 @@ export default function FullShowcaseBoard() {
 
             {/* ─── CHOOSE ROLE ─── */}
             {activeScreen === "05" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 30px", justifyContent: "space-between" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 30px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
                   <button onClick={() => setActiveScreen("04")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", marginBottom: 20 }}>←</button>
                   <h2 style={{ fontSize: 26, fontWeight: 800, color: "#0F172A", margin: "0 0 6px", textAlign: "center" }}>Choose Your Role</h2>
@@ -360,7 +299,7 @@ export default function FullShowcaseBoard() {
 
             {/* ─── LOGIN SCREEN ─── */}
             {activeScreen === "06" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 30px", justifyContent: "space-between" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 30px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
                   <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", marginBottom: 20 }}>←</button>
                   <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 6px" }}>Welcome Back!</h2>
@@ -399,7 +338,7 @@ export default function FullShowcaseBoard() {
 
             {/* ─── ENTER OTP ─── */}
             {activeScreen === "07" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 20px", justifyContent: "space-between" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 24px 20px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
                   <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", marginBottom: 20 }}>←</button>
                   <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 6px", textAlign: "center" }}>Enter OTP</h2>
@@ -447,7 +386,7 @@ export default function FullShowcaseBoard() {
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
-                  <button onClick={() => setActiveScreen("22")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>☰</button>
+                  <button onClick={() => setActiveScreen("24")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>☰</button>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 16 }}>P</div>
                     <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Paarkkar</span>
@@ -2752,6 +2691,56 @@ export default function FullShowcaseBoard() {
 
           </div>
         </div>
+      </div>
+
+      {/* DISCREET FLOATING SCREEN NAVIGATOR TOOLBAR FOR JUMPING TO ANY PAGE */}
+      <div style={{ position: "fixed", bottom: 12, right: 12, zIndex: 1000 }}>
+        {showQuickNav ? (
+          <div style={{ background: "#1E293B", borderRadius: 16, padding: 12, border: "1px solid #334155", boxShadow: "0 10px 30px rgba(0,0,0,0.5)", width: 260, maxHeight: 320, display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, borderBottom: "1px solid #334155", paddingBottom: 6 }}>
+              <span style={{ fontSize: 12, fontWeight: 800, color: "#22C55E" }}>Jump to Page</span>
+              <button onClick={() => setShowQuickNav(false)} style={{ background: "none", border: "none", color: "#94A3B8", cursor: "pointer", fontWeight: "bold" }}>✕</button>
+            </div>
+            <div style={{ overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
+              {screensList.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => { setActiveScreen(s.id); setShowQuickNav(false); }}
+                  style={{
+                    textAlign: "left",
+                    padding: "6px 10px",
+                    borderRadius: 8,
+                    border: "none",
+                    background: activeScreen === s.id ? "#22C55E" : "transparent",
+                    color: activeScreen === s.id ? "#FFF" : "#CBD5E1",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor: "pointer"
+                  }}
+                >
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowQuickNav(true)}
+            style={{
+              padding: "8px 14px",
+              borderRadius: 20,
+              background: "#22C55E",
+              color: "#FFF",
+              border: "none",
+              fontWeight: 800,
+              fontSize: 12,
+              cursor: "pointer",
+              boxShadow: "0 4px 14px rgba(34,197,94,0.4)"
+            }}
+          >
+            ⚙️ Switch Screen
+          </button>
+        )}
       </div>
 
     </div>
