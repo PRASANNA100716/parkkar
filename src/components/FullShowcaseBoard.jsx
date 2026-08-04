@@ -1127,27 +1127,48 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── SCREEN 02: ONBOARDING 1 ─── */}
+            {/* ─── SCREEN 02: ONBOARDING 1 (EXACT MATCH TO TARGET REFERENCE IMAGE 1) ─── */}
             {activeScreen === "02" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px 24px 30px", background: "#FFF" }}>
-                <div style={{ width: "100%" }}>
-                  <RealOfficePhoto height={230} badge="NEARBY INSTANT RESERVATION" />
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "28px 24px 28px", background: "#FFFFFF" }}>
+                
+                {/* TOP TITLE & SUBTITLE */}
+                <div style={{ textAlign: "center", marginTop: 10 }}>
+                  <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 10px", letterSpacing: "-0.02em", lineHeight: 1.25 }}>
+                    Find Parking<br />Anywhere
+                  </h2>
+                  <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.5, margin: 0, fontWeight: 600 }}>
+                    Find safe &amp; affordable<br />parking near you.
+                  </p>
                 </div>
 
-                <div style={{ textAlign: "center" }}>
-                  <h2 style={{ fontSize: 26, fontWeight: 800, color: "#0F172A", margin: "0 0 10px" }}>Find Parking Anywhere</h2>
-                  <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.5, margin: 0 }}>Discover safe, verified, and affordable parking spaces around your location in real time across Tamil Nadu.</p>
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
-                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>Skip</button>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <div style={{ width: 24, height: 8, borderRadius: 4, background: "#22C55E" }} />
-                    <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
-                    <div style={{ width: 8, height: 8, borderRadius: 4, background: "#E2E8F0" }} />
+                {/* CENTER VECTOR GRAPHIC: WHITE SEDAN CAR WITH GREEN P MAP PIN */}
+                <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", width: "100%", margin: "16px 0" }}>
+                  <div style={{ width: "100%", height: 260, borderRadius: 24, overflow: "hidden", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <SmartImage 
+                      sources={[process.env.PUBLIC_URL + "/assets/onboarding_car.png", process.env.PUBLIC_URL + "/assets/driver_car.png"]} 
+                      alt="Find Parking Anywhere" 
+                    />
                   </div>
-                  <button onClick={() => setActiveScreen("03")} style={{ width: 48, height: 48, borderRadius: "50%", background: "#22C55E", border: "none", color: "#FFF", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 16px rgba(34,197,94,0.3)" }}>
-                    <IconChevronRight size={20} color="#FFF" />
+                </div>
+
+                {/* BOTTOM CONTROLS: SKIP, INDICATOR DOTS, NEXT BUTTON */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 700, cursor: "pointer", fontSize: 15 }}>
+                    Skip
+                  </button>
+
+                  <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#22C55E" }} />
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#E2E8F0" }} />
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#E2E8F0" }} />
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#E2E8F0" }} />
+                  </div>
+
+                  <button 
+                    onClick={() => setActiveScreen("03")} 
+                    style={{ padding: "10px 22px", borderRadius: 14, background: "#22C55E", border: "none", color: "#FFF", cursor: "pointer", fontSize: 14, fontWeight: 900, boxShadow: "0 6px 18px rgba(34,197,94,0.35)" }}
+                  >
+                    Next
                   </button>
                 </div>
               </div>
