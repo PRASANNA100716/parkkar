@@ -278,8 +278,9 @@ const REAL_IMAGES = {
 const SmartImage = memo(({ sources = [], alt, style, loading = "lazy" }) => {
   const [sourceIndex, setSourceIndex] = useState(0);
 
-  const srcList = Array.isArray(sources) && sources.length > 0 ? sources : [SVG_GARAGE_DATA_URL];
-  const currentSrc = srcList[sourceIndex] || SVG_GARAGE_DATA_URL;
+  const fallbackPhoto = process.env.PUBLIC_URL + "/assets/home_garage.png";
+  const srcList = Array.isArray(sources) && sources.length > 0 ? sources : [fallbackPhoto];
+  const currentSrc = srcList[sourceIndex] || fallbackPhoto;
 
   const handleError = useCallback(() => {
     if (sourceIndex < srcList.length - 1) {
@@ -292,7 +293,7 @@ const SmartImage = memo(({ sources = [], alt, style, loading = "lazy" }) => {
   if (sourceIndex >= srcList.length) {
     return (
       <img
-        src={SVG_GARAGE_DATA_URL}
+        src={fallbackPhoto}
         alt={alt}
         loading={loading}
         decoding="async"
@@ -725,29 +726,28 @@ export default function FullShowcaseBoard() {
 
   // Helper to ensure EVERY spot (Firebase or Host) always gets a crisp real photograph image
   const resolveRealPhoto = (photoUrl, title = "", address = "", city = "", type = "") => {
-    if (photoUrl && !photoUrl.startsWith("data:image/svg") && photoUrl.length > 25 && !photoUrl.includes("undefined")) {
-      return photoUrl;
-    }
     const textStr = `${title} ${address} ${city} ${type}`.toLowerCase();
-    if (textStr.includes("coimbatore") || textStr.includes("sipco") || textStr.includes("singanallur")) {
-      return process.env.PUBLIC_URL + "/assets/coimbatore_garage.png";
+    let assetFallback = process.env.PUBLIC_URL + "/assets/home_garage.png";
+
+    if (textStr.includes("coimbatore") || textStr.includes("isha") || textStr.includes("sipco") || textStr.includes("singanallur")) {
+      assetFallback = process.env.PUBLIC_URL + "/assets/coimbatore_garage.png";
+    } else if (textStr.includes("madurai")) {
+      assetFallback = process.env.PUBLIC_URL + "/assets/madurai_bay.png";
+    } else if (textStr.includes("ev") || textStr.includes("charge")) {
+      assetFallback = process.env.PUBLIC_URL + "/assets/ev_hub.png";
+    } else if (textStr.includes("basement") || textStr.includes("office") || textStr.includes("underground")) {
+      assetFallback = process.env.PUBLIC_URL + "/assets/office_basement.png";
+    } else if (textStr.includes("driveway") || textStr.includes("residential")) {
+      assetFallback = process.env.PUBLIC_URL + "/assets/residential_driveway.png";
+    } else if (textStr.includes("apartment")) {
+      assetFallback = process.env.PUBLIC_URL + "/assets/apartment_bay.png";
     }
-    if (textStr.includes("madurai")) {
-      return process.env.PUBLIC_URL + "/assets/madurai_bay.png";
+
+    if (photoUrl && !photoUrl.startsWith("data:image/svg") && photoUrl.length > 25 && !photoUrl.includes("undefined")) {
+      return [photoUrl, assetFallback, process.env.PUBLIC_URL + "/assets/home_garage.png"];
     }
-    if (textStr.includes("ev") || textStr.includes("charge")) {
-      return process.env.PUBLIC_URL + "/assets/ev_hub.png";
-    }
-    if (textStr.includes("basement") || textStr.includes("office") || textStr.includes("underground")) {
-      return process.env.PUBLIC_URL + "/assets/office_basement.png";
-    }
-    if (textStr.includes("driveway") || textStr.includes("residential")) {
-      return process.env.PUBLIC_URL + "/assets/residential_driveway.png";
-    }
-    if (textStr.includes("apartment")) {
-      return process.env.PUBLIC_URL + "/assets/apartment_bay.png";
-    }
-    return process.env.PUBLIC_URL + "/assets/home_garage.png";
+
+    return [assetFallback, process.env.PUBLIC_URL + "/assets/home_garage.png"];
   };
 
   // Load Live Spots from Firebase Firestore on Mount
@@ -756,8 +756,7 @@ export default function FullShowcaseBoard() {
       const dbSpots = await fetchHostSpotsFromFirebase();
       if (dbSpots && dbSpots.length > 0) {
         const formatted = dbSpots.map(s => {
-          const realPhoto = resolveRealPhoto(s.photoUrl, s.title, s.address, s.city, s.type);
-          const photoSources = [realPhoto, SVG_GARAGE_DATA_URL];
+          const photoSources = resolveRealPhoto(s.photoUrl, s.title, s.address, s.city, s.type);
           return {
             id: s.id,
             title: s.title || "Host Parking Space",
@@ -1213,10 +1212,12 @@ export default function FullShowcaseBoard() {
   const handlePublishHostSpot = async () => {
     setIsPublishing(true);
 
-    const realPhoto = resolveRealPhoto(hostForm.photoUrl, hostForm.title, hostForm.address, hostForm.city, hostForm.type);
+    const hostPhotoSources = resolveRealPhoto(hostForm.photoUrl, hostForm.title, hostForm.address, hostForm.city, hostForm.type);
+    const primaryPhotoUrl = Array.isArray(hostPhotoSources) ? hostPhotoSources[0] : hostPhotoSources;
+
     const updatedForm = { 
       ...hostForm, 
-      photoUrl: realPhoto,
+      photoUrl: primaryPhotoUrl,
       hostEmail: currentUser?.email || "host@parkkar.com",
       hostName: currentUser?.displayName || "Verified Host"
     };
@@ -1227,8 +1228,6 @@ export default function FullShowcaseBoard() {
     } catch (err) {
       console.warn("Publish persistence failed, listing stays live in this session:", err);
     }
-
-    const hostPhotoSources = [realPhoto, SVG_GARAGE_DATA_URL];
 
     const newSpot = {
       id: publishedId || "sp_custom_" + Date.now(),
