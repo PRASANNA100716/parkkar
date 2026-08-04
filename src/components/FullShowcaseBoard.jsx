@@ -1049,23 +1049,23 @@ export default function FullShowcaseBoard() {
           {/* SCREEN CONTENT AREA */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
             
-            {/* ─── SCREEN 01: EXACT MATCH TO TARGET REFERENCE IMAGE 2 ─── */}
+            {/* ─── SCREEN 01: OLA / UBER STYLE PREMIUM SPLASH SCREEN ─── */}
             {activeScreen === "01" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "24px 20px 20px", background: "#FFFFFF", position: "relative", overflow: "hidden" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "28px 20px 20px", background: "#FFFFFF", position: "relative", overflow: "hidden" }}>
                 
                 {/* BRAND HEADER: GREEN MAP PIN + PAARKKAR LOGO & TAGLINE */}
                 <div style={{ textAlign: "center", marginTop: 10, zIndex: 10 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 12 }}>
                     {/* GREEN MAP PIN LOGO WITH WHITE P */}
-                    <div style={{ position: "relative", width: 56, height: 66, display: "flex", alignItems: "center", justifyContent: "center", filter: "drop-shadow(0 8px 18px rgba(34,197,94,0.4))" }}>
-                      <svg viewBox="0 0 100 120" width="56" height="66" fill="none">
+                    <div style={{ position: "relative", width: 54, height: 64, display: "flex", alignItems: "center", justifyContent: "center", filter: "drop-shadow(0 8px 18px rgba(34,197,94,0.4))" }}>
+                      <svg viewBox="0 0 100 120" width="54" height="64" fill="none">
                         <path d="M50 0 C22.4 0 0 22.4 0 50 C0 80 50 120 50 120 C50 120 100 80 100 50 C100 22.4 77.6 0 50 0 Z" fill="#22C55E" />
                         <circle cx="50" cy="46" r="28" fill="#16A34A" />
                         <text x="50" y="58" font-family="system-ui, sans-serif" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">P</text>
                       </svg>
                     </div>
 
-                    <h1 style={{ fontSize: 34, fontWeight: 900, color: "#0F172A", margin: 0, letterSpacing: "-0.03em", fontFamily: "system-ui, sans-serif" }}>
+                    <h1 style={{ fontSize: 36, fontWeight: 900, color: "#0F172A", margin: 0, letterSpacing: "-0.03em", fontFamily: "system-ui, sans-serif" }}>
                       Paarkkar
                     </h1>
                   </div>
@@ -1076,25 +1076,35 @@ export default function FullShowcaseBoard() {
                   </p>
                 </div>
 
-                {/* CENTER CITY SKYLINE & WHITE LUXURY SEDAN CAR WITH FLOATING GREEN P MAP PIN */}
-                <div style={{ width: "100%", flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", position: "relative", margin: "16px 0", minHeight: 280 }}>
-                  
-                  {/* FLOATING GREEN P MAP PIN PINNED ON TOP OF CAR */}
-                  <div style={{ position: "absolute", top: "18%", left: "46%", transform: "translateX(-50%)", zIndex: 12, animation: "bounce 2s infinite ease-in-out", filter: "drop-shadow(0 10px 20px rgba(34,197,94,0.5))" }}>
-                    <svg viewBox="0 0 100 120" width="52" height="62" fill="none">
-                      <path d="M50 0 C22.4 0 0 22.4 0 50 C0 80 50 120 50 120 C50 120 100 80 100 50 C100 22.4 77.6 0 50 0 Z" fill="#22C55E" />
-                      <circle cx="50" cy="46" r="28" fill="#16A34A" />
-                      <text x="50" y="58" font-family="system-ui, sans-serif" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">P</text>
-                    </svg>
-                  </div>
+                {/* HERO CAR ILLUSTRATION CONTAINER WITH INTEGRATED PIN ON CAR ROOF */}
+                <div style={{ width: "100%", flex: 1, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", margin: "10px 0" }}>
+                  <div style={{ width: "100%", height: 310, borderRadius: 28, overflow: "hidden", position: "relative", boxShadow: "0 14px 35px rgba(0,0,0,0.08)", border: "1px solid #F1F5F9" }}>
+                    
+                    {/* FLOATING MAP PIN PINNED ACCURATELY ON TOP OF WHITE CAR ROOF */}
+                    <div style={{ 
+                      position: "absolute", 
+                      top: "22%", 
+                      left: "50%", 
+                      transform: "translateX(-50%)", 
+                      zIndex: 15,
+                      filter: "drop-shadow(0 10px 24px rgba(34,197,94,0.65))"
+                    }}>
+                      <svg viewBox="0 0 100 120" width="56" height="66" fill="none">
+                        <path d="M50 0 C22.4 0 0 22.4 0 50 C0 80 50 120 50 120 C50 120 100 80 100 50 C100 22.4 77.6 0 50 0 Z" fill="#22C55E" />
+                        <circle cx="50" cy="46" r="28" fill="#16A34A" />
+                        <text x="50" y="58" font-family="system-ui, sans-serif" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">P</text>
+                      </svg>
+                    </div>
 
-                  {/* CITY CAR ILLUSTRATION BACKGROUND */}
-                  <div style={{ width: "100%", height: 260, borderRadius: 24, overflow: "hidden", position: "relative", boxShadow: "0 12px 30px rgba(0,0,0,0.08)" }}>
                     <SmartImage 
-                      sources={[process.env.PUBLIC_URL + "/assets/splash_city_car.png", process.env.PUBLIC_URL + "/assets/driver_car.png"]} 
-                      alt="Paarkkar City Car" 
+                      sources={[
+                        process.env.PUBLIC_URL + "/assets/ola_splash.png", 
+                        process.env.PUBLIC_URL + "/assets/splash_city_car.png", 
+                        process.env.PUBLIC_URL + "/assets/driver_car.png"
+                      ]} 
+                      alt="Paarkkar Ola Style City Car" 
                     />
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(255,255,255,0.9) 0%, transparent 40%)" }} />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(255,255,255,0.7) 0%, transparent 50%)" }} />
                   </div>
                 </div>
 
