@@ -121,15 +121,6 @@ const IconShare = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
-const IconCalendar = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-    <line x1="16" y1="2" x2="16" y2="6" />
-    <line x1="8" y1="2" x2="8" y2="6" />
-    <line x1="3" y1="10" x2="21" y2="10" />
-  </svg>
-);
-
 const IconCheck = ({ size = 20, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="20 6 9 17 4 12" />
@@ -345,6 +336,7 @@ export default function FullShowcaseBoard() {
   const [role, setRole] = useState(null);
   const [otpVal, setOtpVal] = useState(["2", "4", "6", "8", "2", "1"]);
   const [showQuickNav, setShowQuickNav] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
 
   // Booking Flow State
   const [selectedDate, setSelectedDate] = useState("Today, 04 Aug");
@@ -452,6 +444,68 @@ export default function FullShowcaseBoard() {
               </svg>
             </div>
           </div>
+
+          {/* REAL INTERACTIVE SIDE NAVIGATION DRAWER OVERLAY */}
+          {showDrawer && (
+            <div style={{ position: "absolute", inset: 0, zIndex: 1000, display: "flex" }}>
+              {/* BACKDROP */}
+              <div 
+                onClick={() => setShowDrawer(false)}
+                style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(4px)" }}
+              />
+
+              {/* DRAWER CONTENT PANEL */}
+              <div style={{ width: 300, background: "#FFF", height: "100%", position: "relative", zIndex: 10, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 24, boxShadow: "10px 0 30px rgba(0,0,0,0.2)" }}>
+                <div>
+                  {/* CLOSE BUTTON & USER HEADER */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 20 }}>
+                        HA
+                      </div>
+                      <div>
+                        <h3 style={{ margin: "0 0 2px", fontSize: 16, fontWeight: 900, color: "#0F172A" }}>Hanush Adith</h3>
+                        <span style={{ fontSize: 11, color: "#22C55E", fontWeight: 800, background: "#DCFCE7", padding: "2px 8px", borderRadius: 6 }}>VERIFIED DRIVER</span>
+                      </div>
+                    </div>
+                    <button onClick={() => setShowDrawer(false)} style={{ background: "none", border: "none", fontSize: 18, color: "#94A3B8", cursor: "pointer", fontWeight: "bold" }}>✕</button>
+                  </div>
+
+                  <div style={{ borderBottom: "1px solid #F1F5F9", marginBottom: 16 }} />
+
+                  {/* NAVIGATION LINKS */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {[
+                      { icon: "🗺️", label: "Find Parking (Map)", action: () => { setActiveScreen("08"); setShowDrawer(false); } },
+                      { icon: "🚗", label: "My Bookings", action: () => { setActiveScreen("20"); setShowDrawer(false); } },
+                      { icon: "💳", label: "Wallet & Payments (₹450)", action: () => { setActiveScreen("21"); setShowDrawer(false); } },
+                      { icon: "🔔", label: "Notifications (2)", action: () => { setActiveScreen("22"); setShowDrawer(false); } },
+                      { icon: "❤️", label: "Saved Favorites", action: () => { setActiveScreen("23"); setShowDrawer(false); } },
+                      { icon: "🏢", label: "Switch to Host Mode", action: () => { setActiveScreen("29"); setShowDrawer(false); } },
+                      { icon: "⚙️", label: "Account Settings", action: () => { setActiveScreen("25"); setShowDrawer(false); } },
+                      { icon: "🎁", label: "Invite & Earn ₹100", action: () => { setActiveScreen("27"); setShowDrawer(false); } },
+                    ].map((item, idx) => (
+                      <div 
+                        key={idx}
+                        onClick={item.action}
+                        style={{ padding: "12px 14px", borderRadius: 14, background: "#F8FAFC", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", fontSize: 14, fontWeight: 700, color: "#0F172A" }}
+                      >
+                        <span style={{ fontSize: 16 }}>{item.icon}</span>
+                        <span>{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => { setActiveScreen("01"); setShowDrawer(false); }}
+                  style={{ width: "100%", padding: 14, borderRadius: 14, background: "#FEF2F2", border: "none", color: "#EF4444", fontWeight: 800, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                >
+                  🚪 Sign Out
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* SCREEN CONTENT AREA */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", position: "relative" }}>
@@ -735,7 +789,7 @@ export default function FullShowcaseBoard() {
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
-                  <button onClick={() => setActiveScreen("24")} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                  <button onClick={() => setShowDrawer(true)} style={{ background: "none", border: "none", cursor: "pointer" }}>
                     <IconMenu size={22} color="#0F172A" />
                   </button>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -1222,10 +1276,10 @@ export default function FullShowcaseBoard() {
 
                 <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
                   <button 
-                    onClick={() => setActiveScreen("15")}
+                    onClick={() => setActiveScreen("20")}
                     style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 15, cursor: "pointer", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
                   >
-                    View Active Parking Pass
+                    View My Bookings
                   </button>
                   <button 
                     onClick={() => setActiveScreen("08")}
@@ -1237,9 +1291,141 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* DEFAULT FALLBACK FOR OTHER SCREENS */}
+            {/* ─── SCREEN 20: MY BOOKINGS ─── */}
+            {activeScreen === "20" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
+                  <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
+                    <IconChevronLeft size={22} color="#0F172A" />
+                  </button>
+                  <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>My Bookings</span>
+                </div>
+
+                <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
+                  <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: "#22C55E", background: "#DCFCE7", padding: "2px 8px", borderRadius: 6 }}>UPCOMING</span>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: "#0F172A" }}>₹170</span>
+                    </div>
+                    <h4 style={{ margin: "0 0 2px", fontSize: 16, fontWeight: 900, color: "#0F172A" }}>Home Garage - Slot A-12</h4>
+                    <p style={{ margin: "0 0 10px", fontSize: 12, color: "#64748B" }}>Anna Nagar, Chennai</p>
+                    <div style={{ fontSize: 12, color: "#475569", fontWeight: 600 }}>📅 Today, 04 Aug • 10:00 AM - 02:00 PM</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 21: WALLET BALANCE ─── */}
+            {activeScreen === "21" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
+                  <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
+                    <IconChevronLeft size={22} color="#0F172A" />
+                  </button>
+                  <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Paarkkar Wallet</span>
+                </div>
+
+                <div style={{ padding: 20 }}>
+                  <div style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", borderRadius: 20, padding: 24, color: "#FFF", boxShadow: "0 10px 25px rgba(0,0,0,0.15)", marginBottom: 20 }}>
+                    <span style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Total Wallet Balance</span>
+                    <div style={{ fontSize: 36, fontWeight: 900, color: "#22C55E", marginTop: 4 }}>₹450.00</div>
+                    <span style={{ fontSize: 11, color: "#CBD5E1", display: "block", marginTop: 10 }}>Auto-refunds & cashbacks credited instantly</span>
+                  </div>
+
+                  <button style={{ width: "100%", padding: 16, borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontWeight: 900, fontSize: 15, cursor: "pointer" }}>
+                    + Add Money to Wallet
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 22: NOTIFICATIONS ─── */}
+            {activeScreen === "22" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
+                  <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
+                    <IconChevronLeft size={22} color="#0F172A" />
+                  </button>
+                  <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Notifications</span>
+                </div>
+
+                <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+                  {[
+                    { title: "Booking Confirmed 🎉", desc: "Your slot at Home Garage has been reserved.", time: "10m ago" },
+                    { title: "₹100 Cashback Credited 🎁", desc: "Welcome bonus credited to your Paarkkar wallet.", time: "1h ago" }
+                  ].map((n, i) => (
+                    <div key={i} style={{ background: "#FFF", borderRadius: 14, padding: 14, border: "1px solid #E2E8F0" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                        <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: "#0F172A" }}>{n.title}</h4>
+                        <span style={{ fontSize: 11, color: "#94A3B8" }}>{n.time}</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: 12, color: "#64748B" }}>{n.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 24: USER PROFILE ─── */}
+            {activeScreen === "24" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
+                  <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
+                    <IconChevronLeft size={22} color="#0F172A" />
+                  </button>
+                  <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>User Profile</span>
+                </div>
+
+                <div style={{ padding: 20, textAlign: "center" }}>
+                  <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#22C55E", color: "#FFF", fontSize: 32, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+                    HA
+                  </div>
+                  <h3 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 900, color: "#0F172A" }}>Hanush Adith</h3>
+                  <p style={{ margin: "0 0 12px", fontSize: 13, color: "#64748B" }}>+91 98765 43210 • hanush@paarkkar.in</p>
+                  <span style={{ background: "#DCFCE7", color: "#16A34A", fontSize: 12, fontWeight: 800, padding: "4px 12px", borderRadius: 8 }}>
+                    VERIFIED DRIVER & HOST
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* ─── SCREEN 29: HOST DASHBOARD ─── */}
+            {activeScreen === "29" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
+                <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF", borderBottom: "1px solid #F1F5F9" }}>
+                  <button onClick={() => setActiveScreen("08")} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                    <IconChevronLeft size={22} color="#0F172A" />
+                  </button>
+                  <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Host Dashboard</span>
+                  <span style={{ fontSize: 11, fontWeight: 800, background: "#FEF3C7", color: "#D97706", padding: "4px 8px", borderRadius: 6 }}>HOST MODE</span>
+                </div>
+
+                <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
+                  <div style={{ background: "linear-gradient(135deg, #16A34A 0%, #15803D 100%)", borderRadius: 20, padding: 20, color: "#FFF" }}>
+                    <span style={{ fontSize: 12, opacity: 0.9 }}>This Month's Earnings</span>
+                    <div style={{ fontSize: 32, fontWeight: 900, marginTop: 4 }}>₹12,450.00</div>
+                    <span style={{ fontSize: 11, opacity: 0.9, marginTop: 8, display: "block" }}>14 Completed Driver Bookings</span>
+                  </div>
+
+                  <div style={{ background: "#FFF", borderRadius: 16, padding: 16, border: "1px solid #E2E8F0" }}>
+                    <h4 style={{ margin: "0 0 8px", fontSize: 15, fontWeight: 800, color: "#0F172A" }}>Your Listed Spaces (1 Spot)</h4>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                      <div style={{ width: 60, height: 60, borderRadius: 10, overflow: "hidden" }}>
+                        <SmartImage sources={REAL_IMAGES.garage} alt="garage" />
+                      </div>
+                      <div>
+                        <h5 style={{ margin: "0 0 2px", fontSize: 14, fontWeight: 800, color: "#0F172A" }}>Home Garage - Slot A-12</h5>
+                        <span style={{ fontSize: 11, color: "#16A34A", fontWeight: 700 }}>● Active • ₹40/hr</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* DEFAULT FALLBACK FOR OTHER UNRENDERED SCREENS */}
             {![
-              "01","02","03","04","05","06","07","08","09","10","11","12","13","14"
+              "01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","20","21","22","24","29"
             ].includes(activeScreen) && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 20px 24px", justifyContent: "space-between", background: "#FFF" }}>
                 <div>
