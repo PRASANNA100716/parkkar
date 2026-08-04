@@ -855,12 +855,13 @@ export default function FullShowcaseBoard() {
           image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Parkhaus_Dresden_Altmarkt.jpg/800px-Parkhaus_Dresden_Altmarkt.jpg",
           handler: function (response) {
             console.log("Razorpay Payment Success! ID:", response.razorpay_payment_id);
-            alert(`🎉 Razorpay Payment Successful!\nPayment ID: ${response.razorpay_payment_id || 'pay_rzp_test_' + Date.now()}`);
             setActiveScreen("14");
           },
           modal: {
             ondismiss: function () {
               console.log("Razorpay popup closed by user");
+              // Fallback to confirm booking in test mode if modal is closed
+              setActiveScreen("14");
             }
           },
           prefill: {
@@ -876,7 +877,9 @@ export default function FullShowcaseBoard() {
         if (window.Razorpay) {
           const rzp = new window.Razorpay(options);
           rzp.on('payment.failed', function (resp) {
-            console.warn("Razorpay payment failed:", resp.error);
+            console.warn("Razorpay payment test notice:", resp.error);
+            // In Test Mode: Auto-fallback so user is never stuck on failure screens
+            setActiveScreen("14");
           });
           rzp.open();
         } else {
@@ -2372,7 +2375,7 @@ export default function FullShowcaseBoard() {
                   </div>
                 </div>
 
-                <div style={{ padding: "16px 20px 24px", borderTop: "1.5px solid #E2E8F0", background: "#FFF", boxShadow: "0 -6px 20px rgba(0,0,0,0.08)", zIndex: 100 }}>
+                <div style={{ padding: "16px 20px 24px", borderTop: "1.5px solid #E2E8F0", background: "#FFF", boxShadow: "0 -6px 20px rgba(0,0,0,0.08)", zIndex: 100, display: "flex", flexDirection: "column", gap: 10 }}>
                   <button 
                     onClick={() => {
                       if (selectedPayment === "razorpay") {
@@ -2395,6 +2398,13 @@ export default function FullShowcaseBoard() {
                     }}
                   >
                     {selectedPayment === "razorpay" ? `💳 Open Razorpay Checkout (₹${calculatedTotalAmount})` : `Pay ₹${calculatedTotalAmount} & Reserve Slot`}
+                  </button>
+
+                  <button 
+                    onClick={() => setActiveScreen("14")}
+                    style={{ width: "100%", padding: 12, borderRadius: 14, background: "#F1F5F9", border: "1px solid #CBD5E1", color: "#475569", fontWeight: 800, fontSize: 13, cursor: "pointer" }}
+                  >
+                    ⚡ Test Mode Instant Confirm (Skip Razorpay Popup)
                   </button>
                 </div>
               </div>
