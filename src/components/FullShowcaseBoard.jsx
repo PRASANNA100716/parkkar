@@ -1368,7 +1368,7 @@ export default function FullShowcaseBoard() {
                 {/* BOTTOM ACTION BUTTONS */}
                 <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
                   <button 
-                    onClick={() => setActiveScreen("06")} 
+                    onClick={() => setActiveScreen("02")} 
                     style={{ width: "100%", padding: "14px 20px", borderRadius: 16, background: "#22C55E", border: "none", color: "#FFF", fontSize: 16, fontWeight: 900, cursor: "pointer", boxShadow: "0 6px 20px rgba(34,197,94,0.35)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
                   >
                     <span>Get Started</span>
@@ -1377,7 +1377,7 @@ export default function FullShowcaseBoard() {
                     </div>
                   </button>
                   <button 
-                    onClick={() => setActiveScreen("06")} 
+                    onClick={() => setActiveScreen("05")} 
                     style={{ width: "100%", padding: "12px", borderRadius: 16, background: "#FFFFFF", border: "1.5px solid #DCFCE7", color: "#475569", fontSize: 13, fontWeight: 800, cursor: "pointer" }}
                   >
                     Already have an account? <span style={{ color: "#22C55E", fontWeight: 900 }}>Sign In</span>
@@ -1413,7 +1413,7 @@ export default function FullShowcaseBoard() {
 
                 {/* BOTTOM CONTROLS: SKIP, INDICATOR DOTS, NEXT BUTTON */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
-                  <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 700, cursor: "pointer", fontSize: 15 }}>
+                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 700, cursor: "pointer", fontSize: 15 }}>
                     Skip
                   </button>
 
@@ -1526,7 +1526,7 @@ export default function FullShowcaseBoard() {
 
                 {/* BOTTOM CONTROLS: SKIP, INDICATOR DOTS, NEXT BUTTON */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
-                  <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 800, cursor: "pointer", fontSize: 14 }}>
+                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 800, cursor: "pointer", fontSize: 14 }}>
                     Skip
                   </button>
 
@@ -1619,7 +1619,7 @@ export default function FullShowcaseBoard() {
 
                 {/* BOTTOM CONTROLS: SKIP, INDICATOR DOTS, NEXT BUTTON */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
-                  <button onClick={() => setActiveScreen("06")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 800, cursor: "pointer", fontSize: 14 }}>
+                  <button onClick={() => setActiveScreen("05")} style={{ background: "none", border: "none", color: "#64748B", fontWeight: 800, cursor: "pointer", fontSize: 14 }}>
                     Skip
                   </button>
 
@@ -1630,7 +1630,7 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   <button 
-                    onClick={() => setActiveScreen("06")} 
+                    onClick={() => setActiveScreen("05")} 
                     style={{ width: 44, height: 44, borderRadius: "50%", background: "#22C55E", border: "none", color: "#FFF", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 16px rgba(34,197,94,0.35)" }}
                   >
                     <IconChevronRight size={20} color="#FFF" />
@@ -1648,11 +1648,11 @@ export default function FullShowcaseBoard() {
                   </button>
                   <h2 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", margin: "0 0 4px", textAlign: "center", letterSpacing: "-0.02em" }}>Choose Your Role</h2>
                   <p style={{ fontSize: 13, fontWeight: 600, color: "#64748B", textAlign: "center", margin: "0 0 24px" }}>
-                    Mandatory KYC verification required to enter app
+                    Select your role to sign in or create an account
                   </p>
                   
                   <div 
-                    onClick={() => handleAccessApp("driver")} 
+                    onClick={() => { setRole("driver"); setActiveScreen("06"); }} 
                     style={{ 
                       background: "#FFFFFF", 
                       borderRadius: 22, 
@@ -1683,7 +1683,7 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   <div 
-                    onClick={() => handleAccessApp("host")} 
+                    onClick={() => { setRole("host"); setActiveScreen("06"); }} 
                     style={{ 
                       background: "#FFFFFF", 
                       borderRadius: 22, 
