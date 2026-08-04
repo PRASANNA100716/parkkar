@@ -548,6 +548,8 @@ export default function FullShowcaseBoard() {
 
   // Hidden File Input Ref for Host Photo Upload
   const fileInputRef = useRef(null);
+  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
+  const [photoStatus, setPhotoStatus] = useState("");
 
   // Dynamic Tamil Nadu Spots Database State
   const [allSpots, setAllSpots] = useState(INITIAL_TAMIL_NADU_SPOTS);
@@ -560,10 +562,6 @@ export default function FullShowcaseBoard() {
 
   // Custom Firebase Credentials State (Pre-filled with user's project paarkkar-dda3d)
   const [fbConfigInput, setFbConfigInput] = useState(getFirebaseConfig());
-
-  // Host Image Upload Processing Status
-  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
-  const [photoStatus, setPhotoStatus] = useState("");
 
   // Load Live Spots from Firebase Firestore on Mount
   useEffect(() => {
@@ -2732,8 +2730,21 @@ export default function FullShowcaseBoard() {
                     <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Step 3: Upload Space Photo</span>
                   </div>
 
-                  <div style={{ width: "100%", height: 210, borderRadius: 20, overflow: "hidden", position: "relative", marginBottom: 12, border: "2.5px solid #22C55E", boxShadow: "0 6px 20px rgba(34,197,94,0.2)" }}>
-                    <SmartImage sources={[hostForm.photoUrl]} alt="Upload Preview" />
+                  <div style={{ width: "100%", height: 210, borderRadius: 20, overflow: "hidden", position: "relative", marginBottom: 12, border: "2.5px solid #22C55E", boxShadow: "0 6px 20px rgba(34,197,94,0.2)", background: "#F1F5F9" }}>
+                    {hostForm.photoUrl ? (
+                      <img 
+                        src={hostForm.photoUrl} 
+                        alt="Upload Preview" 
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                        onError={(e) => { e.target.src = process.env.PUBLIC_URL + "/assets/home_garage.png"; }}
+                      />
+                    ) : (
+                      <img 
+                        src={process.env.PUBLIC_URL + "/assets/home_garage.png"} 
+                        alt="Default preview" 
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                      />
+                    )}
                     <div style={{ position: "absolute", bottom: 12, left: 12, background: "rgba(15,23,42,0.9)", color: "#22C55E", padding: "5px 12px", borderRadius: 10, fontSize: 11, fontWeight: 900, backdropFilter: "blur(6px)" }}>
                       ✓ READY FOR FIREBASE STORAGE & FIRESTORE
                     </div>
@@ -2762,7 +2773,7 @@ export default function FullShowcaseBoard() {
                       <IconCamera size={24} color="#FFF" />
                     </div>
                     <span style={{ fontSize: 14, fontWeight: 900, color: "#16A34A", display: "block" }}>
-                      {isProcessingPhoto ? "⚡ Uploading to Firebase Storage..." : "📸 Tap to Choose Photo / Take Picture"}
+                      {isProcessingPhoto ? "⚡ Processing Uploaded Image..." : "📸 Tap to Choose Photo / Take Picture"}
                     </span>
                     <span style={{ fontSize: 11, color: "#64748B", marginTop: 2, display: "block" }}>Direct Firebase Storage Upload Enabled</span>
                   </div>
@@ -2782,7 +2793,7 @@ export default function FullShowcaseBoard() {
                         }}
                         style={{ width: 85, height: 60, borderRadius: 12, overflow: "hidden", border: hostForm.photoUrl === item.url ? "2.5px solid #22C55E" : "1.5px solid #E2E8F0", cursor: "pointer", position: "relative" }}
                       >
-                        <SmartImage sources={[item.url, SVG_GARAGE_DATA_URL]} alt={item.name} />
+                        <img src={item.url} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         <div style={{ position: "absolute", bottom: 2, left: 2, right: 2, background: "rgba(15,23,42,0.85)", color: "#FFF", fontSize: 9, fontWeight: 900, textAlign: "center", padding: "1px 0", borderRadius: 4 }}>
                           {item.name}
                         </div>
@@ -2812,8 +2823,21 @@ export default function FullShowcaseBoard() {
                   </div>
 
                   <div style={{ background: "#FFF", borderRadius: 20, padding: 16, border: "1px solid #E2E8F0", boxShadow: "0 4px 14px rgba(0,0,0,0.05)", marginBottom: 16 }}>
-                    <div style={{ width: "100%", height: 160, borderRadius: 14, overflow: "hidden", marginBottom: 12 }}>
-                      <SmartImage sources={[hostForm.photoUrl]} alt="final" />
+                    <div style={{ width: "100%", height: 170, borderRadius: 14, overflow: "hidden", marginBottom: 12, position: "relative", background: "#F1F5F9" }}>
+                      {hostForm.photoUrl ? (
+                        <img 
+                          src={hostForm.photoUrl} 
+                          alt="Uploaded spot" 
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                          onError={(e) => { e.target.src = process.env.PUBLIC_URL + "/assets/home_garage.png"; }}
+                        />
+                      ) : (
+                        <img 
+                          src={process.env.PUBLIC_URL + "/assets/home_garage.png"} 
+                          alt="Default garage" 
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                        />
+                      )}
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                       <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0F172A" }}>{hostForm.title}</h3>
