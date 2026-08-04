@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // Theme Palette matching Paarkkar UI Reference
 const T = {
@@ -17,6 +17,8 @@ const T = {
   gray4: "#64748B",
   white: "#FFFFFF",
 };
+
+const GOOGLE_MAPS_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "AIzaSyCgVkjThmCRYwn9Q5Py8F52EUEo774gRLY";
 
 // ─── CRISP PRODUCTION SVG ICONS ──────────────────────────────────────────────
 const IconSearch = ({ size = 18, color = "currentColor" }) => (
@@ -102,13 +104,6 @@ const IconChevronLeft = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
-const IconLocation = ({ size = 16, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-    <circle cx="12" cy="10" r="3" />
-  </svg>
-);
-
 const IconCar = ({ size = 20, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
@@ -123,34 +118,10 @@ const IconShield = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
-const IconCreditCard = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="20" height="14" x="2" y="5" rx="2" />
-    <line x1="2" x2="22" y1="10" y2="10" />
-  </svg>
-);
-
-const IconBank = ({ size = 20, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="3" x2="21" y1="22" y2="22" />
-    <line x1="6" x2="6" y1="11" y2="19" />
-    <line x1="10" x2="10" y1="11" y2="19" />
-    <line x1="14" x2="14" y1="11" y2="19" />
-    <line x1="18" x2="18" y1="11" y2="19" />
-    <polygon points="12 2 20 7 4 7 12 2" />
-  </svg>
-);
-
 const IconLock = ({ size = 16, color = "currentColor" }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-  </svg>
-);
-
-const IconNavigation = ({ size = 18, color = "currentColor" }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="3 11 22 2 13 21 11 13 3 11" />
   </svg>
 );
 
@@ -214,6 +185,59 @@ const RealDrivewayPhoto = ({ height = 200, badge = "GATED RESIDENTIAL DRIVEWAY" 
   </div>
 );
 
+// ─── GOOGLE MAPS COMPONENT WITH API KEY ───────────────────────────────────────
+function GoogleMapView() {
+  const mapRef = useRef(null);
+
+  useEffect(() => {
+    if (!window.google) {
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}`;
+      script.async = true;
+      script.onload = () => initMap();
+      document.head.appendChild(script);
+    } else {
+      initMap();
+    }
+
+    function initMap() {
+      if (!mapRef.current || !window.google) return;
+      const annaNagar = { lat: 13.0850, lng: 80.2101 };
+      const map = new window.google.maps.Map(mapRef.current, {
+        center: annaNagar,
+        zoom: 14,
+        disableDefaultUI: true,
+        styles: [
+          { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
+          { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
+          { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
+          { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
+          { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] }
+        ]
+      });
+
+      // Parking spot markers
+      new window.google.maps.Marker({
+        position: { lat: 13.0850, lng: 80.2101 },
+        map,
+        title: "Home Garage (₹40/hr)",
+      });
+      new window.google.maps.Marker({
+        position: { lat: 13.0890, lng: 80.2150 },
+        map,
+        title: "Office Basement (₹60/hr)",
+      });
+      new window.google.maps.Marker({
+        position: { lat: 13.0810, lng: 80.2050 },
+        map,
+        title: "Apartment Parking (₹35/hr)",
+      });
+    }
+  }, []);
+
+  return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
+}
+
 export default function FullShowcaseBoard() {
   const [activeScreen, setActiveScreen] = useState("01");
   const [role, setRole] = useState(null);
@@ -227,7 +251,6 @@ export default function FullShowcaseBoard() {
   const [durationHours, setDurationHours] = useState(2);
   const [paymentMethod, setPaymentMethod] = useState("upi");
   const [extendOption, setExtendOption] = useState("1 Hour");
-  const [bookingFilter, setBookingFilter] = useState("Completed");
 
   const [selectedSpot, setSelectedSpot] = useState({
     title: "Home Garage",
@@ -567,7 +590,7 @@ export default function FullShowcaseBoard() {
               </div>
             )}
 
-            {/* ─── HOME / SEARCH (MAP VIEW) ─── */}
+            {/* ─── HOME / SEARCH (REAL GOOGLE MAP VIEW WITH API KEY) ─── */}
             {activeScreen === "08" && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
                 <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFF" }}>
@@ -576,7 +599,7 @@ export default function FullShowcaseBoard() {
                   </button>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFF", fontWeight: 900, fontSize: 16 }}>P</div>
-                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Paarkkar</span>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#0F172A" }}>Paarkkar Map</span>
                   </div>
                   <button onClick={() => setActiveScreen("22")} style={{ background: "none", border: "none", cursor: "pointer" }}>
                     <IconBell size={20} color="#0F172A" />
@@ -594,14 +617,9 @@ export default function FullShowcaseBoard() {
                 </div>
 
                 <div style={{ flex: 1, background: "#0F172A", position: "relative", overflow: "hidden" }}>
-                  <svg viewBox="0 0 400 400" width="100%" height="100%">
-                    <rect width="100%" height="100%" fill="#0F172A" />
-                    <path d="M0 100 L400 120 M0 240 L400 220 M120 0 L140 400 M280 0 L260 400" stroke="#1E293B" strokeWidth="24" />
-                    <path d="M0 100 L400 120 M0 240 L400 220 M120 0 L140 400 M280 0 L260 400" stroke="#334155" strokeWidth="4" />
-                    <circle cx="200" cy="180" r="10" fill="#3B82F6" stroke="#FFF" strokeWidth="4" />
-                  </svg>
+                  <GoogleMapView />
 
-                  <div style={{ position: "absolute", top: 70, left: 60, background: "#22C55E", color: "#FFF", padding: "6px 12px", borderRadius: 16, fontWeight: 900, fontSize: 13, boxShadow: "0 4px 14px rgba(34,197,94,0.4)" }}>₹40/hr</div>
+                  <div style={{ position: "absolute", top: 16, left: 16, background: "#22C55E", color: "#FFF", padding: "6px 12px", borderRadius: 16, fontWeight: 900, fontSize: 13, boxShadow: "0 4px 14px rgba(34,197,94,0.4)" }}>₹40/hr</div>
 
                   <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, background: "#FFF", borderRadius: 20, padding: 14, boxShadow: "0 10px 30px rgba(0,0,0,0.25)", display: "flex", gap: 12, alignItems: "center" }}>
                     <img src={REAL_IMAGES.garage} alt="spot" style={{ width: 70, height: 70, borderRadius: 12, objectFit: "cover" }} />
